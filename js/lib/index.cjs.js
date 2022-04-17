@@ -5,7 +5,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var borsh = require('borsh');
 var web3_js = require('@solana/web3.js');
 
-const vrf_program = new web3_js.PublicKey("VRF2YJRMzJ1CrdEeTa9g55RGMBnvN3WG6PEuFNuPhjX");
+const vrf_program = new web3_js.PublicKey("VRFS1BUivo8SDWKjsx3TVW976LXvpB1fFwTf6hGutbJ");
 const config_account_seed = Buffer.from("orao-vrf-network-configuration");
 const randomness_account_seed = Buffer.from("orao-vrf-randomness-request");
 class RandomnessRequested {

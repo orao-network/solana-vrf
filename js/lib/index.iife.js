@@ -17847,7 +17847,7 @@ var vrf = (function (exports) {
 	});
 	new PublicKey('Vote111111111111111111111111111111111111111');
 
-	const vrf_program = new PublicKey("VRF2YJRMzJ1CrdEeTa9g55RGMBnvN3WG6PEuFNuPhjX");
+	const vrf_program = new PublicKey("VRFS1BUivo8SDWKjsx3TVW976LXvpB1fFwTf6hGutbJ");
 	const config_account_seed = Buffer.from("orao-vrf-network-configuration");
 	const randomness_account_seed = Buffer.from("orao-vrf-randomness-request");
 	class RandomnessRequested {
