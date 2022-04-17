@@ -3,7 +3,7 @@ use solana_sdk::pubkey::Pubkey;
 use std::str::FromStr;
 
 /// Public key of contracts
-const DEVNET_ID: &str = "VRF2YJRMzJ1CrdEeTa9g55RGMBnvN3WG6PEuFNuPhjX";
+const DEVNET_ID: &str = "VRFS1BUivo8SDWKjsx3TVW976LXvpB1fFwTf6hGutbJ";
 const MAINNET_ID: &str = "VRFbts7MNgJGfc4ZznJAshGGwdJz2xcUgMhv6FJmYJR";
 
 /// Environment variables used commonly throughout
