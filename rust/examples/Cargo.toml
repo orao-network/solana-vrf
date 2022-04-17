@@ -1,0 +1,10 @@
+[package]
+name = "orao-vrf-solana-example"
+version = "0.1.1"
+edition = "2021"
+
+[dependencies]
+orao-solana-vrf = "0.1.1"
+
+solana-sdk = "1.10.8"
+solana-client = "1.10.8"
