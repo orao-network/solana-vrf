@@ -4,6 +4,7 @@ use solana_sdk::{
   pubkey::Pubkey,
   signer::{keypair::Keypair, Signer},
 };
+use std::{thread, time};
 
 fn airdrop_sol_to_payer(payer: &Keypair, sols: u64) {
   println!("Airdropping {} SOL to {}", sols, payer.pubkey());
@@ -35,7 +36,7 @@ fn get_fulfilled_randomness(
 ) -> Randomness {
   let mut err_count = 0;
   loop {
-    if err_count > 6 {
+    if err_count > 5 {
       panic!("Unable to retrieve randomness for seed {:?}", seed);
     }
     match requestor.get_randomness(seed) {
@@ -48,6 +49,27 @@ fn get_fulfilled_randomness(
         err_count += 1;
       }
     }
+  }
+}
+
+fn verify_randomness_loop(
+  requestor: &VrfRequestor,
+  seed: &Pubkey,
+  randomness: &Randomness,
+) {
+  let mut attempts = 0;
+  while attempts < 5 {
+    // Sleep for 10 secs, in case there are issues with devnet
+    let ten_secs = time::Duration::from_secs(10);
+    thread::sleep(ten_secs);
+
+    if let Err(err) = requestor.verify_randomness_offchain(&seed, randomness) {
+      println!("Unable to verify signature due to {:?}", err);
+      attempts += 1;
+      continue;
+    }
+    println!("Randomness verified!");
+    break;
   }
 }
 
@@ -75,8 +97,6 @@ fn main() {
   println!("");
   println!("Fetched randomness! {:?}", randomness);
 
-  // (Optinal) Verify randomness offchain
-  requestor
-    .verify_randomness_offchain(&random_seed, &randomness)
-    .unwrap();
+  // (Optional) Verify randomness offchain
+  verify_randomness_loop(&requestor, &random_seed, &randomness);
 }
