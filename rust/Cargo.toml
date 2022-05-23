@@ -1,15 +1,22 @@
 [package]
 name = "orao-solana-vrf"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["ORAO Devs <hello@orao.network>"]
-description = "ORAO VRF on-chain Rust SDK for Solana"
+homepage = "https://orao.network"
+repository = "https://github.com/orao-network/solana-vrf/tree/master/rust"
+license = "Apache-2.0"
+keywords = ["solana", "vrf", "ed25519"]
+description = "ORAO Verifiable Random Function for Solana."
 
 [dependencies]
 
-borsh = "0.9.1"
-log = "0.4"
-solana-client = "1.10.8"
-solana-program = "1.10.8"
-solana-sdk = "1.10.8"
-thiserror = "1"
+borsh = "0.9.3"
+bs58 = "0.4"
+ed25519-dalek = "1.0.1"
+log = "0.4.17"
+solana-client = "1.10.17"
+solana-program = "1.10.17"
+solana-sdk = "1.10.17"
+solana-transaction-status = "1.10.17"
+thiserror = "1.0.31"

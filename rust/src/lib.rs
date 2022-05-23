@@ -17,25 +17,39 @@
 //! requestor.request_randomness(&payer, &random_seed).unwrap();
 //! let randomness = requestor.get_randomness(&randomness);
 //!
+//!
+//! // Verify Randomness (Optional)
+//! // Note: All generated randomness are submitted to native EdSigVerify program for onchain verification before
+//! // being saved on the account.
+//! // No news is good news.
+//! requestor.verify_randomness_offchain(&random_seed, &randomness).unwrap();
+//!
+//!
 //! ```
 mod env;
 mod error;
 mod instructions;
 mod state;
+mod verify;
 
 use env::Env;
 
 pub use env::Network;
 pub use error::Error;
-use log::info;
 use instructions::VrfInstruction;
-//use orao_vrf::instructions::VrfInstruction;
+use log::info;
 use solana_client::rpc_client::RpcClient;
 use solana_sdk::{
-  pubkey::Pubkey, signature::Keypair, signer::Signer, transaction::Transaction,
+  pubkey::Pubkey,
+  signature::{Keypair, Signature},
+  signer::Signer,
+  transaction::Transaction,
 };
+use solana_transaction_status::UiTransactionEncoding;
 use state::decode_treasury_acc_from_config;
 pub use state::{Randomness, RandomnessStatus};
+use std::str::FromStr;
+use verify::{is_vrf_fulfilled_transaction, verify_randomness_offchain};
 
 /// VrfRequestor encapsulates logic to request randomness from orao vrf contract on the Solana blockchain.
 ///
@@ -59,7 +73,7 @@ pub use state::{Randomness, RandomnessStatus};
 /// ```
 ///
 pub struct VrfRequestor {
-  rpc_client: RpcClient,
+  pub rpc_client: RpcClient,
   env: Env,
 }
 
@@ -109,7 +123,11 @@ impl VrfRequestor {
   ) -> Result<(), Error> {
     if let Err(_) = self.get_randomness_account(seed) {
       let tx = self.build_randomness_request_tx(seed, payer)?;
-      let _ = self.rpc_client.send_and_confirm_transaction(&tx)?;
+      println!("Tx built: {:?}", tx);
+      println!("Sending and confirming TX");
+      let signature = self.rpc_client.send_and_confirm_transaction(&tx)?;
+      println!("TX signature: {:?}", signature);
+      println!("Tx sent. Waiting for fulfilment...");
     } else {
       info!("Randomness exists!");
     }
@@ -164,6 +182,64 @@ impl VrfRequestor {
       self.rpc_client.get_account(&randomness_address)?;
     Randomness::decode_from_bytes(&randomness_account.data)
   }
+
+  /// Verify `Randomness` with `PublicKey` and `seed` used.
+  ///
+  /// Fetch `PublicKey` from `FulfillRandomness` transaction which contain EdSigVerify and FulfillRandomness instruction.
+  /// Then, verify `Randomness` (signature) generated from `seed` (message) and `Public Key`. An invalid `Randomness` will throw `Error::RandomnessVerifyError` error.
+  ///
+  /// _Note: This step is optional as `Randomness` returned from `Self::get_randomness` would have been
+  /// verified onchain via native EdSigVerify program._
+  ///
+  pub fn verify_randomness_offchain(
+    &self,
+    seed: &Pubkey,
+    randomness: &Randomness,
+  ) -> Result<(), Error> {
+    // Get randomness account
+    let req_account =
+      self.env.find_randomness_request_account(&seed.to_bytes());
+
+    // Get randomness generated from seed
+    let randomness_signature =
+      randomness.randomness.clone().unwrap_or(vec![0; 64]);
+
+    // List all confirmed transactions
+    let signatures: Vec<String> = self
+      .rpc_client
+      .get_signatures_for_address(&req_account)?
+      .into_iter()
+      .map(|tx| tx.signature)
+      .collect();
+
+    if signatures.len() == 0 {
+      return Err(Error::NotFound(format!(
+        "No transactions found for seed {}",
+        seed
+      )));
+    }
+
+    for signature_str in signatures.iter() {
+      let signature = Signature::from_str(signature_str).unwrap();
+      // Fetch transaction data for each signaature
+      let tx = self
+        .rpc_client
+        .get_transaction(&signature, UiTransactionEncoding::JsonParsed)?;
+
+      if is_vrf_fulfilled_transaction(&tx, self.env.vrf_program.to_string()) {
+        verify_randomness_offchain(
+          &tx,
+          &seed.to_bytes(),
+          randomness_signature.as_ref(),
+        )?;
+        return Ok(());
+      }
+    }
+
+    Err(Error::RandomnessVerifyError(
+      "Unable to find transaction with EdSigVerify instruction".to_string(),
+    ))
+  }
 }
 
 fn derive_randomness_address(
@@ -176,3 +252,23 @@ fn derive_randomness_address(
   return public_key;
 }
 
+#[cfg(test)]
+mod tests {
+  use super::{Env, Network, VrfRequestor};
+  use solana_sdk::pubkey::Pubkey;
+  use std::str::FromStr;
+
+  #[test]
+  fn test_verify_randomness_offchain() {
+    let mut requestor = VrfRequestor::new(Network::Devnet).unwrap();
+    // Change program id
+    requestor.env.vrf_program =
+      Pubkey::from_str("VRFUm3dhiqtyW6nj8XghcPLJbCXg9Hj85iABpxwq1Xz").unwrap();
+    let seed =
+      Pubkey::from_str("HB2UbFFKUt4ZNHoJgGYtG9FzcXxzZeu2Zqy7k3sZKGqK").unwrap();
+
+    let randomness = requestor.get_randomness(&seed).unwrap();
+    let res = requestor.verify_randomness_offchain(&seed, &randomness);
+    assert_eq!(res.is_ok(), true);
+  }
+}

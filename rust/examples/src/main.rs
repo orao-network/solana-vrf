@@ -33,10 +33,20 @@ fn get_fulfilled_randomness(
   requestor: &VrfRequestor,
   seed: &Pubkey,
 ) -> Randomness {
+  let mut err_count = 0;
   loop {
-    let randomness = requestor.get_randomness(seed).unwrap();
-    if randomness.status == RandomnessStatus::Fulfilled {
-      return randomness;
+    if err_count > 6 {
+      panic!("Unable to retrieve randomness for seed {:?}", seed);
+    }
+    match requestor.get_randomness(seed) {
+      Ok(randomness) => {
+        if randomness.status == RandomnessStatus::Fulfilled {
+          return randomness;
+        }
+      }
+      Err(_) => {
+        err_count += 1;
+      }
     }
   }
 }
@@ -57,10 +67,16 @@ fn main() {
   println!("Random Seed: {}", random_seed);
 
   // Request a VRF Randomness!
-  println!("Please wait while we are requesting a new randomness...");
+  println!("Please wait while we request new randomness...");
   let requestor = VrfRequestor::new(Network::Devnet).unwrap();
   requestor.request_randomness(&payer, &random_seed).unwrap();
 
   let randomness = get_fulfilled_randomness(&requestor, &random_seed);
+  println!("");
   println!("Fetched randomness! {:?}", randomness);
+
+  // (Optinal) Verify randomness offchain
+  requestor
+    .verify_randomness_offchain(&random_seed, &randomness)
+    .unwrap();
 }

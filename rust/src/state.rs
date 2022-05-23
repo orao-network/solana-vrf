@@ -1,13 +1,13 @@
+use super::instructions::{Rand, Seed};
 use crate::error::Error as VrfError;
 use borsh::{BorshDeserialize, BorshSerialize};
 use solana_sdk::pubkey::Pubkey;
-use super::instructions::{Seed, Rand};
 
 pub fn decode_treasury_acc_from_config(
   account_data: &Vec<u8>,
 ) -> Result<Pubkey, VrfError> {
   let config = NetworkConfiguration::deserialize(&mut account_data.as_slice())
-    .map_err(|err| VrfError::DecodeError(err.to_string()))?;
+    .map_err(|err| VrfError::RandomnessDecodeError(err.to_string()))?;
   Ok(config.treasury)
 }
 
@@ -51,7 +51,7 @@ impl Randomness {
   pub fn decode_from_bytes(data: &Vec<u8>) -> Result<Self, VrfError> {
     let randomness_acc =
       RandomnessAccount::deserialize(&mut data.as_slice())
-        .map_err(|err| VrfError::DecodeError(err.to_string()))?;
+        .map_err(|err| VrfError::RandomnessDecodeError(err.to_string()))?;
     Ok(randomness_acc.into())
   }
 }
@@ -70,7 +70,7 @@ pub enum RandomnessStatus {
 
 // Smart contract data
 
-/// On chain Randomness Account 
+/// On chain Randomness Account
 #[derive(BorshSerialize, BorshDeserialize, Clone, Debug, PartialEq)]
 pub enum RandomnessAccount {
   RandomnessRequested {

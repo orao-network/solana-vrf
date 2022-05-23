@@ -1,10 +1,10 @@
 [package]
 name = "orao-vrf-solana-example"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 
 [dependencies]
-orao-solana-vrf = "0.1.1"
-
-solana-sdk = "1.10.8"
-solana-client = "1.10.8"
+orao-solana-vrf = {path = "../"}
+#orao-solana-vrf = "0.1.2"
+solana-sdk = "1.10.17"
+solana-client = "1.10.17"

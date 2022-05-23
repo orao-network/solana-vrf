@@ -1,4 +1,3 @@
-use crate::error::Error;
 use solana_sdk::pubkey::Pubkey;
 use std::str::FromStr;
 
@@ -30,12 +29,19 @@ impl Env {
   }
 
   pub fn find_config_account_address(&self) -> Pubkey {
-    Pubkey::find_program_address(&[self.config_account_seed.as_bytes()], &self.vrf_program)
-      .0
+    Pubkey::find_program_address(
+      &[self.config_account_seed.as_bytes()],
+      &self.vrf_program,
+    )
+    .0
   }
 
   pub fn find_randomness_request_account(&self, seed: &[u8; 32]) -> Pubkey {
-    Pubkey::find_program_address(&[self.randomness_account_seed.as_bytes(), seed], &self.vrf_program).0
+    Pubkey::find_program_address(
+      &[self.randomness_account_seed.as_bytes(), seed],
+      &self.vrf_program,
+    )
+    .0
   }
 }
 
