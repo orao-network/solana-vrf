@@ -4,7 +4,6 @@ version = "0.1.2"
 edition = "2021"
 
 [dependencies]
-orao-solana-vrf = {path = "../"}
-#orao-solana-vrf = "0.1.2"
+orao-solana-vrf = "0.1.2"
 solana-sdk = "1.10.17"
 solana-client = "1.10.17"
