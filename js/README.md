@@ -3,13 +3,13 @@ This repository provides the off-chain web3 SDK for requesting on-chain randomne
 
 ## Import ORAO's VRF library
 ```
-import { createOrGetRandomnessRequest, RandomnessFullfilled, RandomnessRequested } from './lib/orao-vrf-solana-js/index.esm'; // path to copied library, includes VRF contract address
+import { createOrGetRandomnessRequest, RandomnessFullfilled, RandomnessRequested, verifyRandomnessOffchain  } from './lib/orao-vrf-solana-js/index.esm'; // path to copied library, includes VRF contract address
 import { Keypair, PublicKey, Transaction, clusterApiUrl, Connection } from '@solana/web3.js';
 
 
 // Create a connection to to Solana's devnet network
-const connection = new Connection(clusterApiUrl('devnet'));
-
+const cluster = "devnet";
+const connection = new Connection(clusterApiUrl(cluster));
 
 // Generate a new keypair
 const payer = Keypair.generate();
@@ -20,7 +20,7 @@ await connection.confirmTransaction(airdroptx, "finalized");
 
 const walletPublicKey = payer.publicKey;
 const seed = new PublicKey('<public key>'); // public key can be generated using Keypair.generate().publicKey
-const request = await createOrGetRandomnessRequest(walletPublicKey, connection, seed.toBuffer());
+const request = await createOrGetRandomnessRequest(walletPublicKey, cluster, seed.toBuffer());
 
 if (request instanceof Transaction) {
 	//Request randomness
@@ -34,5 +34,9 @@ if (request instanceof Transaction) {
 } else if (request instanceof RandomnessFullfilled) {
 	//radnomness has been fulfilled
 	alert('Randomness fulfulled');
+
+	// (Optional) Verify this randomness offchain.
+	await verifyRandomnessOffchain(cluster, seed, request.randomness);
+	alert("Randomness verified");
 }
 ```

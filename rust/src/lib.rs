@@ -225,7 +225,17 @@ impl VrfRequestor {
       let tx = self
         .rpc_client
         .get_transaction(&signature, UiTransactionEncoding::JsonParsed)?;
-
+      // Skip transaction if tx status is error
+      if tx
+        .transaction
+        .meta
+        .as_ref()
+        .map(|meta| meta.status.is_err())
+        .unwrap_or(true)
+      {
+        info!("Skipping transaction {:?} due to error status", signature_str);
+        continue;
+      }
       if is_vrf_fulfilled_transaction(&tx, self.env.vrf_program.to_string()) {
         verify_randomness_offchain(
           &tx,
@@ -269,6 +279,25 @@ mod tests {
 
     let randomness = requestor.get_randomness(&seed).unwrap();
     let res = requestor.verify_randomness_offchain(&seed, &randomness);
+    assert_eq!(res.is_ok(), true);
+  }
+
+  #[test]
+  fn test_verify_randomness_offchain_with_error_status() {
+    let mut requestor = VrfRequestor::new(Network::Devnet).unwrap();
+    // Change program id
+    requestor.env.vrf_program =
+      Pubkey::from_str("VRFUm3dhiqtyW6nj8XghcPLJbCXg9Hj85iABpxwq1Xz").unwrap();
+    
+    // This seed contains a failed Fulfill transaction that should be skipped.
+    let seed = Pubkey::new(&[
+      96, 135, 155, 105, 43, 71, 237, 124, 163, 112, 135, 141, 76, 39, 239, 53,
+      248, 172, 40, 167, 137, 248, 107, 93, 126, 211, 48, 152, 145, 175, 209,
+      235,
+    ]);
+    let randomness = requestor.get_randomness(&seed).unwrap();
+    let res =
+      requestor.verify_randomness_offchain(&seed, &randomness);
     assert_eq!(res.is_ok(), true);
   }
 }

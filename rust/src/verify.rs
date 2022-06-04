@@ -54,6 +54,7 @@ fn is_vrf_fulfilled_instructions(
       "".to_string()
     })
     .collect();
+
   // TODO: Check instruction of vrf_program_id
   program_ids[0] == solana_sdk::ed25519_program::id().to_string()
     && program_ids[1] == vrf_program_id

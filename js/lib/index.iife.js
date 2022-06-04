@@ -3394,9 +3394,9 @@ var vrf = (function (exports) {
 	var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array;
 
 	var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-	for (var i = 0, len = code.length; i < len; ++i) {
-	  lookup[i] = code[i];
-	  revLookup[code.charCodeAt(i)] = i;
+	for (var i$1 = 0, len = code.length; i$1 < len; ++i$1) {
+	  lookup[i$1] = code[i$1];
+	  revLookup[code.charCodeAt(i$1)] = i$1;
 	}
 
 	// Support decoding URL-safe base64 strings, as Node.js does.
@@ -6985,14 +6985,14 @@ var vrf = (function (exports) {
 
 	var naclFast = {exports: {}};
 
-	var _nodeResolve_empty = {};
+	var nodeCrypto = {};
 
-	var _nodeResolve_empty$1 = /*#__PURE__*/Object.freeze({
+	var _nodeResolve_empty = /*#__PURE__*/Object.freeze({
 		__proto__: null,
-		'default': _nodeResolve_empty
+		'default': nodeCrypto
 	});
 
-	var require$$0 = /*@__PURE__*/getAugmentedNamespace(_nodeResolve_empty$1);
+	var require$$0$1 = /*@__PURE__*/getAugmentedNamespace(_nodeResolve_empty);
 
 	(function (module) {
 	(function(nacl) {
@@ -9373,7 +9373,7 @@ var vrf = (function (exports) {
 	    });
 	  } else if (typeof commonjsRequire !== 'undefined') {
 	    // Node.js.
-	    crypto = require$$0;
+	    crypto = require$$0$1;
 	    if (crypto && crypto.randomBytes) {
 	      nacl.setPRNG(function(x, n) {
 	        var i, v = crypto.randomBytes(n);
@@ -12648,7 +12648,7 @@ var vrf = (function (exports) {
 
 
 	  validate(value, options = {}) {
-	    return validate(value, this, options);
+	    return validate$1(value, this, options);
 	  }
 
 	}
@@ -12657,7 +12657,7 @@ var vrf = (function (exports) {
 	 */
 
 	function assert$7(value, struct) {
-	  const result = validate(value, struct);
+	  const result = validate$1(value, struct);
 
 	  if (result[0]) {
 	    throw result[0];
@@ -12668,7 +12668,7 @@ var vrf = (function (exports) {
 	 */
 
 	function create(value, struct) {
-	  const result = validate(value, struct, {
+	  const result = validate$1(value, struct, {
 	    coerce: true
 	  });
 
@@ -12683,7 +12683,7 @@ var vrf = (function (exports) {
 	 */
 
 	function mask(value, struct) {
-	  const result = validate(value, struct, {
+	  const result = validate$1(value, struct, {
 	    coerce: true,
 	    mask: true
 	  });
@@ -12699,7 +12699,7 @@ var vrf = (function (exports) {
 	 */
 
 	function is(value, struct) {
-	  const result = validate(value, struct);
+	  const result = validate$1(value, struct);
 	  return !result[0];
 	}
 	/**
@@ -12707,7 +12707,7 @@ var vrf = (function (exports) {
 	 * value (with potential coercion) if valid.
 	 */
 
-	function validate(value, struct, options = {}) {
+	function validate$1(value, struct, options = {}) {
 	  const tuples = run(value, struct, options);
 	  const tuple = shiftIterator(tuples);
 
@@ -12975,6 +12975,3007 @@ var vrf = (function (exports) {
 	    }
 	  });
 	}
+
+	var index_browser = {};
+
+	var interopRequireDefault = {exports: {}};
+
+	(function (module) {
+	function _interopRequireDefault(obj) {
+	  return obj && obj.__esModule ? obj : {
+	    "default": obj
+	  };
+	}
+
+	module.exports = _interopRequireDefault, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	}(interopRequireDefault));
+
+	var classCallCheck = {exports: {}};
+
+	(function (module) {
+	function _classCallCheck(instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
+
+	module.exports = _classCallCheck, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	}(classCallCheck));
+
+	var inherits$1 = {exports: {}};
+
+	var setPrototypeOf = {exports: {}};
+
+	(function (module) {
+	function _setPrototypeOf(o, p) {
+	  module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+	    o.__proto__ = p;
+	    return o;
+	  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	  return _setPrototypeOf(o, p);
+	}
+
+	module.exports = _setPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	}(setPrototypeOf));
+
+	(function (module) {
+	var setPrototypeOf$1 = setPrototypeOf.exports;
+
+	function _inherits(subClass, superClass) {
+	  if (typeof superClass !== "function" && superClass !== null) {
+	    throw new TypeError("Super expression must either be null or a function");
+	  }
+
+	  subClass.prototype = Object.create(superClass && superClass.prototype, {
+	    constructor: {
+	      value: subClass,
+	      writable: true,
+	      configurable: true
+	    }
+	  });
+	  Object.defineProperty(subClass, "prototype", {
+	    writable: false
+	  });
+	  if (superClass) setPrototypeOf$1(subClass, superClass);
+	}
+
+	module.exports = _inherits, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	}(inherits$1));
+
+	var possibleConstructorReturn = {exports: {}};
+
+	var _typeof = {exports: {}};
+
+	(function (module) {
+	function _typeof(obj) {
+	  "@babel/helpers - typeof";
+
+	  return (module.exports = _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+	    return typeof obj;
+	  } : function (obj) {
+	    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+	  }, module.exports.__esModule = true, module.exports["default"] = module.exports), _typeof(obj);
+	}
+
+	module.exports = _typeof, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	}(_typeof));
+
+	var assertThisInitialized = {exports: {}};
+
+	(function (module) {
+	function _assertThisInitialized(self) {
+	  if (self === void 0) {
+	    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+	  }
+
+	  return self;
+	}
+
+	module.exports = _assertThisInitialized, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	}(assertThisInitialized));
+
+	(function (module) {
+	var _typeof$1 = _typeof.exports["default"];
+
+	var assertThisInitialized$1 = assertThisInitialized.exports;
+
+	function _possibleConstructorReturn(self, call) {
+	  if (call && (_typeof$1(call) === "object" || typeof call === "function")) {
+	    return call;
+	  } else if (call !== void 0) {
+	    throw new TypeError("Derived constructors may only return object or undefined");
+	  }
+
+	  return assertThisInitialized$1(self);
+	}
+
+	module.exports = _possibleConstructorReturn, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	}(possibleConstructorReturn));
+
+	var getPrototypeOf = {exports: {}};
+
+	(function (module) {
+	function _getPrototypeOf(o) {
+	  module.exports = _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+	    return o.__proto__ || Object.getPrototypeOf(o);
+	  }, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	  return _getPrototypeOf(o);
+	}
+
+	module.exports = _getPrototypeOf, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	}(getPrototypeOf));
+
+	var websocket_browser = {};
+
+	var createClass = {exports: {}};
+
+	(function (module) {
+	function _defineProperties(target, props) {
+	  for (var i = 0; i < props.length; i++) {
+	    var descriptor = props[i];
+	    descriptor.enumerable = descriptor.enumerable || false;
+	    descriptor.configurable = true;
+	    if ("value" in descriptor) descriptor.writable = true;
+	    Object.defineProperty(target, descriptor.key, descriptor);
+	  }
+	}
+
+	function _createClass(Constructor, protoProps, staticProps) {
+	  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+	  if (staticProps) _defineProperties(Constructor, staticProps);
+	  Object.defineProperty(Constructor, "prototype", {
+	    writable: false
+	  });
+	  return Constructor;
+	}
+
+	module.exports = _createClass, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	}(createClass));
+
+	var eventemitter3 = {exports: {}};
+
+	(function (module) {
+
+	var has = Object.prototype.hasOwnProperty
+	  , prefix = '~';
+
+	/**
+	 * Constructor to create a storage for our `EE` objects.
+	 * An `Events` instance is a plain object whose properties are event names.
+	 *
+	 * @constructor
+	 * @private
+	 */
+	function Events() {}
+
+	//
+	// We try to not inherit from `Object.prototype`. In some engines creating an
+	// instance in this way is faster than calling `Object.create(null)` directly.
+	// If `Object.create(null)` is not supported we prefix the event names with a
+	// character to make sure that the built-in object properties are not
+	// overridden or used as an attack vector.
+	//
+	if (Object.create) {
+	  Events.prototype = Object.create(null);
+
+	  //
+	  // This hack is needed because the `__proto__` property is still inherited in
+	  // some old browsers like Android 4, iPhone 5.1, Opera 11 and Safari 5.
+	  //
+	  if (!new Events().__proto__) prefix = false;
+	}
+
+	/**
+	 * Representation of a single event listener.
+	 *
+	 * @param {Function} fn The listener function.
+	 * @param {*} context The context to invoke the listener with.
+	 * @param {Boolean} [once=false] Specify if the listener is a one-time listener.
+	 * @constructor
+	 * @private
+	 */
+	function EE(fn, context, once) {
+	  this.fn = fn;
+	  this.context = context;
+	  this.once = once || false;
+	}
+
+	/**
+	 * Add a listener for a given event.
+	 *
+	 * @param {EventEmitter} emitter Reference to the `EventEmitter` instance.
+	 * @param {(String|Symbol)} event The event name.
+	 * @param {Function} fn The listener function.
+	 * @param {*} context The context to invoke the listener with.
+	 * @param {Boolean} once Specify if the listener is a one-time listener.
+	 * @returns {EventEmitter}
+	 * @private
+	 */
+	function addListener(emitter, event, fn, context, once) {
+	  if (typeof fn !== 'function') {
+	    throw new TypeError('The listener must be a function');
+	  }
+
+	  var listener = new EE(fn, context || emitter, once)
+	    , evt = prefix ? prefix + event : event;
+
+	  if (!emitter._events[evt]) emitter._events[evt] = listener, emitter._eventsCount++;
+	  else if (!emitter._events[evt].fn) emitter._events[evt].push(listener);
+	  else emitter._events[evt] = [emitter._events[evt], listener];
+
+	  return emitter;
+	}
+
+	/**
+	 * Clear event by name.
+	 *
+	 * @param {EventEmitter} emitter Reference to the `EventEmitter` instance.
+	 * @param {(String|Symbol)} evt The Event name.
+	 * @private
+	 */
+	function clearEvent(emitter, evt) {
+	  if (--emitter._eventsCount === 0) emitter._events = new Events();
+	  else delete emitter._events[evt];
+	}
+
+	/**
+	 * Minimal `EventEmitter` interface that is molded against the Node.js
+	 * `EventEmitter` interface.
+	 *
+	 * @constructor
+	 * @public
+	 */
+	function EventEmitter() {
+	  this._events = new Events();
+	  this._eventsCount = 0;
+	}
+
+	/**
+	 * Return an array listing the events for which the emitter has registered
+	 * listeners.
+	 *
+	 * @returns {Array}
+	 * @public
+	 */
+	EventEmitter.prototype.eventNames = function eventNames() {
+	  var names = []
+	    , events
+	    , name;
+
+	  if (this._eventsCount === 0) return names;
+
+	  for (name in (events = this._events)) {
+	    if (has.call(events, name)) names.push(prefix ? name.slice(1) : name);
+	  }
+
+	  if (Object.getOwnPropertySymbols) {
+	    return names.concat(Object.getOwnPropertySymbols(events));
+	  }
+
+	  return names;
+	};
+
+	/**
+	 * Return the listeners registered for a given event.
+	 *
+	 * @param {(String|Symbol)} event The event name.
+	 * @returns {Array} The registered listeners.
+	 * @public
+	 */
+	EventEmitter.prototype.listeners = function listeners(event) {
+	  var evt = prefix ? prefix + event : event
+	    , handlers = this._events[evt];
+
+	  if (!handlers) return [];
+	  if (handlers.fn) return [handlers.fn];
+
+	  for (var i = 0, l = handlers.length, ee = new Array(l); i < l; i++) {
+	    ee[i] = handlers[i].fn;
+	  }
+
+	  return ee;
+	};
+
+	/**
+	 * Return the number of listeners listening to a given event.
+	 *
+	 * @param {(String|Symbol)} event The event name.
+	 * @returns {Number} The number of listeners.
+	 * @public
+	 */
+	EventEmitter.prototype.listenerCount = function listenerCount(event) {
+	  var evt = prefix ? prefix + event : event
+	    , listeners = this._events[evt];
+
+	  if (!listeners) return 0;
+	  if (listeners.fn) return 1;
+	  return listeners.length;
+	};
+
+	/**
+	 * Calls each of the listeners registered for a given event.
+	 *
+	 * @param {(String|Symbol)} event The event name.
+	 * @returns {Boolean} `true` if the event had listeners, else `false`.
+	 * @public
+	 */
+	EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
+	  var evt = prefix ? prefix + event : event;
+
+	  if (!this._events[evt]) return false;
+
+	  var listeners = this._events[evt]
+	    , len = arguments.length
+	    , args
+	    , i;
+
+	  if (listeners.fn) {
+	    if (listeners.once) this.removeListener(event, listeners.fn, undefined, true);
+
+	    switch (len) {
+	      case 1: return listeners.fn.call(listeners.context), true;
+	      case 2: return listeners.fn.call(listeners.context, a1), true;
+	      case 3: return listeners.fn.call(listeners.context, a1, a2), true;
+	      case 4: return listeners.fn.call(listeners.context, a1, a2, a3), true;
+	      case 5: return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
+	      case 6: return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
+	    }
+
+	    for (i = 1, args = new Array(len -1); i < len; i++) {
+	      args[i - 1] = arguments[i];
+	    }
+
+	    listeners.fn.apply(listeners.context, args);
+	  } else {
+	    var length = listeners.length
+	      , j;
+
+	    for (i = 0; i < length; i++) {
+	      if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
+
+	      switch (len) {
+	        case 1: listeners[i].fn.call(listeners[i].context); break;
+	        case 2: listeners[i].fn.call(listeners[i].context, a1); break;
+	        case 3: listeners[i].fn.call(listeners[i].context, a1, a2); break;
+	        case 4: listeners[i].fn.call(listeners[i].context, a1, a2, a3); break;
+	        default:
+	          if (!args) for (j = 1, args = new Array(len -1); j < len; j++) {
+	            args[j - 1] = arguments[j];
+	          }
+
+	          listeners[i].fn.apply(listeners[i].context, args);
+	      }
+	    }
+	  }
+
+	  return true;
+	};
+
+	/**
+	 * Add a listener for a given event.
+	 *
+	 * @param {(String|Symbol)} event The event name.
+	 * @param {Function} fn The listener function.
+	 * @param {*} [context=this] The context to invoke the listener with.
+	 * @returns {EventEmitter} `this`.
+	 * @public
+	 */
+	EventEmitter.prototype.on = function on(event, fn, context) {
+	  return addListener(this, event, fn, context, false);
+	};
+
+	/**
+	 * Add a one-time listener for a given event.
+	 *
+	 * @param {(String|Symbol)} event The event name.
+	 * @param {Function} fn The listener function.
+	 * @param {*} [context=this] The context to invoke the listener with.
+	 * @returns {EventEmitter} `this`.
+	 * @public
+	 */
+	EventEmitter.prototype.once = function once(event, fn, context) {
+	  return addListener(this, event, fn, context, true);
+	};
+
+	/**
+	 * Remove the listeners of a given event.
+	 *
+	 * @param {(String|Symbol)} event The event name.
+	 * @param {Function} fn Only remove the listeners that match this function.
+	 * @param {*} context Only remove the listeners that have this context.
+	 * @param {Boolean} once Only remove one-time listeners.
+	 * @returns {EventEmitter} `this`.
+	 * @public
+	 */
+	EventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
+	  var evt = prefix ? prefix + event : event;
+
+	  if (!this._events[evt]) return this;
+	  if (!fn) {
+	    clearEvent(this, evt);
+	    return this;
+	  }
+
+	  var listeners = this._events[evt];
+
+	  if (listeners.fn) {
+	    if (
+	      listeners.fn === fn &&
+	      (!once || listeners.once) &&
+	      (!context || listeners.context === context)
+	    ) {
+	      clearEvent(this, evt);
+	    }
+	  } else {
+	    for (var i = 0, events = [], length = listeners.length; i < length; i++) {
+	      if (
+	        listeners[i].fn !== fn ||
+	        (once && !listeners[i].once) ||
+	        (context && listeners[i].context !== context)
+	      ) {
+	        events.push(listeners[i]);
+	      }
+	    }
+
+	    //
+	    // Reset the array, or remove it completely if we have no more listeners.
+	    //
+	    if (events.length) this._events[evt] = events.length === 1 ? events[0] : events;
+	    else clearEvent(this, evt);
+	  }
+
+	  return this;
+	};
+
+	/**
+	 * Remove all listeners, or those of the specified event.
+	 *
+	 * @param {(String|Symbol)} [event] The event name.
+	 * @returns {EventEmitter} `this`.
+	 * @public
+	 */
+	EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
+	  var evt;
+
+	  if (event) {
+	    evt = prefix ? prefix + event : event;
+	    if (this._events[evt]) clearEvent(this, evt);
+	  } else {
+	    this._events = new Events();
+	    this._eventsCount = 0;
+	  }
+
+	  return this;
+	};
+
+	//
+	// Alias methods names because people roll like that.
+	//
+	EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+	EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+
+	//
+	// Expose the prefix.
+	//
+	EventEmitter.prefixed = prefix;
+
+	//
+	// Allow `EventEmitter` to be imported as module namespace.
+	//
+	EventEmitter.EventEmitter = EventEmitter;
+
+	//
+	// Expose the module.
+	//
+	{
+	  module.exports = EventEmitter;
+	}
+	}(eventemitter3));
+
+	/**
+	 * WebSocket implements a browser-side WebSocket specification.
+	 * @module Client
+	 */
+
+	(function (exports) {
+
+	var _interopRequireDefault = interopRequireDefault.exports;
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports["default"] = _default;
+
+	var _classCallCheck2 = _interopRequireDefault(classCallCheck.exports);
+
+	var _createClass2 = _interopRequireDefault(createClass.exports);
+
+	var _inherits2 = _interopRequireDefault(inherits$1.exports);
+
+	var _possibleConstructorReturn2 = _interopRequireDefault(possibleConstructorReturn.exports);
+
+	var _getPrototypeOf2 = _interopRequireDefault(getPrototypeOf.exports);
+
+	var _eventemitter = eventemitter3.exports;
+
+	function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+
+	function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+	var WebSocketBrowserImpl = /*#__PURE__*/function (_EventEmitter) {
+	  (0, _inherits2["default"])(WebSocketBrowserImpl, _EventEmitter);
+
+	  var _super = _createSuper(WebSocketBrowserImpl);
+
+	  /** Instantiate a WebSocket class
+	   * @constructor
+	   * @param {String} address - url to a websocket server
+	   * @param {(Object)} options - websocket options
+	   * @param {(String|Array)} protocols - a list of protocols
+	   * @return {WebSocketBrowserImpl} - returns a WebSocket instance
+	   */
+	  function WebSocketBrowserImpl(address, options, protocols) {
+	    var _this;
+
+	    (0, _classCallCheck2["default"])(this, WebSocketBrowserImpl);
+	    _this = _super.call(this);
+	    _this.socket = new window.WebSocket(address, protocols);
+
+	    _this.socket.onopen = function () {
+	      return _this.emit("open");
+	    };
+
+	    _this.socket.onmessage = function (event) {
+	      return _this.emit("message", event.data);
+	    };
+
+	    _this.socket.onerror = function (error) {
+	      return _this.emit("error", error);
+	    };
+
+	    _this.socket.onclose = function (event) {
+	      _this.emit("close", event.code, event.reason);
+	    };
+
+	    return _this;
+	  }
+	  /**
+	   * Sends data through a websocket connection
+	   * @method
+	   * @param {(String|Object)} data - data to be sent via websocket
+	   * @param {Object} optionsOrCallback - ws options
+	   * @param {Function} callback - a callback called once the data is sent
+	   * @return {Undefined}
+	   */
+
+
+	  (0, _createClass2["default"])(WebSocketBrowserImpl, [{
+	    key: "send",
+	    value: function send(data, optionsOrCallback, callback) {
+	      var cb = callback || optionsOrCallback;
+
+	      try {
+	        this.socket.send(data);
+	        cb();
+	      } catch (error) {
+	        cb(error);
+	      }
+	    }
+	    /**
+	     * Closes an underlying socket
+	     * @method
+	     * @param {Number} code - status code explaining why the connection is being closed
+	     * @param {String} reason - a description why the connection is closing
+	     * @return {Undefined}
+	     * @throws {Error}
+	     */
+
+	  }, {
+	    key: "close",
+	    value: function close(code, reason) {
+	      this.socket.close(code, reason);
+	    }
+	  }, {
+	    key: "addEventListener",
+	    value: function addEventListener(type, listener, options) {
+	      this.socket.addEventListener(type, listener, options);
+	    }
+	  }]);
+	  return WebSocketBrowserImpl;
+	}(_eventemitter.EventEmitter);
+	/**
+	 * factory method for common WebSocket instance
+	 * @method
+	 * @param {String} address - url to a websocket server
+	 * @param {(Object)} options - websocket options
+	 * @return {Undefined}
+	 */
+
+
+	function _default(address, options) {
+	  return new WebSocketBrowserImpl(address, options);
+	}
+	}(websocket_browser));
+
+	var client = {};
+
+	var runtime = {exports: {}};
+
+	/**
+	 * Copyright (c) 2014-present, Facebook, Inc.
+	 *
+	 * This source code is licensed under the MIT license found in the
+	 * LICENSE file in the root directory of this source tree.
+	 */
+
+	(function (module) {
+	var runtime = (function (exports) {
+
+	  var Op = Object.prototype;
+	  var hasOwn = Op.hasOwnProperty;
+	  var undefined$1; // More compressible than void 0.
+	  var $Symbol = typeof Symbol === "function" ? Symbol : {};
+	  var iteratorSymbol = $Symbol.iterator || "@@iterator";
+	  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
+	  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+	  function define(obj, key, value) {
+	    Object.defineProperty(obj, key, {
+	      value: value,
+	      enumerable: true,
+	      configurable: true,
+	      writable: true
+	    });
+	    return obj[key];
+	  }
+	  try {
+	    // IE 8 has a broken Object.defineProperty that only works on DOM objects.
+	    define({}, "");
+	  } catch (err) {
+	    define = function(obj, key, value) {
+	      return obj[key] = value;
+	    };
+	  }
+
+	  function wrap(innerFn, outerFn, self, tryLocsList) {
+	    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+	    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+	    var generator = Object.create(protoGenerator.prototype);
+	    var context = new Context(tryLocsList || []);
+
+	    // The ._invoke method unifies the implementations of the .next,
+	    // .throw, and .return methods.
+	    generator._invoke = makeInvokeMethod(innerFn, self, context);
+
+	    return generator;
+	  }
+	  exports.wrap = wrap;
+
+	  // Try/catch helper to minimize deoptimizations. Returns a completion
+	  // record like context.tryEntries[i].completion. This interface could
+	  // have been (and was previously) designed to take a closure to be
+	  // invoked without arguments, but in all the cases we care about we
+	  // already have an existing method we want to call, so there's no need
+	  // to create a new function object. We can even get away with assuming
+	  // the method takes exactly one argument, since that happens to be true
+	  // in every case, so we don't have to touch the arguments object. The
+	  // only additional allocation required is the completion record, which
+	  // has a stable shape and so hopefully should be cheap to allocate.
+	  function tryCatch(fn, obj, arg) {
+	    try {
+	      return { type: "normal", arg: fn.call(obj, arg) };
+	    } catch (err) {
+	      return { type: "throw", arg: err };
+	    }
+	  }
+
+	  var GenStateSuspendedStart = "suspendedStart";
+	  var GenStateSuspendedYield = "suspendedYield";
+	  var GenStateExecuting = "executing";
+	  var GenStateCompleted = "completed";
+
+	  // Returning this object from the innerFn has the same effect as
+	  // breaking out of the dispatch switch statement.
+	  var ContinueSentinel = {};
+
+	  // Dummy constructor functions that we use as the .constructor and
+	  // .constructor.prototype properties for functions that return Generator
+	  // objects. For full spec compliance, you may wish to configure your
+	  // minifier not to mangle the names of these two functions.
+	  function Generator() {}
+	  function GeneratorFunction() {}
+	  function GeneratorFunctionPrototype() {}
+
+	  // This is a polyfill for %IteratorPrototype% for environments that
+	  // don't natively support it.
+	  var IteratorPrototype = {};
+	  define(IteratorPrototype, iteratorSymbol, function () {
+	    return this;
+	  });
+
+	  var getProto = Object.getPrototypeOf;
+	  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+	  if (NativeIteratorPrototype &&
+	      NativeIteratorPrototype !== Op &&
+	      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
+	    // This environment has a native %IteratorPrototype%; use it instead
+	    // of the polyfill.
+	    IteratorPrototype = NativeIteratorPrototype;
+	  }
+
+	  var Gp = GeneratorFunctionPrototype.prototype =
+	    Generator.prototype = Object.create(IteratorPrototype);
+	  GeneratorFunction.prototype = GeneratorFunctionPrototype;
+	  define(Gp, "constructor", GeneratorFunctionPrototype);
+	  define(GeneratorFunctionPrototype, "constructor", GeneratorFunction);
+	  GeneratorFunction.displayName = define(
+	    GeneratorFunctionPrototype,
+	    toStringTagSymbol,
+	    "GeneratorFunction"
+	  );
+
+	  // Helper for defining the .next, .throw, and .return methods of the
+	  // Iterator interface in terms of a single ._invoke method.
+	  function defineIteratorMethods(prototype) {
+	    ["next", "throw", "return"].forEach(function(method) {
+	      define(prototype, method, function(arg) {
+	        return this._invoke(method, arg);
+	      });
+	    });
+	  }
+
+	  exports.isGeneratorFunction = function(genFun) {
+	    var ctor = typeof genFun === "function" && genFun.constructor;
+	    return ctor
+	      ? ctor === GeneratorFunction ||
+	        // For the native GeneratorFunction constructor, the best we can
+	        // do is to check its .name property.
+	        (ctor.displayName || ctor.name) === "GeneratorFunction"
+	      : false;
+	  };
+
+	  exports.mark = function(genFun) {
+	    if (Object.setPrototypeOf) {
+	      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+	    } else {
+	      genFun.__proto__ = GeneratorFunctionPrototype;
+	      define(genFun, toStringTagSymbol, "GeneratorFunction");
+	    }
+	    genFun.prototype = Object.create(Gp);
+	    return genFun;
+	  };
+
+	  // Within the body of any async function, `await x` is transformed to
+	  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+	  // `hasOwn.call(value, "__await")` to determine if the yielded value is
+	  // meant to be awaited.
+	  exports.awrap = function(arg) {
+	    return { __await: arg };
+	  };
+
+	  function AsyncIterator(generator, PromiseImpl) {
+	    function invoke(method, arg, resolve, reject) {
+	      var record = tryCatch(generator[method], generator, arg);
+	      if (record.type === "throw") {
+	        reject(record.arg);
+	      } else {
+	        var result = record.arg;
+	        var value = result.value;
+	        if (value &&
+	            typeof value === "object" &&
+	            hasOwn.call(value, "__await")) {
+	          return PromiseImpl.resolve(value.__await).then(function(value) {
+	            invoke("next", value, resolve, reject);
+	          }, function(err) {
+	            invoke("throw", err, resolve, reject);
+	          });
+	        }
+
+	        return PromiseImpl.resolve(value).then(function(unwrapped) {
+	          // When a yielded Promise is resolved, its final value becomes
+	          // the .value of the Promise<{value,done}> result for the
+	          // current iteration.
+	          result.value = unwrapped;
+	          resolve(result);
+	        }, function(error) {
+	          // If a rejected Promise was yielded, throw the rejection back
+	          // into the async generator function so it can be handled there.
+	          return invoke("throw", error, resolve, reject);
+	        });
+	      }
+	    }
+
+	    var previousPromise;
+
+	    function enqueue(method, arg) {
+	      function callInvokeWithMethodAndArg() {
+	        return new PromiseImpl(function(resolve, reject) {
+	          invoke(method, arg, resolve, reject);
+	        });
+	      }
+
+	      return previousPromise =
+	        // If enqueue has been called before, then we want to wait until
+	        // all previous Promises have been resolved before calling invoke,
+	        // so that results are always delivered in the correct order. If
+	        // enqueue has not been called before, then it is important to
+	        // call invoke immediately, without waiting on a callback to fire,
+	        // so that the async generator function has the opportunity to do
+	        // any necessary setup in a predictable way. This predictability
+	        // is why the Promise constructor synchronously invokes its
+	        // executor callback, and why async functions synchronously
+	        // execute code before the first await. Since we implement simple
+	        // async functions in terms of async generators, it is especially
+	        // important to get this right, even though it requires care.
+	        previousPromise ? previousPromise.then(
+	          callInvokeWithMethodAndArg,
+	          // Avoid propagating failures to Promises returned by later
+	          // invocations of the iterator.
+	          callInvokeWithMethodAndArg
+	        ) : callInvokeWithMethodAndArg();
+	    }
+
+	    // Define the unified helper method that is used to implement .next,
+	    // .throw, and .return (see defineIteratorMethods).
+	    this._invoke = enqueue;
+	  }
+
+	  defineIteratorMethods(AsyncIterator.prototype);
+	  define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
+	    return this;
+	  });
+	  exports.AsyncIterator = AsyncIterator;
+
+	  // Note that simple async functions are implemented on top of
+	  // AsyncIterator objects; they just return a Promise for the value of
+	  // the final result produced by the iterator.
+	  exports.async = function(innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+	    if (PromiseImpl === void 0) PromiseImpl = Promise;
+
+	    var iter = new AsyncIterator(
+	      wrap(innerFn, outerFn, self, tryLocsList),
+	      PromiseImpl
+	    );
+
+	    return exports.isGeneratorFunction(outerFn)
+	      ? iter // If outerFn is a generator, return the full iterator.
+	      : iter.next().then(function(result) {
+	          return result.done ? result.value : iter.next();
+	        });
+	  };
+
+	  function makeInvokeMethod(innerFn, self, context) {
+	    var state = GenStateSuspendedStart;
+
+	    return function invoke(method, arg) {
+	      if (state === GenStateExecuting) {
+	        throw new Error("Generator is already running");
+	      }
+
+	      if (state === GenStateCompleted) {
+	        if (method === "throw") {
+	          throw arg;
+	        }
+
+	        // Be forgiving, per 25.3.3.3.3 of the spec:
+	        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+	        return doneResult();
+	      }
+
+	      context.method = method;
+	      context.arg = arg;
+
+	      while (true) {
+	        var delegate = context.delegate;
+	        if (delegate) {
+	          var delegateResult = maybeInvokeDelegate(delegate, context);
+	          if (delegateResult) {
+	            if (delegateResult === ContinueSentinel) continue;
+	            return delegateResult;
+	          }
+	        }
+
+	        if (context.method === "next") {
+	          // Setting context._sent for legacy support of Babel's
+	          // function.sent implementation.
+	          context.sent = context._sent = context.arg;
+
+	        } else if (context.method === "throw") {
+	          if (state === GenStateSuspendedStart) {
+	            state = GenStateCompleted;
+	            throw context.arg;
+	          }
+
+	          context.dispatchException(context.arg);
+
+	        } else if (context.method === "return") {
+	          context.abrupt("return", context.arg);
+	        }
+
+	        state = GenStateExecuting;
+
+	        var record = tryCatch(innerFn, self, context);
+	        if (record.type === "normal") {
+	          // If an exception is thrown from innerFn, we leave state ===
+	          // GenStateExecuting and loop back for another invocation.
+	          state = context.done
+	            ? GenStateCompleted
+	            : GenStateSuspendedYield;
+
+	          if (record.arg === ContinueSentinel) {
+	            continue;
+	          }
+
+	          return {
+	            value: record.arg,
+	            done: context.done
+	          };
+
+	        } else if (record.type === "throw") {
+	          state = GenStateCompleted;
+	          // Dispatch the exception by looping back around to the
+	          // context.dispatchException(context.arg) call above.
+	          context.method = "throw";
+	          context.arg = record.arg;
+	        }
+	      }
+	    };
+	  }
+
+	  // Call delegate.iterator[context.method](context.arg) and handle the
+	  // result, either by returning a { value, done } result from the
+	  // delegate iterator, or by modifying context.method and context.arg,
+	  // setting context.delegate to null, and returning the ContinueSentinel.
+	  function maybeInvokeDelegate(delegate, context) {
+	    var method = delegate.iterator[context.method];
+	    if (method === undefined$1) {
+	      // A .throw or .return when the delegate iterator has no .throw
+	      // method always terminates the yield* loop.
+	      context.delegate = null;
+
+	      if (context.method === "throw") {
+	        // Note: ["return"] must be used for ES3 parsing compatibility.
+	        if (delegate.iterator["return"]) {
+	          // If the delegate iterator has a return method, give it a
+	          // chance to clean up.
+	          context.method = "return";
+	          context.arg = undefined$1;
+	          maybeInvokeDelegate(delegate, context);
+
+	          if (context.method === "throw") {
+	            // If maybeInvokeDelegate(context) changed context.method from
+	            // "return" to "throw", let that override the TypeError below.
+	            return ContinueSentinel;
+	          }
+	        }
+
+	        context.method = "throw";
+	        context.arg = new TypeError(
+	          "The iterator does not provide a 'throw' method");
+	      }
+
+	      return ContinueSentinel;
+	    }
+
+	    var record = tryCatch(method, delegate.iterator, context.arg);
+
+	    if (record.type === "throw") {
+	      context.method = "throw";
+	      context.arg = record.arg;
+	      context.delegate = null;
+	      return ContinueSentinel;
+	    }
+
+	    var info = record.arg;
+
+	    if (! info) {
+	      context.method = "throw";
+	      context.arg = new TypeError("iterator result is not an object");
+	      context.delegate = null;
+	      return ContinueSentinel;
+	    }
+
+	    if (info.done) {
+	      // Assign the result of the finished delegate to the temporary
+	      // variable specified by delegate.resultName (see delegateYield).
+	      context[delegate.resultName] = info.value;
+
+	      // Resume execution at the desired location (see delegateYield).
+	      context.next = delegate.nextLoc;
+
+	      // If context.method was "throw" but the delegate handled the
+	      // exception, let the outer generator proceed normally. If
+	      // context.method was "next", forget context.arg since it has been
+	      // "consumed" by the delegate iterator. If context.method was
+	      // "return", allow the original .return call to continue in the
+	      // outer generator.
+	      if (context.method !== "return") {
+	        context.method = "next";
+	        context.arg = undefined$1;
+	      }
+
+	    } else {
+	      // Re-yield the result returned by the delegate method.
+	      return info;
+	    }
+
+	    // The delegate iterator is finished, so forget it and continue with
+	    // the outer generator.
+	    context.delegate = null;
+	    return ContinueSentinel;
+	  }
+
+	  // Define Generator.prototype.{next,throw,return} in terms of the
+	  // unified ._invoke helper method.
+	  defineIteratorMethods(Gp);
+
+	  define(Gp, toStringTagSymbol, "Generator");
+
+	  // A Generator should always return itself as the iterator object when the
+	  // @@iterator function is called on it. Some browsers' implementations of the
+	  // iterator prototype chain incorrectly implement this, causing the Generator
+	  // object to not be returned from this call. This ensures that doesn't happen.
+	  // See https://github.com/facebook/regenerator/issues/274 for more details.
+	  define(Gp, iteratorSymbol, function() {
+	    return this;
+	  });
+
+	  define(Gp, "toString", function() {
+	    return "[object Generator]";
+	  });
+
+	  function pushTryEntry(locs) {
+	    var entry = { tryLoc: locs[0] };
+
+	    if (1 in locs) {
+	      entry.catchLoc = locs[1];
+	    }
+
+	    if (2 in locs) {
+	      entry.finallyLoc = locs[2];
+	      entry.afterLoc = locs[3];
+	    }
+
+	    this.tryEntries.push(entry);
+	  }
+
+	  function resetTryEntry(entry) {
+	    var record = entry.completion || {};
+	    record.type = "normal";
+	    delete record.arg;
+	    entry.completion = record;
+	  }
+
+	  function Context(tryLocsList) {
+	    // The root entry object (effectively a try statement without a catch
+	    // or a finally block) gives us a place to store values thrown from
+	    // locations where there is no enclosing try statement.
+	    this.tryEntries = [{ tryLoc: "root" }];
+	    tryLocsList.forEach(pushTryEntry, this);
+	    this.reset(true);
+	  }
+
+	  exports.keys = function(object) {
+	    var keys = [];
+	    for (var key in object) {
+	      keys.push(key);
+	    }
+	    keys.reverse();
+
+	    // Rather than returning an object with a next method, we keep
+	    // things simple and return the next function itself.
+	    return function next() {
+	      while (keys.length) {
+	        var key = keys.pop();
+	        if (key in object) {
+	          next.value = key;
+	          next.done = false;
+	          return next;
+	        }
+	      }
+
+	      // To avoid creating an additional object, we just hang the .value
+	      // and .done properties off the next function object itself. This
+	      // also ensures that the minifier will not anonymize the function.
+	      next.done = true;
+	      return next;
+	    };
+	  };
+
+	  function values(iterable) {
+	    if (iterable) {
+	      var iteratorMethod = iterable[iteratorSymbol];
+	      if (iteratorMethod) {
+	        return iteratorMethod.call(iterable);
+	      }
+
+	      if (typeof iterable.next === "function") {
+	        return iterable;
+	      }
+
+	      if (!isNaN(iterable.length)) {
+	        var i = -1, next = function next() {
+	          while (++i < iterable.length) {
+	            if (hasOwn.call(iterable, i)) {
+	              next.value = iterable[i];
+	              next.done = false;
+	              return next;
+	            }
+	          }
+
+	          next.value = undefined$1;
+	          next.done = true;
+
+	          return next;
+	        };
+
+	        return next.next = next;
+	      }
+	    }
+
+	    // Return an iterator with no values.
+	    return { next: doneResult };
+	  }
+	  exports.values = values;
+
+	  function doneResult() {
+	    return { value: undefined$1, done: true };
+	  }
+
+	  Context.prototype = {
+	    constructor: Context,
+
+	    reset: function(skipTempReset) {
+	      this.prev = 0;
+	      this.next = 0;
+	      // Resetting context._sent for legacy support of Babel's
+	      // function.sent implementation.
+	      this.sent = this._sent = undefined$1;
+	      this.done = false;
+	      this.delegate = null;
+
+	      this.method = "next";
+	      this.arg = undefined$1;
+
+	      this.tryEntries.forEach(resetTryEntry);
+
+	      if (!skipTempReset) {
+	        for (var name in this) {
+	          // Not sure about the optimal order of these conditions:
+	          if (name.charAt(0) === "t" &&
+	              hasOwn.call(this, name) &&
+	              !isNaN(+name.slice(1))) {
+	            this[name] = undefined$1;
+	          }
+	        }
+	      }
+	    },
+
+	    stop: function() {
+	      this.done = true;
+
+	      var rootEntry = this.tryEntries[0];
+	      var rootRecord = rootEntry.completion;
+	      if (rootRecord.type === "throw") {
+	        throw rootRecord.arg;
+	      }
+
+	      return this.rval;
+	    },
+
+	    dispatchException: function(exception) {
+	      if (this.done) {
+	        throw exception;
+	      }
+
+	      var context = this;
+	      function handle(loc, caught) {
+	        record.type = "throw";
+	        record.arg = exception;
+	        context.next = loc;
+
+	        if (caught) {
+	          // If the dispatched exception was caught by a catch block,
+	          // then let that catch block handle the exception normally.
+	          context.method = "next";
+	          context.arg = undefined$1;
+	        }
+
+	        return !! caught;
+	      }
+
+	      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+	        var entry = this.tryEntries[i];
+	        var record = entry.completion;
+
+	        if (entry.tryLoc === "root") {
+	          // Exception thrown outside of any try block that could handle
+	          // it, so set the completion value of the entire function to
+	          // throw the exception.
+	          return handle("end");
+	        }
+
+	        if (entry.tryLoc <= this.prev) {
+	          var hasCatch = hasOwn.call(entry, "catchLoc");
+	          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+	          if (hasCatch && hasFinally) {
+	            if (this.prev < entry.catchLoc) {
+	              return handle(entry.catchLoc, true);
+	            } else if (this.prev < entry.finallyLoc) {
+	              return handle(entry.finallyLoc);
+	            }
+
+	          } else if (hasCatch) {
+	            if (this.prev < entry.catchLoc) {
+	              return handle(entry.catchLoc, true);
+	            }
+
+	          } else if (hasFinally) {
+	            if (this.prev < entry.finallyLoc) {
+	              return handle(entry.finallyLoc);
+	            }
+
+	          } else {
+	            throw new Error("try statement without catch or finally");
+	          }
+	        }
+	      }
+	    },
+
+	    abrupt: function(type, arg) {
+	      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+	        var entry = this.tryEntries[i];
+	        if (entry.tryLoc <= this.prev &&
+	            hasOwn.call(entry, "finallyLoc") &&
+	            this.prev < entry.finallyLoc) {
+	          var finallyEntry = entry;
+	          break;
+	        }
+	      }
+
+	      if (finallyEntry &&
+	          (type === "break" ||
+	           type === "continue") &&
+	          finallyEntry.tryLoc <= arg &&
+	          arg <= finallyEntry.finallyLoc) {
+	        // Ignore the finally entry if control is not jumping to a
+	        // location outside the try/catch block.
+	        finallyEntry = null;
+	      }
+
+	      var record = finallyEntry ? finallyEntry.completion : {};
+	      record.type = type;
+	      record.arg = arg;
+
+	      if (finallyEntry) {
+	        this.method = "next";
+	        this.next = finallyEntry.finallyLoc;
+	        return ContinueSentinel;
+	      }
+
+	      return this.complete(record);
+	    },
+
+	    complete: function(record, afterLoc) {
+	      if (record.type === "throw") {
+	        throw record.arg;
+	      }
+
+	      if (record.type === "break" ||
+	          record.type === "continue") {
+	        this.next = record.arg;
+	      } else if (record.type === "return") {
+	        this.rval = this.arg = record.arg;
+	        this.method = "return";
+	        this.next = "end";
+	      } else if (record.type === "normal" && afterLoc) {
+	        this.next = afterLoc;
+	      }
+
+	      return ContinueSentinel;
+	    },
+
+	    finish: function(finallyLoc) {
+	      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+	        var entry = this.tryEntries[i];
+	        if (entry.finallyLoc === finallyLoc) {
+	          this.complete(entry.completion, entry.afterLoc);
+	          resetTryEntry(entry);
+	          return ContinueSentinel;
+	        }
+	      }
+	    },
+
+	    "catch": function(tryLoc) {
+	      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+	        var entry = this.tryEntries[i];
+	        if (entry.tryLoc === tryLoc) {
+	          var record = entry.completion;
+	          if (record.type === "throw") {
+	            var thrown = record.arg;
+	            resetTryEntry(entry);
+	          }
+	          return thrown;
+	        }
+	      }
+
+	      // The context.catch method must only be called with a location
+	      // argument that corresponds to a known catch block.
+	      throw new Error("illegal catch attempt");
+	    },
+
+	    delegateYield: function(iterable, resultName, nextLoc) {
+	      this.delegate = {
+	        iterator: values(iterable),
+	        resultName: resultName,
+	        nextLoc: nextLoc
+	      };
+
+	      if (this.method === "next") {
+	        // Deliberately forget the last sent value so that we don't
+	        // accidentally pass it on to the delegate.
+	        this.arg = undefined$1;
+	      }
+
+	      return ContinueSentinel;
+	    }
+	  };
+
+	  // Regardless of whether this script is executing as a CommonJS module
+	  // or not, return the runtime object so that we can declare the variable
+	  // regeneratorRuntime in the outer scope, which allows this module to be
+	  // injected easily by `bin/regenerator --include-runtime script.js`.
+	  return exports;
+
+	}(
+	  // If this script is executing as a CommonJS module, use module.exports
+	  // as the regeneratorRuntime namespace. Otherwise create a new empty
+	  // object. Either way, the resulting object will be used to initialize
+	  // the regeneratorRuntime variable at the top of this file.
+	  module.exports 
+	));
+
+	try {
+	  regeneratorRuntime = runtime;
+	} catch (accidentalStrictMode) {
+	  // This module should not be running in strict mode, so the above
+	  // assignment should always work unless something is misconfigured. Just
+	  // in case runtime.js accidentally runs in strict mode, in modern engines
+	  // we can explicitly access globalThis. In older engines we can escape
+	  // strict mode using a global Function call. This could conceivably fail
+	  // if a Content Security Policy forbids using Function, but in that case
+	  // the proper solution is to fix the accidental strict mode problem. If
+	  // you've misconfigured your bundler to force strict mode and applied a
+	  // CSP to forbid Function, and you're not willing to fix either of those
+	  // problems, please detail your unique predicament in a GitHub issue.
+	  if (typeof globalThis === "object") {
+	    globalThis.regeneratorRuntime = runtime;
+	  } else {
+	    Function("r", "regeneratorRuntime = r")(runtime);
+	  }
+	}
+	}(runtime));
+
+	var regenerator = runtime.exports;
+
+	var asyncToGenerator = {exports: {}};
+
+	(function (module) {
+	function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+	  try {
+	    var info = gen[key](arg);
+	    var value = info.value;
+	  } catch (error) {
+	    reject(error);
+	    return;
+	  }
+
+	  if (info.done) {
+	    resolve(value);
+	  } else {
+	    Promise.resolve(value).then(_next, _throw);
+	  }
+	}
+
+	function _asyncToGenerator(fn) {
+	  return function () {
+	    var self = this,
+	        args = arguments;
+	    return new Promise(function (resolve, reject) {
+	      var gen = fn.apply(self, args);
+
+	      function _next(value) {
+	        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+	      }
+
+	      function _throw(err) {
+	        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+	      }
+
+	      _next(undefined);
+	    });
+	  };
+	}
+
+	module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exports["default"] = module.exports;
+	}(asyncToGenerator));
+
+	/*!
+	Copyright (C) 2013-2017 by Andrea Giammarchi - @WebReflection
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in
+	all copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+	THE SOFTWARE.
+
+	*/
+
+	var
+	  // should be a not so common char
+	  // possibly one JSON does not encode
+	  // possibly one encodeURIComponent does not encode
+	  // right now this char is '~' but this might change in the future
+	  specialChar = '~',
+	  safeSpecialChar = '\\x' + (
+	    '0' + specialChar.charCodeAt(0).toString(16)
+	  ).slice(-2),
+	  escapedSafeSpecialChar = '\\' + safeSpecialChar,
+	  specialCharRG = new RegExp(safeSpecialChar, 'g'),
+	  safeSpecialCharRG = new RegExp(escapedSafeSpecialChar, 'g'),
+
+	  safeStartWithSpecialCharRG = new RegExp('(?:^|([^\\\\]))' + escapedSafeSpecialChar),
+
+	  indexOf = [].indexOf || function(v){
+	    for(var i=this.length;i--&&this[i]!==v;);
+	    return i;
+	  },
+	  $String = String  // there's no way to drop warnings in JSHint
+	                    // about new String ... well, I need that here!
+	                    // faked, and happy linter!
+	;
+
+	function generateReplacer(value, replacer, resolve) {
+	  var
+	    doNotIgnore = false,
+	    inspect = !!replacer,
+	    path = [],
+	    all  = [value],
+	    seen = [value],
+	    mapp = [resolve ? specialChar : '[Circular]'],
+	    last = value,
+	    lvl  = 1,
+	    i, fn
+	  ;
+	  if (inspect) {
+	    fn = typeof replacer === 'object' ?
+	      function (key, value) {
+	        return key !== '' && replacer.indexOf(key) < 0 ? void 0 : value;
+	      } :
+	      replacer;
+	  }
+	  return function(key, value) {
+	    // the replacer has rights to decide
+	    // if a new object should be returned
+	    // or if there's some key to drop
+	    // let's call it here rather than "too late"
+	    if (inspect) value = fn.call(this, key, value);
+
+	    // first pass should be ignored, since it's just the initial object
+	    if (doNotIgnore) {
+	      if (last !== this) {
+	        i = lvl - indexOf.call(all, this) - 1;
+	        lvl -= i;
+	        all.splice(lvl, all.length);
+	        path.splice(lvl - 1, path.length);
+	        last = this;
+	      }
+	      // console.log(lvl, key, path);
+	      if (typeof value === 'object' && value) {
+	    	// if object isn't referring to parent object, add to the
+	        // object path stack. Otherwise it is already there.
+	        if (indexOf.call(all, value) < 0) {
+	          all.push(last = value);
+	        }
+	        lvl = all.length;
+	        i = indexOf.call(seen, value);
+	        if (i < 0) {
+	          i = seen.push(value) - 1;
+	          if (resolve) {
+	            // key cannot contain specialChar but could be not a string
+	            path.push(('' + key).replace(specialCharRG, safeSpecialChar));
+	            mapp[i] = specialChar + path.join(specialChar);
+	          } else {
+	            mapp[i] = mapp[0];
+	          }
+	        } else {
+	          value = mapp[i];
+	        }
+	      } else {
+	        if (typeof value === 'string' && resolve) {
+	          // ensure no special char involved on deserialization
+	          // in this case only first char is important
+	          // no need to replace all value (better performance)
+	          value = value .replace(safeSpecialChar, escapedSafeSpecialChar)
+	                        .replace(specialChar, safeSpecialChar);
+	        }
+	      }
+	    } else {
+	      doNotIgnore = true;
+	    }
+	    return value;
+	  };
+	}
+
+	function retrieveFromPath(current, keys) {
+	  for(var i = 0, length = keys.length; i < length; current = current[
+	    // keys should be normalized back here
+	    keys[i++].replace(safeSpecialCharRG, specialChar)
+	  ]);
+	  return current;
+	}
+
+	function generateReviver(reviver) {
+	  return function(key, value) {
+	    var isString = typeof value === 'string';
+	    if (isString && value.charAt(0) === specialChar) {
+	      return new $String(value.slice(1));
+	    }
+	    if (key === '') value = regenerate(value, value, {});
+	    // again, only one needed, do not use the RegExp for this replacement
+	    // only keys need the RegExp
+	    if (isString) value = value .replace(safeStartWithSpecialCharRG, '$1' + specialChar)
+	                                .replace(escapedSafeSpecialChar, safeSpecialChar);
+	    return reviver ? reviver.call(this, key, value) : value;
+	  };
+	}
+
+	function regenerateArray(root, current, retrieve) {
+	  for (var i = 0, length = current.length; i < length; i++) {
+	    current[i] = regenerate(root, current[i], retrieve);
+	  }
+	  return current;
+	}
+
+	function regenerateObject(root, current, retrieve) {
+	  for (var key in current) {
+	    if (current.hasOwnProperty(key)) {
+	      current[key] = regenerate(root, current[key], retrieve);
+	    }
+	  }
+	  return current;
+	}
+
+	function regenerate(root, current, retrieve) {
+	  return current instanceof Array ?
+	    // fast Array reconstruction
+	    regenerateArray(root, current, retrieve) :
+	    (
+	      current instanceof $String ?
+	        (
+	          // root is an empty string
+	          current.length ?
+	            (
+	              retrieve.hasOwnProperty(current) ?
+	                retrieve[current] :
+	                retrieve[current] = retrieveFromPath(
+	                  root, current.split(specialChar)
+	                )
+	            ) :
+	            root
+	        ) :
+	        (
+	          current instanceof Object ?
+	            // dedicated Object parser
+	            regenerateObject(root, current, retrieve) :
+	            // value as it is
+	            current
+	        )
+	    )
+	  ;
+	}
+
+	var CircularJSON = {
+	  stringify: function stringify(value, replacer, space, doNotResolve) {
+	    return CircularJSON.parser.stringify(
+	      value,
+	      generateReplacer(value, replacer, !doNotResolve),
+	      space
+	    );
+	  },
+	  parse: function parse(text, reviver) {
+	    return CircularJSON.parser.parse(
+	      text,
+	      generateReviver(reviver)
+	    );
+	  },
+	  // A parser should be an API 1:1 compatible with JSON
+	  // it should expose stringify and parse methods.
+	  // The default parser is the native JSON.
+	  parser: JSON
+	};
+
+	var circularJson_node = CircularJSON;
+
+	/**
+	 * "Client" wraps "ws" or a browser-implemented "WebSocket" library
+	 * according to the environment providing JSON RPC 2.0 support on top.
+	 * @module Client
+	 */
+
+	(function (exports) {
+
+	var _interopRequireDefault = interopRequireDefault.exports;
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports["default"] = void 0;
+
+	var _regenerator = _interopRequireDefault(regenerator);
+
+	var _asyncToGenerator2 = _interopRequireDefault(asyncToGenerator.exports);
+
+	var _typeof2 = _interopRequireDefault(_typeof.exports);
+
+	var _classCallCheck2 = _interopRequireDefault(classCallCheck.exports);
+
+	var _createClass2 = _interopRequireDefault(createClass.exports);
+
+	var _inherits2 = _interopRequireDefault(inherits$1.exports);
+
+	var _possibleConstructorReturn2 = _interopRequireDefault(possibleConstructorReturn.exports);
+
+	var _getPrototypeOf2 = _interopRequireDefault(getPrototypeOf.exports);
+
+	var _eventemitter = eventemitter3.exports;
+
+	var _circularJson = _interopRequireDefault(circularJson_node);
+
+	function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+
+	function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+	var __rest = function (s, e) {
+	  var t = {};
+
+	  for (var p in s) {
+	    if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
+	  }
+
+	  if (s != null && typeof Object.getOwnPropertySymbols === "function") for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+	    if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i])) t[p[i]] = s[p[i]];
+	  }
+	  return t;
+	}; // @ts-ignore
+
+
+	var CommonClient = /*#__PURE__*/function (_EventEmitter) {
+	  (0, _inherits2["default"])(CommonClient, _EventEmitter);
+
+	  var _super = _createSuper(CommonClient);
+
+	  /**
+	   * Instantiate a Client class.
+	   * @constructor
+	   * @param {webSocketFactory} webSocketFactory - factory method for WebSocket
+	   * @param {String} address - url to a websocket server
+	   * @param {Object} options - ws options object with reconnect parameters
+	   * @param {Function} generate_request_id - custom generation request Id
+	   * @return {CommonClient}
+	   */
+	  function CommonClient(webSocketFactory) {
+	    var _this;
+
+	    var address = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "ws://localhost:8080";
+
+	    var _a = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+	    var generate_request_id = arguments.length > 3 ? arguments[3] : undefined;
+	    (0, _classCallCheck2["default"])(this, CommonClient);
+
+	    var _a$autoconnect = _a.autoconnect,
+	        autoconnect = _a$autoconnect === void 0 ? true : _a$autoconnect,
+	        _a$reconnect = _a.reconnect,
+	        reconnect = _a$reconnect === void 0 ? true : _a$reconnect,
+	        _a$reconnect_interval = _a.reconnect_interval,
+	        reconnect_interval = _a$reconnect_interval === void 0 ? 1000 : _a$reconnect_interval,
+	        _a$max_reconnects = _a.max_reconnects,
+	        max_reconnects = _a$max_reconnects === void 0 ? 5 : _a$max_reconnects,
+	        rest_options = __rest(_a, ["autoconnect", "reconnect", "reconnect_interval", "max_reconnects"]);
+
+	    _this = _super.call(this);
+	    _this.webSocketFactory = webSocketFactory;
+	    _this.queue = {};
+	    _this.rpc_id = 0;
+	    _this.address = address;
+	    _this.autoconnect = autoconnect;
+	    _this.ready = false;
+	    _this.reconnect = reconnect;
+	    _this.reconnect_interval = reconnect_interval;
+	    _this.max_reconnects = max_reconnects;
+	    _this.rest_options = rest_options;
+	    _this.current_reconnects = 0;
+
+	    _this.generate_request_id = generate_request_id || function () {
+	      return ++_this.rpc_id;
+	    };
+
+	    if (_this.autoconnect) _this._connect(_this.address, Object.assign({
+	      autoconnect: _this.autoconnect,
+	      reconnect: _this.reconnect,
+	      reconnect_interval: _this.reconnect_interval,
+	      max_reconnects: _this.max_reconnects
+	    }, _this.rest_options));
+	    return _this;
+	  }
+	  /**
+	   * Connects to a defined server if not connected already.
+	   * @method
+	   * @return {Undefined}
+	   */
+
+
+	  (0, _createClass2["default"])(CommonClient, [{
+	    key: "connect",
+	    value: function connect() {
+	      if (this.socket) return;
+
+	      this._connect(this.address, Object.assign({
+	        autoconnect: this.autoconnect,
+	        reconnect: this.reconnect,
+	        reconnect_interval: this.reconnect_interval,
+	        max_reconnects: this.max_reconnects
+	      }, this.rest_options));
+	    }
+	    /**
+	     * Calls a registered RPC method on server.
+	     * @method
+	     * @param {String} method - RPC method name
+	     * @param {Object|Array} params - optional method parameters
+	     * @param {Number} timeout - RPC reply timeout value
+	     * @param {Object} ws_opts - options passed to ws
+	     * @return {Promise}
+	     */
+
+	  }, {
+	    key: "call",
+	    value: function call(method, params, timeout, ws_opts) {
+	      var _this2 = this;
+
+	      if (!ws_opts && "object" === (0, _typeof2["default"])(timeout)) {
+	        ws_opts = timeout;
+	        timeout = null;
+	      }
+
+	      return new Promise(function (resolve, reject) {
+	        if (!_this2.ready) return reject(new Error("socket not ready"));
+
+	        var rpc_id = _this2.generate_request_id(method, params);
+
+	        var message = {
+	          jsonrpc: "2.0",
+	          method: method,
+	          params: params || null,
+	          id: rpc_id
+	        };
+
+	        _this2.socket.send(JSON.stringify(message), ws_opts, function (error) {
+	          if (error) return reject(error);
+	          _this2.queue[rpc_id] = {
+	            promise: [resolve, reject]
+	          };
+
+	          if (timeout) {
+	            _this2.queue[rpc_id].timeout = setTimeout(function () {
+	              delete _this2.queue[rpc_id];
+	              reject(new Error("reply timeout"));
+	            }, timeout);
+	          }
+	        });
+	      });
+	    }
+	    /**
+	     * Logins with the other side of the connection.
+	     * @method
+	     * @param {Object} params - Login credentials object
+	     * @return {Promise}
+	     */
+
+	  }, {
+	    key: "login",
+	    value: function () {
+	      var _login = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(params) {
+	        var resp;
+	        return _regenerator["default"].wrap(function _callee$(_context) {
+	          while (1) {
+	            switch (_context.prev = _context.next) {
+	              case 0:
+	                _context.next = 2;
+	                return this.call("rpc.login", params);
+
+	              case 2:
+	                resp = _context.sent;
+
+	                if (resp) {
+	                  _context.next = 5;
+	                  break;
+	                }
+
+	                throw new Error("authentication failed");
+
+	              case 5:
+	                return _context.abrupt("return", resp);
+
+	              case 6:
+	              case "end":
+	                return _context.stop();
+	            }
+	          }
+	        }, _callee, this);
+	      }));
+
+	      function login(_x) {
+	        return _login.apply(this, arguments);
+	      }
+
+	      return login;
+	    }()
+	    /**
+	     * Fetches a list of client's methods registered on server.
+	     * @method
+	     * @return {Array}
+	     */
+
+	  }, {
+	    key: "listMethods",
+	    value: function () {
+	      var _listMethods = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
+	        return _regenerator["default"].wrap(function _callee2$(_context2) {
+	          while (1) {
+	            switch (_context2.prev = _context2.next) {
+	              case 0:
+	                _context2.next = 2;
+	                return this.call("__listMethods");
+
+	              case 2:
+	                return _context2.abrupt("return", _context2.sent);
+
+	              case 3:
+	              case "end":
+	                return _context2.stop();
+	            }
+	          }
+	        }, _callee2, this);
+	      }));
+
+	      function listMethods() {
+	        return _listMethods.apply(this, arguments);
+	      }
+
+	      return listMethods;
+	    }()
+	    /**
+	     * Sends a JSON-RPC 2.0 notification to server.
+	     * @method
+	     * @param {String} method - RPC method name
+	     * @param {Object} params - optional method parameters
+	     * @return {Promise}
+	     */
+
+	  }, {
+	    key: "notify",
+	    value: function notify(method, params) {
+	      var _this3 = this;
+
+	      return new Promise(function (resolve, reject) {
+	        if (!_this3.ready) return reject(new Error("socket not ready"));
+	        var message = {
+	          jsonrpc: "2.0",
+	          method: method,
+	          params: params || null
+	        };
+
+	        _this3.socket.send(JSON.stringify(message), function (error) {
+	          if (error) return reject(error);
+	          resolve();
+	        });
+	      });
+	    }
+	    /**
+	     * Subscribes for a defined event.
+	     * @method
+	     * @param {String|Array} event - event name
+	     * @return {Undefined}
+	     * @throws {Error}
+	     */
+
+	  }, {
+	    key: "subscribe",
+	    value: function () {
+	      var _subscribe = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(event) {
+	        var result;
+	        return _regenerator["default"].wrap(function _callee3$(_context3) {
+	          while (1) {
+	            switch (_context3.prev = _context3.next) {
+	              case 0:
+	                if (typeof event === "string") event = [event];
+	                _context3.next = 3;
+	                return this.call("rpc.on", event);
+
+	              case 3:
+	                result = _context3.sent;
+
+	                if (!(typeof event === "string" && result[event] !== "ok")) {
+	                  _context3.next = 6;
+	                  break;
+	                }
+
+	                throw new Error("Failed subscribing to an event '" + event + "' with: " + result[event]);
+
+	              case 6:
+	                return _context3.abrupt("return", result);
+
+	              case 7:
+	              case "end":
+	                return _context3.stop();
+	            }
+	          }
+	        }, _callee3, this);
+	      }));
+
+	      function subscribe(_x2) {
+	        return _subscribe.apply(this, arguments);
+	      }
+
+	      return subscribe;
+	    }()
+	    /**
+	     * Unsubscribes from a defined event.
+	     * @method
+	     * @param {String|Array} event - event name
+	     * @return {Undefined}
+	     * @throws {Error}
+	     */
+
+	  }, {
+	    key: "unsubscribe",
+	    value: function () {
+	      var _unsubscribe = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(event) {
+	        var result;
+	        return _regenerator["default"].wrap(function _callee4$(_context4) {
+	          while (1) {
+	            switch (_context4.prev = _context4.next) {
+	              case 0:
+	                if (typeof event === "string") event = [event];
+	                _context4.next = 3;
+	                return this.call("rpc.off", event);
+
+	              case 3:
+	                result = _context4.sent;
+
+	                if (!(typeof event === "string" && result[event] !== "ok")) {
+	                  _context4.next = 6;
+	                  break;
+	                }
+
+	                throw new Error("Failed unsubscribing from an event with: " + result);
+
+	              case 6:
+	                return _context4.abrupt("return", result);
+
+	              case 7:
+	              case "end":
+	                return _context4.stop();
+	            }
+	          }
+	        }, _callee4, this);
+	      }));
+
+	      function unsubscribe(_x3) {
+	        return _unsubscribe.apply(this, arguments);
+	      }
+
+	      return unsubscribe;
+	    }()
+	    /**
+	     * Closes a WebSocket connection gracefully.
+	     * @method
+	     * @param {Number} code - socket close code
+	     * @param {String} data - optional data to be sent before closing
+	     * @return {Undefined}
+	     */
+
+	  }, {
+	    key: "close",
+	    value: function close(code, data) {
+	      this.socket.close(code || 1000, data);
+	    }
+	    /**
+	     * Connection/Message handler.
+	     * @method
+	     * @private
+	     * @param {String} address - WebSocket API address
+	     * @param {Object} options - ws options object
+	     * @return {Undefined}
+	     */
+
+	  }, {
+	    key: "_connect",
+	    value: function _connect(address, options) {
+	      var _this4 = this;
+
+	      this.socket = this.webSocketFactory(address, options);
+	      this.socket.addEventListener("open", function () {
+	        _this4.ready = true;
+
+	        _this4.emit("open");
+
+	        _this4.current_reconnects = 0;
+	      });
+	      this.socket.addEventListener("message", function (_ref) {
+	        var message = _ref.data;
+	        if (message instanceof ArrayBuffer) message = Buffer.from(message).toString();
+
+	        try {
+	          message = _circularJson["default"].parse(message);
+	        } catch (error) {
+	          return;
+	        } // check if any listeners are attached and forward event
+
+
+	        if (message.notification && _this4.listeners(message.notification).length) {
+	          if (!Object.keys(message.params).length) return _this4.emit(message.notification);
+	          var args = [message.notification];
+	          if (message.params.constructor === Object) args.push(message.params);else // using for-loop instead of unshift/spread because performance is better
+	            for (var i = 0; i < message.params.length; i++) {
+	              args.push(message.params[i]);
+	            } // run as microtask so that pending queue messages are resolved first
+	          // eslint-disable-next-line prefer-spread
+
+	          return Promise.resolve().then(function () {
+	            _this4.emit.apply(_this4, args);
+	          });
+	        }
+
+	        if (!_this4.queue[message.id]) {
+	          // general JSON RPC 2.0 events
+	          if (message.method && message.params) {
+	            // run as microtask so that pending queue messages are resolved first
+	            return Promise.resolve().then(function () {
+	              _this4.emit(message.method, message.params);
+	            });
+	          }
+
+	          return;
+	        } // reject early since server's response is invalid
+
+
+	        if ("error" in message === "result" in message) _this4.queue[message.id].promise[1](new Error("Server response malformed. Response must include either \"result\"" + " or \"error\", but not both."));
+	        if (_this4.queue[message.id].timeout) clearTimeout(_this4.queue[message.id].timeout);
+	        if (message.error) _this4.queue[message.id].promise[1](message.error);else _this4.queue[message.id].promise[0](message.result);
+	        delete _this4.queue[message.id];
+	      });
+	      this.socket.addEventListener("error", function (error) {
+	        return _this4.emit("error", error);
+	      });
+	      this.socket.addEventListener("close", function (_ref2) {
+	        var code = _ref2.code,
+	            reason = _ref2.reason;
+	        if (_this4.ready) // Delay close event until internal state is updated
+	          setTimeout(function () {
+	            return _this4.emit("close", code, reason);
+	          }, 0);
+	        _this4.ready = false;
+	        _this4.socket = undefined;
+	        if (code === 1000) return;
+	        _this4.current_reconnects++;
+	        if (_this4.reconnect && (_this4.max_reconnects > _this4.current_reconnects || _this4.max_reconnects === 0)) setTimeout(function () {
+	          return _this4._connect(address, options);
+	        }, _this4.reconnect_interval);
+	      });
+	    }
+	  }]);
+	  return CommonClient;
+	}(_eventemitter.EventEmitter);
+
+	exports["default"] = CommonClient;
+	}(client));
+
+	var _interopRequireDefault = interopRequireDefault.exports;
+
+	Object.defineProperty(index_browser, "__esModule", {
+	  value: true
+	});
+	var Client_1 = index_browser.Client = void 0;
+
+	var _classCallCheck2 = _interopRequireDefault(classCallCheck.exports);
+
+	var _inherits2 = _interopRequireDefault(inherits$1.exports);
+
+	var _possibleConstructorReturn2 = _interopRequireDefault(possibleConstructorReturn.exports);
+
+	var _getPrototypeOf2 = _interopRequireDefault(getPrototypeOf.exports);
+
+	var _websocket = _interopRequireDefault(websocket_browser);
+
+	var _client = _interopRequireDefault(client);
+
+	function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = (0, _getPrototypeOf2["default"])(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = (0, _getPrototypeOf2["default"])(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return (0, _possibleConstructorReturn2["default"])(this, result); }; }
+
+	function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+	var Client = /*#__PURE__*/function (_CommonClient) {
+	  (0, _inherits2["default"])(Client, _CommonClient);
+
+	  var _super = _createSuper(Client);
+
+	  function Client() {
+	    var address = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "ws://localhost:8080";
+
+	    var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+	        _ref$autoconnect = _ref.autoconnect,
+	        autoconnect = _ref$autoconnect === void 0 ? true : _ref$autoconnect,
+	        _ref$reconnect = _ref.reconnect,
+	        reconnect = _ref$reconnect === void 0 ? true : _ref$reconnect,
+	        _ref$reconnect_interv = _ref.reconnect_interval,
+	        reconnect_interval = _ref$reconnect_interv === void 0 ? 1000 : _ref$reconnect_interv,
+	        _ref$max_reconnects = _ref.max_reconnects,
+	        max_reconnects = _ref$max_reconnects === void 0 ? 5 : _ref$max_reconnects;
+
+	    var generate_request_id = arguments.length > 2 ? arguments[2] : undefined;
+	    (0, _classCallCheck2["default"])(this, Client);
+	    return _super.call(this, _websocket["default"], address, {
+	      autoconnect: autoconnect,
+	      reconnect: reconnect,
+	      reconnect_interval: reconnect_interval,
+	      max_reconnects: max_reconnects
+	    }, generate_request_id);
+	  }
+
+	  return Client;
+	}(_client["default"]);
+
+	Client_1 = index_browser.Client = Client;
+
+	// Unique ID creation requires a high quality random # generator. In the browser we therefore
+	// require the crypto API and do not support built-in fallback to lower quality random number
+	// generators (like Math.random()).
+	var getRandomValues;
+	var rnds8 = new Uint8Array(16);
+	function rng() {
+	  // lazy load so that environments that need to polyfill have a chance to do so
+	  if (!getRandomValues) {
+	    // getRandomValues needs to be invoked in a context where "this" is a Crypto implementation. Also,
+	    // find the complete implementation of crypto (msCrypto) on IE11.
+	    getRandomValues = typeof crypto !== 'undefined' && crypto.getRandomValues && crypto.getRandomValues.bind(crypto) || typeof msCrypto !== 'undefined' && typeof msCrypto.getRandomValues === 'function' && msCrypto.getRandomValues.bind(msCrypto);
+
+	    if (!getRandomValues) {
+	      throw new Error('crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported');
+	    }
+	  }
+
+	  return getRandomValues(rnds8);
+	}
+
+	var REGEX = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
+
+	function validate(uuid) {
+	  return typeof uuid === 'string' && REGEX.test(uuid);
+	}
+
+	/**
+	 * Convert array of 16 byte values to UUID string format of the form:
+	 * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+	 */
+
+	var byteToHex = [];
+
+	for (var i = 0; i < 256; ++i) {
+	  byteToHex.push((i + 0x100).toString(16).substr(1));
+	}
+
+	function stringify(arr) {
+	  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+	  // Note: Be careful editing this code!  It's been tuned for performance
+	  // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
+	  var uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase(); // Consistency check for valid UUID.  If this throws, it's likely due to one
+	  // of the following:
+	  // - One or more input array values don't map to a hex octet (leading to
+	  // "undefined" in the uuid)
+	  // - Invalid input values for the RFC `version` or `variant` fields
+
+	  if (!validate(uuid)) {
+	    throw TypeError('Stringified UUID is invalid');
+	  }
+
+	  return uuid;
+	}
+
+	//
+	// Inspired by https://github.com/LiosK/UUID.js
+	// and http://docs.python.org/library/uuid.html
+
+	var _nodeId;
+
+	var _clockseq; // Previous uuid creation time
+
+
+	var _lastMSecs = 0;
+	var _lastNSecs = 0; // See https://github.com/uuidjs/uuid for API details
+
+	function v1(options, buf, offset) {
+	  var i = buf && offset || 0;
+	  var b = buf || new Array(16);
+	  options = options || {};
+	  var node = options.node || _nodeId;
+	  var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq; // node and clockseq need to be initialized to random values if they're not
+	  // specified.  We do this lazily to minimize issues related to insufficient
+	  // system entropy.  See #189
+
+	  if (node == null || clockseq == null) {
+	    var seedBytes = options.random || (options.rng || rng)();
+
+	    if (node == null) {
+	      // Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
+	      node = _nodeId = [seedBytes[0] | 0x01, seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]];
+	    }
+
+	    if (clockseq == null) {
+	      // Per 4.2.2, randomize (14 bit) clockseq
+	      clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 0x3fff;
+	    }
+	  } // UUID timestamps are 100 nano-second units since the Gregorian epoch,
+	  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
+	  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
+	  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
+
+
+	  var msecs = options.msecs !== undefined ? options.msecs : Date.now(); // Per 4.2.1.2, use count of uuid's generated during the current clock
+	  // cycle to simulate higher resolution clock
+
+	  var nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1; // Time since last uuid creation (in msecs)
+
+	  var dt = msecs - _lastMSecs + (nsecs - _lastNSecs) / 10000; // Per 4.2.1.2, Bump clockseq on clock regression
+
+	  if (dt < 0 && options.clockseq === undefined) {
+	    clockseq = clockseq + 1 & 0x3fff;
+	  } // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
+	  // time interval
+
+
+	  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
+	    nsecs = 0;
+	  } // Per 4.2.1.2 Throw error if too many uuids are requested
+
+
+	  if (nsecs >= 10000) {
+	    throw new Error("uuid.v1(): Can't create more than 10M uuids/sec");
+	  }
+
+	  _lastMSecs = msecs;
+	  _lastNSecs = nsecs;
+	  _clockseq = clockseq; // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
+
+	  msecs += 12219292800000; // `time_low`
+
+	  var tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
+	  b[i++] = tl >>> 24 & 0xff;
+	  b[i++] = tl >>> 16 & 0xff;
+	  b[i++] = tl >>> 8 & 0xff;
+	  b[i++] = tl & 0xff; // `time_mid`
+
+	  var tmh = msecs / 0x100000000 * 10000 & 0xfffffff;
+	  b[i++] = tmh >>> 8 & 0xff;
+	  b[i++] = tmh & 0xff; // `time_high_and_version`
+
+	  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
+
+	  b[i++] = tmh >>> 16 & 0xff; // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
+
+	  b[i++] = clockseq >>> 8 | 0x80; // `clock_seq_low`
+
+	  b[i++] = clockseq & 0xff; // `node`
+
+	  for (var n = 0; n < 6; ++n) {
+	    b[i + n] = node[n];
+	  }
+
+	  return buf || stringify(b);
+	}
+
+	function parse(uuid) {
+	  if (!validate(uuid)) {
+	    throw TypeError('Invalid UUID');
+	  }
+
+	  var v;
+	  var arr = new Uint8Array(16); // Parse ########-....-....-....-............
+
+	  arr[0] = (v = parseInt(uuid.slice(0, 8), 16)) >>> 24;
+	  arr[1] = v >>> 16 & 0xff;
+	  arr[2] = v >>> 8 & 0xff;
+	  arr[3] = v & 0xff; // Parse ........-####-....-....-............
+
+	  arr[4] = (v = parseInt(uuid.slice(9, 13), 16)) >>> 8;
+	  arr[5] = v & 0xff; // Parse ........-....-####-....-............
+
+	  arr[6] = (v = parseInt(uuid.slice(14, 18), 16)) >>> 8;
+	  arr[7] = v & 0xff; // Parse ........-....-....-####-............
+
+	  arr[8] = (v = parseInt(uuid.slice(19, 23), 16)) >>> 8;
+	  arr[9] = v & 0xff; // Parse ........-....-....-....-############
+	  // (Use "/" to avoid 32-bit truncation when bit-shifting high-order bytes)
+
+	  arr[10] = (v = parseInt(uuid.slice(24, 36), 16)) / 0x10000000000 & 0xff;
+	  arr[11] = v / 0x100000000 & 0xff;
+	  arr[12] = v >>> 24 & 0xff;
+	  arr[13] = v >>> 16 & 0xff;
+	  arr[14] = v >>> 8 & 0xff;
+	  arr[15] = v & 0xff;
+	  return arr;
+	}
+
+	function stringToBytes(str) {
+	  str = unescape(encodeURIComponent(str)); // UTF8 escape
+
+	  var bytes = [];
+
+	  for (var i = 0; i < str.length; ++i) {
+	    bytes.push(str.charCodeAt(i));
+	  }
+
+	  return bytes;
+	}
+
+	var DNS = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+	var URL$1 = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
+	function v35 (name, version, hashfunc) {
+	  function generateUUID(value, namespace, buf, offset) {
+	    if (typeof value === 'string') {
+	      value = stringToBytes(value);
+	    }
+
+	    if (typeof namespace === 'string') {
+	      namespace = parse(namespace);
+	    }
+
+	    if (namespace.length !== 16) {
+	      throw TypeError('Namespace must be array-like (16 iterable integer values, 0-255)');
+	    } // Compute hash of namespace and value, Per 4.3
+	    // Future: Use spread syntax when supported on all platforms, e.g. `bytes =
+	    // hashfunc([...namespace, ... value])`
+
+
+	    var bytes = new Uint8Array(16 + value.length);
+	    bytes.set(namespace);
+	    bytes.set(value, namespace.length);
+	    bytes = hashfunc(bytes);
+	    bytes[6] = bytes[6] & 0x0f | version;
+	    bytes[8] = bytes[8] & 0x3f | 0x80;
+
+	    if (buf) {
+	      offset = offset || 0;
+
+	      for (var i = 0; i < 16; ++i) {
+	        buf[offset + i] = bytes[i];
+	      }
+
+	      return buf;
+	    }
+
+	    return stringify(bytes);
+	  } // Function#name is not settable on some platforms (#270)
+
+
+	  try {
+	    generateUUID.name = name; // eslint-disable-next-line no-empty
+	  } catch (err) {} // For CommonJS default export support
+
+
+	  generateUUID.DNS = DNS;
+	  generateUUID.URL = URL$1;
+	  return generateUUID;
+	}
+
+	/*
+	 * Browser-compatible JavaScript MD5
+	 *
+	 * Modification of JavaScript MD5
+	 * https://github.com/blueimp/JavaScript-MD5
+	 *
+	 * Copyright 2011, Sebastian Tschan
+	 * https://blueimp.net
+	 *
+	 * Licensed under the MIT license:
+	 * https://opensource.org/licenses/MIT
+	 *
+	 * Based on
+	 * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
+	 * Digest Algorithm, as defined in RFC 1321.
+	 * Version 2.2 Copyright (C) Paul Johnston 1999 - 2009
+	 * Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+	 * Distributed under the BSD License
+	 * See http://pajhome.org.uk/crypt/md5 for more info.
+	 */
+	function md5(bytes) {
+	  if (typeof bytes === 'string') {
+	    var msg = unescape(encodeURIComponent(bytes)); // UTF8 escape
+
+	    bytes = new Uint8Array(msg.length);
+
+	    for (var i = 0; i < msg.length; ++i) {
+	      bytes[i] = msg.charCodeAt(i);
+	    }
+	  }
+
+	  return md5ToHexEncodedArray(wordsToMd5(bytesToWords(bytes), bytes.length * 8));
+	}
+	/*
+	 * Convert an array of little-endian words to an array of bytes
+	 */
+
+
+	function md5ToHexEncodedArray(input) {
+	  var output = [];
+	  var length32 = input.length * 32;
+	  var hexTab = '0123456789abcdef';
+
+	  for (var i = 0; i < length32; i += 8) {
+	    var x = input[i >> 5] >>> i % 32 & 0xff;
+	    var hex = parseInt(hexTab.charAt(x >>> 4 & 0x0f) + hexTab.charAt(x & 0x0f), 16);
+	    output.push(hex);
+	  }
+
+	  return output;
+	}
+	/**
+	 * Calculate output length with padding and bit length
+	 */
+
+
+	function getOutputLength(inputLength8) {
+	  return (inputLength8 + 64 >>> 9 << 4) + 14 + 1;
+	}
+	/*
+	 * Calculate the MD5 of an array of little-endian words, and a bit length.
+	 */
+
+
+	function wordsToMd5(x, len) {
+	  /* append padding */
+	  x[len >> 5] |= 0x80 << len % 32;
+	  x[getOutputLength(len) - 1] = len;
+	  var a = 1732584193;
+	  var b = -271733879;
+	  var c = -1732584194;
+	  var d = 271733878;
+
+	  for (var i = 0; i < x.length; i += 16) {
+	    var olda = a;
+	    var oldb = b;
+	    var oldc = c;
+	    var oldd = d;
+	    a = md5ff(a, b, c, d, x[i], 7, -680876936);
+	    d = md5ff(d, a, b, c, x[i + 1], 12, -389564586);
+	    c = md5ff(c, d, a, b, x[i + 2], 17, 606105819);
+	    b = md5ff(b, c, d, a, x[i + 3], 22, -1044525330);
+	    a = md5ff(a, b, c, d, x[i + 4], 7, -176418897);
+	    d = md5ff(d, a, b, c, x[i + 5], 12, 1200080426);
+	    c = md5ff(c, d, a, b, x[i + 6], 17, -1473231341);
+	    b = md5ff(b, c, d, a, x[i + 7], 22, -45705983);
+	    a = md5ff(a, b, c, d, x[i + 8], 7, 1770035416);
+	    d = md5ff(d, a, b, c, x[i + 9], 12, -1958414417);
+	    c = md5ff(c, d, a, b, x[i + 10], 17, -42063);
+	    b = md5ff(b, c, d, a, x[i + 11], 22, -1990404162);
+	    a = md5ff(a, b, c, d, x[i + 12], 7, 1804603682);
+	    d = md5ff(d, a, b, c, x[i + 13], 12, -40341101);
+	    c = md5ff(c, d, a, b, x[i + 14], 17, -1502002290);
+	    b = md5ff(b, c, d, a, x[i + 15], 22, 1236535329);
+	    a = md5gg(a, b, c, d, x[i + 1], 5, -165796510);
+	    d = md5gg(d, a, b, c, x[i + 6], 9, -1069501632);
+	    c = md5gg(c, d, a, b, x[i + 11], 14, 643717713);
+	    b = md5gg(b, c, d, a, x[i], 20, -373897302);
+	    a = md5gg(a, b, c, d, x[i + 5], 5, -701558691);
+	    d = md5gg(d, a, b, c, x[i + 10], 9, 38016083);
+	    c = md5gg(c, d, a, b, x[i + 15], 14, -660478335);
+	    b = md5gg(b, c, d, a, x[i + 4], 20, -405537848);
+	    a = md5gg(a, b, c, d, x[i + 9], 5, 568446438);
+	    d = md5gg(d, a, b, c, x[i + 14], 9, -1019803690);
+	    c = md5gg(c, d, a, b, x[i + 3], 14, -187363961);
+	    b = md5gg(b, c, d, a, x[i + 8], 20, 1163531501);
+	    a = md5gg(a, b, c, d, x[i + 13], 5, -1444681467);
+	    d = md5gg(d, a, b, c, x[i + 2], 9, -51403784);
+	    c = md5gg(c, d, a, b, x[i + 7], 14, 1735328473);
+	    b = md5gg(b, c, d, a, x[i + 12], 20, -1926607734);
+	    a = md5hh(a, b, c, d, x[i + 5], 4, -378558);
+	    d = md5hh(d, a, b, c, x[i + 8], 11, -2022574463);
+	    c = md5hh(c, d, a, b, x[i + 11], 16, 1839030562);
+	    b = md5hh(b, c, d, a, x[i + 14], 23, -35309556);
+	    a = md5hh(a, b, c, d, x[i + 1], 4, -1530992060);
+	    d = md5hh(d, a, b, c, x[i + 4], 11, 1272893353);
+	    c = md5hh(c, d, a, b, x[i + 7], 16, -155497632);
+	    b = md5hh(b, c, d, a, x[i + 10], 23, -1094730640);
+	    a = md5hh(a, b, c, d, x[i + 13], 4, 681279174);
+	    d = md5hh(d, a, b, c, x[i], 11, -358537222);
+	    c = md5hh(c, d, a, b, x[i + 3], 16, -722521979);
+	    b = md5hh(b, c, d, a, x[i + 6], 23, 76029189);
+	    a = md5hh(a, b, c, d, x[i + 9], 4, -640364487);
+	    d = md5hh(d, a, b, c, x[i + 12], 11, -421815835);
+	    c = md5hh(c, d, a, b, x[i + 15], 16, 530742520);
+	    b = md5hh(b, c, d, a, x[i + 2], 23, -995338651);
+	    a = md5ii(a, b, c, d, x[i], 6, -198630844);
+	    d = md5ii(d, a, b, c, x[i + 7], 10, 1126891415);
+	    c = md5ii(c, d, a, b, x[i + 14], 15, -1416354905);
+	    b = md5ii(b, c, d, a, x[i + 5], 21, -57434055);
+	    a = md5ii(a, b, c, d, x[i + 12], 6, 1700485571);
+	    d = md5ii(d, a, b, c, x[i + 3], 10, -1894986606);
+	    c = md5ii(c, d, a, b, x[i + 10], 15, -1051523);
+	    b = md5ii(b, c, d, a, x[i + 1], 21, -2054922799);
+	    a = md5ii(a, b, c, d, x[i + 8], 6, 1873313359);
+	    d = md5ii(d, a, b, c, x[i + 15], 10, -30611744);
+	    c = md5ii(c, d, a, b, x[i + 6], 15, -1560198380);
+	    b = md5ii(b, c, d, a, x[i + 13], 21, 1309151649);
+	    a = md5ii(a, b, c, d, x[i + 4], 6, -145523070);
+	    d = md5ii(d, a, b, c, x[i + 11], 10, -1120210379);
+	    c = md5ii(c, d, a, b, x[i + 2], 15, 718787259);
+	    b = md5ii(b, c, d, a, x[i + 9], 21, -343485551);
+	    a = safeAdd(a, olda);
+	    b = safeAdd(b, oldb);
+	    c = safeAdd(c, oldc);
+	    d = safeAdd(d, oldd);
+	  }
+
+	  return [a, b, c, d];
+	}
+	/*
+	 * Convert an array bytes to an array of little-endian words
+	 * Characters >255 have their high-byte silently ignored.
+	 */
+
+
+	function bytesToWords(input) {
+	  if (input.length === 0) {
+	    return [];
+	  }
+
+	  var length8 = input.length * 8;
+	  var output = new Uint32Array(getOutputLength(length8));
+
+	  for (var i = 0; i < length8; i += 8) {
+	    output[i >> 5] |= (input[i / 8] & 0xff) << i % 32;
+	  }
+
+	  return output;
+	}
+	/*
+	 * Add integers, wrapping at 2^32. This uses 16-bit operations internally
+	 * to work around bugs in some JS interpreters.
+	 */
+
+
+	function safeAdd(x, y) {
+	  var lsw = (x & 0xffff) + (y & 0xffff);
+	  var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+	  return msw << 16 | lsw & 0xffff;
+	}
+	/*
+	 * Bitwise rotate a 32-bit number to the left.
+	 */
+
+
+	function bitRotateLeft(num, cnt) {
+	  return num << cnt | num >>> 32 - cnt;
+	}
+	/*
+	 * These functions implement the four basic operations the algorithm uses.
+	 */
+
+
+	function md5cmn(q, a, b, x, s, t) {
+	  return safeAdd(bitRotateLeft(safeAdd(safeAdd(a, q), safeAdd(x, t)), s), b);
+	}
+
+	function md5ff(a, b, c, d, x, s, t) {
+	  return md5cmn(b & c | ~b & d, a, b, x, s, t);
+	}
+
+	function md5gg(a, b, c, d, x, s, t) {
+	  return md5cmn(b & d | c & ~d, a, b, x, s, t);
+	}
+
+	function md5hh(a, b, c, d, x, s, t) {
+	  return md5cmn(b ^ c ^ d, a, b, x, s, t);
+	}
+
+	function md5ii(a, b, c, d, x, s, t) {
+	  return md5cmn(c ^ (b | ~d), a, b, x, s, t);
+	}
+
+	var v3 = v35('v3', 0x30, md5);
+	var v3$1 = v3;
+
+	function v4(options, buf, offset) {
+	  options = options || {};
+	  var rnds = options.random || (options.rng || rng)(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+
+	  rnds[6] = rnds[6] & 0x0f | 0x40;
+	  rnds[8] = rnds[8] & 0x3f | 0x80; // Copy bytes to buffer, if provided
+
+	  if (buf) {
+	    offset = offset || 0;
+
+	    for (var i = 0; i < 16; ++i) {
+	      buf[offset + i] = rnds[i];
+	    }
+
+	    return buf;
+	  }
+
+	  return stringify(rnds);
+	}
+
+	// Adapted from Chris Veness' SHA1 code at
+	// http://www.movable-type.co.uk/scripts/sha1.html
+	function f$1(s, x, y, z) {
+	  switch (s) {
+	    case 0:
+	      return x & y ^ ~x & z;
+
+	    case 1:
+	      return x ^ y ^ z;
+
+	    case 2:
+	      return x & y ^ x & z ^ y & z;
+
+	    case 3:
+	      return x ^ y ^ z;
+	  }
+	}
+
+	function ROTL(x, n) {
+	  return x << n | x >>> 32 - n;
+	}
+
+	function sha1(bytes) {
+	  var K = [0x5a827999, 0x6ed9eba1, 0x8f1bbcdc, 0xca62c1d6];
+	  var H = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0];
+
+	  if (typeof bytes === 'string') {
+	    var msg = unescape(encodeURIComponent(bytes)); // UTF8 escape
+
+	    bytes = [];
+
+	    for (var i = 0; i < msg.length; ++i) {
+	      bytes.push(msg.charCodeAt(i));
+	    }
+	  } else if (!Array.isArray(bytes)) {
+	    // Convert Array-like to Array
+	    bytes = Array.prototype.slice.call(bytes);
+	  }
+
+	  bytes.push(0x80);
+	  var l = bytes.length / 4 + 2;
+	  var N = Math.ceil(l / 16);
+	  var M = new Array(N);
+
+	  for (var _i = 0; _i < N; ++_i) {
+	    var arr = new Uint32Array(16);
+
+	    for (var j = 0; j < 16; ++j) {
+	      arr[j] = bytes[_i * 64 + j * 4] << 24 | bytes[_i * 64 + j * 4 + 1] << 16 | bytes[_i * 64 + j * 4 + 2] << 8 | bytes[_i * 64 + j * 4 + 3];
+	    }
+
+	    M[_i] = arr;
+	  }
+
+	  M[N - 1][14] = (bytes.length - 1) * 8 / Math.pow(2, 32);
+	  M[N - 1][14] = Math.floor(M[N - 1][14]);
+	  M[N - 1][15] = (bytes.length - 1) * 8 & 0xffffffff;
+
+	  for (var _i2 = 0; _i2 < N; ++_i2) {
+	    var W = new Uint32Array(80);
+
+	    for (var t = 0; t < 16; ++t) {
+	      W[t] = M[_i2][t];
+	    }
+
+	    for (var _t = 16; _t < 80; ++_t) {
+	      W[_t] = ROTL(W[_t - 3] ^ W[_t - 8] ^ W[_t - 14] ^ W[_t - 16], 1);
+	    }
+
+	    var a = H[0];
+	    var b = H[1];
+	    var c = H[2];
+	    var d = H[3];
+	    var e = H[4];
+
+	    for (var _t2 = 0; _t2 < 80; ++_t2) {
+	      var s = Math.floor(_t2 / 20);
+	      var T = ROTL(a, 5) + f$1(s, b, c, d) + e + K[s] + W[_t2] >>> 0;
+	      e = d;
+	      d = c;
+	      c = ROTL(b, 30) >>> 0;
+	      b = a;
+	      a = T;
+	    }
+
+	    H[0] = H[0] + a >>> 0;
+	    H[1] = H[1] + b >>> 0;
+	    H[2] = H[2] + c >>> 0;
+	    H[3] = H[3] + d >>> 0;
+	    H[4] = H[4] + e >>> 0;
+	  }
+
+	  return [H[0] >> 24 & 0xff, H[0] >> 16 & 0xff, H[0] >> 8 & 0xff, H[0] & 0xff, H[1] >> 24 & 0xff, H[1] >> 16 & 0xff, H[1] >> 8 & 0xff, H[1] & 0xff, H[2] >> 24 & 0xff, H[2] >> 16 & 0xff, H[2] >> 8 & 0xff, H[2] & 0xff, H[3] >> 24 & 0xff, H[3] >> 16 & 0xff, H[3] >> 8 & 0xff, H[3] & 0xff, H[4] >> 24 & 0xff, H[4] >> 16 & 0xff, H[4] >> 8 & 0xff, H[4] & 0xff];
+	}
+
+	var v5 = v35('v5', 0x50, sha1);
+	var v5$1 = v5;
+
+	var nil = '00000000-0000-0000-0000-000000000000';
+
+	function version$3(uuid) {
+	  if (!validate(uuid)) {
+	    throw TypeError('Invalid UUID');
+	  }
+
+	  return parseInt(uuid.substr(14, 1), 16);
+	}
+
+	var esmBrowser = /*#__PURE__*/Object.freeze({
+		__proto__: null,
+		v1: v1,
+		v3: v3$1,
+		v4: v4,
+		v5: v5$1,
+		NIL: nil,
+		version: version$3,
+		validate: validate,
+		stringify: stringify,
+		parse: parse
+	});
+
+	var require$$0 = /*@__PURE__*/getAugmentedNamespace(esmBrowser);
+
+	const uuid$1 = require$$0.v4;
+
+	/**
+	 *  Generates a JSON-RPC 1.0 or 2.0 request
+	 *  @param {String} method Name of method to call
+	 *  @param {Array|Object} params Array of parameters passed to the method as specified, or an object of parameter names and corresponding value
+	 *  @param {String|Number|null} [id] Request ID can be a string, number, null for explicit notification or left out for automatic generation
+	 *  @param {Object} [options]
+	 *  @param {Number} [options.version=2] JSON-RPC version to use (1 or 2)
+	 *  @param {Boolean} [options.notificationIdNull=false] When true, version 2 requests will set id to null instead of omitting it
+	 *  @param {Function} [options.generator] Passed the request, and the options object and is expected to return a request ID
+	 *  @throws {TypeError} If any of the parameters are invalid
+	 *  @return {Object} A JSON-RPC 1.0 or 2.0 request
+	 *  @memberOf Utils
+	 */
+	const generateRequest$1 = function(method, params, id, options) {
+	  if(typeof method !== 'string') {
+	    throw new TypeError(method + ' must be a string');
+	  }
+
+	  options = options || {};
+
+	  // check valid version provided
+	  const version = typeof options.version === 'number' ? options.version : 2;
+	  if (version !== 1 && version !== 2) {
+	    throw new TypeError(version + ' must be 1 or 2');
+	  }
+
+	  const request = {
+	    method: method
+	  };
+
+	  if(version === 2) {
+	    request.jsonrpc = '2.0';
+	  }
+
+	  if(params) {
+	    // params given, but invalid?
+	    if(typeof params !== 'object' && !Array.isArray(params)) {
+	      throw new TypeError(params + ' must be an object, array or omitted');
+	    }
+	    request.params = params;
+	  }
+
+	  // if id was left out, generate one (null means explicit notification)
+	  if(typeof(id) === 'undefined') {
+	    const generator = typeof options.generator === 'function' ? options.generator : function() { return uuid$1(); };
+	    request.id = generator(request, options);
+	  } else if (version === 2 && id === null) {
+	    // we have a version 2 notification
+	    if (options.notificationIdNull) {
+	      request.id = null; // id will not be set at all unless option provided
+	    }
+	  } else {
+	    request.id = id;
+	  }
+
+	  return request;
+	};
+
+	var generateRequest_1 = generateRequest$1;
+
+	const uuid = require$$0.v4;
+	const generateRequest = generateRequest_1;
+
+	/**
+	 * Constructor for a Jayson Browser Client that does not depend any node.js core libraries
+	 * @class ClientBrowser
+	 * @param {Function} callServer Method that calls the server, receives the stringified request and a regular node-style callback
+	 * @param {Object} [options]
+	 * @param {Function} [options.reviver] Reviver function for JSON
+	 * @param {Function} [options.replacer] Replacer function for JSON
+	 * @param {Number} [options.version=2] JSON-RPC version to use (1|2)
+	 * @param {Function} [options.generator] Function to use for generating request IDs
+	 *  @param {Boolean} [options.notificationIdNull=false] When true, version 2 requests will set id to null instead of omitting it
+	 * @return {ClientBrowser}
+	 */
+	const ClientBrowser = function(callServer, options) {
+	  if(!(this instanceof ClientBrowser)) {
+	    return new ClientBrowser(callServer, options);
+	  }
+
+	  if (!options) {
+	    options = {};
+	  }
+
+	  this.options = {
+	    reviver: typeof options.reviver !== 'undefined' ? options.reviver : null,
+	    replacer: typeof options.replacer !== 'undefined' ? options.replacer : null,
+	    generator: typeof options.generator !== 'undefined' ? options.generator : function() { return uuid(); },
+	    version: typeof options.version !== 'undefined' ? options.version : 2,
+	    notificationIdNull: typeof options.notificationIdNull === 'boolean' ? options.notificationIdNull : false,
+	  };
+
+	  this.callServer = callServer;
+	};
+
+	var browser = ClientBrowser;
+
+	/**
+	 *  Creates a request and dispatches it if given a callback.
+	 *  @param {String|Array} method A batch request if passed an Array, or a method name if passed a String
+	 *  @param {Array|Object} [params] Parameters for the method
+	 *  @param {String|Number} [id] Optional id. If undefined an id will be generated. If null it creates a notification request
+	 *  @param {Function} [callback] Request callback. If specified, executes the request rather than only returning it.
+	 *  @throws {TypeError} Invalid parameters
+	 *  @return {Object} JSON-RPC 1.0 or 2.0 compatible request
+	 */
+	ClientBrowser.prototype.request = function(method, params, id, callback) {
+	  const self = this;
+	  let request = null;
+
+	  // is this a batch request?
+	  const isBatch = Array.isArray(method) && typeof params === 'function';
+
+	  if (this.options.version === 1 && isBatch) {
+	    throw new TypeError('JSON-RPC 1.0 does not support batching');
+	  }
+
+	  // is this a raw request?
+	  const isRaw = !isBatch && method && typeof method === 'object' && typeof params === 'function';
+
+	  if(isBatch || isRaw) {
+	    callback = params;
+	    request = method;
+	  } else {
+	    if(typeof id === 'function') {
+	      callback = id;
+	      // specifically undefined because "null" is a notification request
+	      id = undefined;
+	    }
+
+	    const hasCallback = typeof callback === 'function';
+
+	    try {
+	      request = generateRequest(method, params, id, {
+	        generator: this.options.generator,
+	        version: this.options.version,
+	        notificationIdNull: this.options.notificationIdNull,
+	      });
+	    } catch(err) {
+	      if(hasCallback) {
+	        return callback(err);
+	      }
+	      throw err;
+	    }
+
+	    // no callback means we should just return a raw request
+	    if(!hasCallback) {
+	      return request;
+	    }
+
+	  }
+
+	  let message;
+	  try {
+	    message = JSON.stringify(request, this.options.replacer);
+	  } catch(err) {
+	    return callback(err);
+	  }
+
+	  this.callServer(message, function(err, response) {
+	    self._parseResponse(err, response, callback);
+	  });
+
+	  // always return the raw request
+	  return request;
+	};
+
+	/**
+	 * Parses a response from a server
+	 * @param {Object} err Error to pass on that is unrelated to the actual response
+	 * @param {String} responseText JSON-RPC 1.0 or 2.0 response
+	 * @param {Function} callback Callback that will receive different arguments depending on the amount of parameters
+	 * @private
+	 */
+	ClientBrowser.prototype._parseResponse = function(err, responseText, callback) {
+	  if(err) {
+	    callback(err);
+	    return;
+	  }
+
+	  if(!responseText) {
+	    // empty response text, assume that is correct because it could be a
+	    // notification which jayson does not give any body for
+	    return callback();
+	  }
+
+	  let response;
+	  try {
+	    response = JSON.parse(responseText, this.options.reviver);
+	  } catch(err) {
+	    return callback(err);
+	  }
+
+	  if(callback.length === 3) {
+	    // if callback length is 3, we split callback arguments on error and response
+
+	    // is batch response?
+	    if(Array.isArray(response)) {
+
+	      // neccesary to split strictly on validity according to spec here
+	      const isError = function(res) {
+	        return typeof res.error !== 'undefined';
+	      };
+
+	      const isNotError = function (res) {
+	        return !isError(res);
+	      };
+
+	      return callback(null, response.filter(isError), response.filter(isNotError));
+	    
+	    } else {
+
+	      // split regardless of validity
+	      return callback(null, response.error, response.result);
+	    
+	    }
+	  
+	  }
+
+	  callback(null, response);
+	};
+
+	var RpcClient = browser;
 
 	const toBuffer = arr => {
 	  if (buffer.Buffer.isBuffer(arr)) {
@@ -14177,7 +17178,7 @@ var vrf = (function (exports) {
 	  8, 5, 12, 9, 12, 5, 14, 6, 8, 13, 6, 5, 15, 13, 11, 11
 	];
 
-	var utils = utils$9;
+	var utils$a = utils$9;
 	var assert$1 = minimalisticAssert;
 
 	function Hmac(hash, key, enc) {
@@ -14189,7 +17190,7 @@ var vrf = (function (exports) {
 	  this.inner = null;
 	  this.outer = null;
 
-	  this._init(utils.toArray(key, enc));
+	  this._init(utils$a.toArray(key, enc));
 	}
 	var hmac = Hmac;
 
@@ -15819,6 +18820,11 @@ var vrf = (function (exports) {
 	new PublicKey('SysvarS1otHistory11111111111111111111111111');
 	new PublicKey('SysvarStakeHistory1111111111111111111111111');
 
+	// zzz
+	function sleep(ms) {
+	  return new Promise(resolve => setTimeout(resolve, ms));
+	}
+
 	/**
 	 * @internal
 	 */
@@ -15856,6 +18862,40 @@ var vrf = (function (exports) {
 
 	const NonceAccountLayout = struct([u32('version'), u32('state'), publicKey('authorizedPubkey'), publicKey('nonce'), struct([FeeCalculatorLayout], 'feeCalculator')]);
 	const NONCE_ACCOUNT_LENGTH = NonceAccountLayout.span;
+
+	/**
+	 * NonceAccount class
+	 */
+	class NonceAccount {
+	  /**
+	   * @internal
+	   */
+	  constructor(args) {
+	    this.authorizedPubkey = void 0;
+	    this.nonce = void 0;
+	    this.feeCalculator = void 0;
+	    this.authorizedPubkey = args.authorizedPubkey;
+	    this.nonce = args.nonce;
+	    this.feeCalculator = args.feeCalculator;
+	  }
+	  /**
+	   * Deserialize NonceAccount from the account data.
+	   *
+	   * @param buffer account data
+	   * @return NonceAccount
+	   */
+
+
+	  static fromAccountData(buffer) {
+	    const nonceAccount = NonceAccountLayout.decode(toBuffer(buffer), 0);
+	    return new NonceAccount({
+	      authorizedPubkey: new PublicKey(nonceAccount.authorizedPubkey),
+	      nonce: new PublicKey(nonceAccount.nonce).toString(),
+	      feeCalculator: nonceAccount.feeCalculator
+	    });
+	  }
+
+	}
 	/**
 	 * An enumeration of valid SystemInstructionType's
 	 */
@@ -16846,11 +19886,174 @@ var vrf = (function (exports) {
 	module.exports = exports;
 	}(browserPonyfill, browserPonyfill.exports));
 
-	/*@__PURE__*/getDefaultExportFromCjs(browserPonyfill.exports);
+	var fetch = /*@__PURE__*/getDefaultExportFromCjs(browserPonyfill.exports);
+
+	const MINIMUM_SLOT_PER_EPOCH = 32; // Returns the number of trailing zeros in the binary representation of self.
+
+	function trailingZeros(n) {
+	  let trailingZeros = 0;
+
+	  while (n > 1) {
+	    n /= 2;
+	    trailingZeros++;
+	  }
+
+	  return trailingZeros;
+	} // Returns the smallest power of two greater than or equal to n
+
+
+	function nextPowerOfTwo(n) {
+	  if (n === 0) return 1;
+	  n--;
+	  n |= n >> 1;
+	  n |= n >> 2;
+	  n |= n >> 4;
+	  n |= n >> 8;
+	  n |= n >> 16;
+	  n |= n >> 32;
+	  return n + 1;
+	}
+	/**
+	 * Epoch schedule
+	 * (see https://docs.solana.com/terminology#epoch)
+	 * Can be retrieved with the {@link connection.getEpochSchedule} method
+	 */
+
+
+	class EpochSchedule {
+	  /** The maximum number of slots in each epoch */
+
+	  /** The number of slots before beginning of an epoch to calculate a leader schedule for that epoch */
+
+	  /** Indicates whether epochs start short and grow */
+
+	  /** The first epoch with `slotsPerEpoch` slots */
+
+	  /** The first slot of `firstNormalEpoch` */
+	  constructor(slotsPerEpoch, leaderScheduleSlotOffset, warmup, firstNormalEpoch, firstNormalSlot) {
+	    this.slotsPerEpoch = void 0;
+	    this.leaderScheduleSlotOffset = void 0;
+	    this.warmup = void 0;
+	    this.firstNormalEpoch = void 0;
+	    this.firstNormalSlot = void 0;
+	    this.slotsPerEpoch = slotsPerEpoch;
+	    this.leaderScheduleSlotOffset = leaderScheduleSlotOffset;
+	    this.warmup = warmup;
+	    this.firstNormalEpoch = firstNormalEpoch;
+	    this.firstNormalSlot = firstNormalSlot;
+	  }
+
+	  getEpoch(slot) {
+	    return this.getEpochAndSlotIndex(slot)[0];
+	  }
+
+	  getEpochAndSlotIndex(slot) {
+	    if (slot < this.firstNormalSlot) {
+	      const epoch = trailingZeros(nextPowerOfTwo(slot + MINIMUM_SLOT_PER_EPOCH + 1)) - trailingZeros(MINIMUM_SLOT_PER_EPOCH) - 1;
+	      const epochLen = this.getSlotsInEpoch(epoch);
+	      const slotIndex = slot - (epochLen - MINIMUM_SLOT_PER_EPOCH);
+	      return [epoch, slotIndex];
+	    } else {
+	      const normalSlotIndex = slot - this.firstNormalSlot;
+	      const normalEpochIndex = Math.floor(normalSlotIndex / this.slotsPerEpoch);
+	      const epoch = this.firstNormalEpoch + normalEpochIndex;
+	      const slotIndex = normalSlotIndex % this.slotsPerEpoch;
+	      return [epoch, slotIndex];
+	    }
+	  }
+
+	  getFirstSlotInEpoch(epoch) {
+	    if (epoch <= this.firstNormalEpoch) {
+	      return (Math.pow(2, epoch) - 1) * MINIMUM_SLOT_PER_EPOCH;
+	    } else {
+	      return (epoch - this.firstNormalEpoch) * this.slotsPerEpoch + this.firstNormalSlot;
+	    }
+	  }
+
+	  getLastSlotInEpoch(epoch) {
+	    return this.getFirstSlotInEpoch(epoch) + this.getSlotsInEpoch(epoch) - 1;
+	  }
+
+	  getSlotsInEpoch(epoch) {
+	    if (epoch < this.firstNormalEpoch) {
+	      return Math.pow(2, epoch + trailingZeros(MINIMUM_SLOT_PER_EPOCH));
+	    } else {
+	      return this.slotsPerEpoch;
+	    }
+	  }
+
+	}
+
+	class SendTransactionError extends Error {
+	  constructor(message, logs) {
+	    super(message);
+	    this.logs = void 0;
+	    this.logs = logs;
+	  }
+
+	}
+
+	// TODO: These constants should be removed in favor of reading them out of a
+	// Syscall account
+
+	/**
+	 * @internal
+	 */
+	const NUM_TICKS_PER_SECOND = 160;
+	/**
+	 * @internal
+	 */
+
+	const DEFAULT_TICKS_PER_SLOT = 64;
+	/**
+	 * @internal
+	 */
+
+	const NUM_SLOTS_PER_SECOND = NUM_TICKS_PER_SECOND / DEFAULT_TICKS_PER_SLOT;
+	/**
+	 * @internal
+	 */
+
+	const MS_PER_SLOT = 1000 / NUM_SLOTS_PER_SECOND;
+
+	function promiseTimeout(promise, timeoutMs) {
+	  let timeoutId;
+	  const timeoutPromise = new Promise(resolve => {
+	    timeoutId = setTimeout(() => resolve(null), timeoutMs);
+	  });
+	  return Promise.race([promise, timeoutPromise]).then(result => {
+	    clearTimeout(timeoutId);
+	    return result;
+	  });
+	}
+
+	function makeWebsocketUrl(endpoint) {
+	  let url = new URL(endpoint);
+	  const useHttps = url.protocol === 'https:';
+	  url.protocol = useHttps ? 'wss:' : 'ws:';
+	  url.host = ''; // Only shift the port by +1 as a convention for ws(s) only if given endpoint
+	  // is explictly specifying the endpoint port (HTTP-based RPC), assuming
+	  // we're directly trying to connect to solana-validator's ws listening port.
+	  // When the endpoint omits the port, we're connecting to the protocol
+	  // default ports: http(80) or https(443) and it's assumed we're behind a reverse
+	  // proxy which manages WebSocket upgrade and backend port redirection.
+
+	  if (url.port !== '') {
+	    url.port = String(Number(url.port) + 1);
+	  }
+
+	  return url.toString();
+	}
 
 	const PublicKeyFromString = coerce(instance(PublicKey), string(), value => new PublicKey(value));
 	const RawAccountDataResult = tuple([string(), literal('base64')]);
 	const BufferFromRawAccountData = coerce(instance(buffer.Buffer), RawAccountDataResult, value => buffer.Buffer.from(value[0], 'base64'));
+	/**
+	 * Attempt to use a recent blockhash for up to 30 seconds
+	 * @internal
+	 */
+
+	const BLOCKHASH_CACHE_TIMEOUT_MS = 30 * 1000;
 
 	/**
 	 * @internal
@@ -16937,7 +20140,7 @@ var vrf = (function (exports) {
 	/**
 	 * Expected JSON RPC response for the "getInflationReward" message
 	 */
-	jsonRpcResult(array(nullable(type({
+	const GetInflationRewardResult = jsonRpcResult(array(nullable(type({
 	  epoch: number(),
 	  effectiveSlot: number(),
 	  amount: number(),
@@ -16989,11 +20192,11 @@ var vrf = (function (exports) {
 	 * Version info for a node
 	 */
 
-	type({
+	const VersionResult = type({
 	  'solana-core': string(),
 	  'feature-set': optional(number())
 	});
-	jsonRpcResultAndContext(type({
+	const SimulatedTransactionResponseStruct = jsonRpcResultAndContext(type({
 	  err: nullable(union([type({}), string()])),
 	  logs: nullable(array(string())),
 	  accounts: optional(nullable(array(nullable(type({
@@ -17005,32 +20208,143 @@ var vrf = (function (exports) {
 	  }))))),
 	  unitsConsumed: optional(number())
 	}));
+
+	function createRpcClient(url, useHttps, httpHeaders, fetchMiddleware, disableRetryOnRateLimit) {
+
+	  let fetchWithMiddleware;
+
+	  if (fetchMiddleware) {
+	    fetchWithMiddleware = async (url, options) => {
+	      const modifiedFetchArgs = await new Promise((resolve, reject) => {
+	        try {
+	          fetchMiddleware(url, options, (modifiedUrl, modifiedOptions) => resolve([modifiedUrl, modifiedOptions]));
+	        } catch (error) {
+	          reject(error);
+	        }
+	      });
+	      return await fetch(...modifiedFetchArgs);
+	    };
+	  }
+
+	  const clientBrowser = new RpcClient(async (request, callback) => {
+	    const agent = undefined;
+	    const options = {
+	      method: 'POST',
+	      body: request,
+	      agent,
+	      headers: Object.assign({
+	        'Content-Type': 'application/json'
+	      }, httpHeaders || {})
+	    };
+
+	    try {
+	      let too_many_requests_retries = 5;
+	      let res;
+	      let waitTime = 500;
+
+	      for (;;) {
+	        if (fetchWithMiddleware) {
+	          res = await fetchWithMiddleware(url, options);
+	        } else {
+	          res = await fetch(url, options);
+	        }
+
+	        if (res.status !== 429
+	        /* Too many requests */
+	        ) {
+	          break;
+	        }
+
+	        if (disableRetryOnRateLimit === true) {
+	          break;
+	        }
+
+	        too_many_requests_retries -= 1;
+
+	        if (too_many_requests_retries === 0) {
+	          break;
+	        }
+
+	        console.log(`Server responded with ${res.status} ${res.statusText}.  Retrying after ${waitTime}ms delay...`);
+	        await sleep(waitTime);
+	        waitTime *= 2;
+	      }
+
+	      const text = await res.text();
+
+	      if (res.ok) {
+	        callback(null, text);
+	      } else {
+	        callback(new Error(`${res.status} ${res.statusText}: ${text}`));
+	      }
+	    } catch (err) {
+	      if (err instanceof Error) callback(err);
+	    } finally {
+	    }
+	  }, {});
+	  return clientBrowser;
+	}
+
+	function createRpcRequest(client) {
+	  return (method, args) => {
+	    return new Promise((resolve, reject) => {
+	      client.request(method, args, (err, response) => {
+	        if (err) {
+	          reject(err);
+	          return;
+	        }
+
+	        resolve(response);
+	      });
+	    });
+	  };
+	}
+
+	function createRpcBatchRequest(client) {
+	  return requests => {
+	    return new Promise((resolve, reject) => {
+	      // Do nothing if requests is empty
+	      if (requests.length === 0) resolve([]);
+	      const batch = requests.map(params => {
+	        return client.request(params.methodName, params.args);
+	      });
+	      client.request(batch, (err, response) => {
+	        if (err) {
+	          reject(err);
+	          return;
+	        }
+
+	        resolve(response);
+	      });
+	    });
+	  };
+	}
 	/**
 	 * Expected JSON RPC response for the "getInflationGovernor" message
 	 */
 
 
-	jsonRpcResult(GetInflationGovernorResult);
+	const GetInflationGovernorRpcResult = jsonRpcResult(GetInflationGovernorResult);
 	/**
 	 * Expected JSON RPC response for the "getEpochInfo" message
 	 */
 
-	jsonRpcResult(GetEpochInfoResult);
+	const GetEpochInfoRpcResult = jsonRpcResult(GetEpochInfoResult);
 	/**
 	 * Expected JSON RPC response for the "getEpochSchedule" message
 	 */
 
-	jsonRpcResult(GetEpochScheduleResult);
+	const GetEpochScheduleRpcResult = jsonRpcResult(GetEpochScheduleResult);
 	/**
 	 * Expected JSON RPC response for the "getLeaderSchedule" message
 	 */
 
-	jsonRpcResult(GetLeaderScheduleResult);
+	const GetLeaderScheduleRpcResult = jsonRpcResult(GetLeaderScheduleResult);
 	/**
 	 * Expected JSON RPC response for the "minimumLedgerSlot" and "getFirstAvailableBlock" messages
 	 */
 
-	jsonRpcResult(number());
+	const SlotRpcResult = jsonRpcResult(number());
 	/**
 	 * Supply
 	 */
@@ -17038,7 +20352,7 @@ var vrf = (function (exports) {
 	/**
 	 * Expected JSON RPC response for the "getSupply" message
 	 */
-	jsonRpcResultAndContext(type({
+	const GetSupplyRpcResult = jsonRpcResultAndContext(type({
 	  total: number(),
 	  circulating: number(),
 	  nonCirculating: number(),
@@ -17065,7 +20379,7 @@ var vrf = (function (exports) {
 	/**
 	 * Expected JSON RPC response for the "getTokenLargestAccounts" message
 	 */
-	jsonRpcResultAndContext(array(type({
+	const GetTokenLargestAccountsResult = jsonRpcResultAndContext(array(type({
 	  address: PublicKeyFromString,
 	  amount: string(),
 	  uiAmount: nullable(number()),
@@ -17076,7 +20390,7 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for the "getTokenAccountsByOwner" message
 	 */
 
-	jsonRpcResultAndContext(array(type({
+	const GetTokenAccountsByOwner = jsonRpcResultAndContext(array(type({
 	  pubkey: PublicKeyFromString,
 	  account: type({
 	    executable: boolean(),
@@ -17095,7 +20409,7 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for the "getTokenAccountsByOwner" message with parsed data
 	 */
 
-	jsonRpcResultAndContext(array(type({
+	const GetParsedTokenAccountsByOwner = jsonRpcResultAndContext(array(type({
 	  pubkey: PublicKeyFromString,
 	  account: type({
 	    executable: boolean(),
@@ -17112,7 +20426,7 @@ var vrf = (function (exports) {
 	/**
 	 * Expected JSON RPC response for the "getLargestAccounts" message
 	 */
-	jsonRpcResultAndContext(array(type({
+	const GetLargestAccountsRpcResult = jsonRpcResultAndContext(array(type({
 	  lamports: number(),
 	  address: PublicKeyFromString
 	})));
@@ -17131,7 +20445,7 @@ var vrf = (function (exports) {
 	 * @internal
 	 */
 
-	type({
+	const KeyedAccountInfoResult = type({
 	  pubkey: PublicKeyFromString,
 	  account: AccountInfoResult
 	});
@@ -17153,7 +20467,7 @@ var vrf = (function (exports) {
 	  data: ParsedOrRawAccountData,
 	  rentEpoch: number()
 	});
-	type({
+	const KeyedParsedAccountInfoResult = type({
 	  pubkey: PublicKeyFromString,
 	  account: ParsedAccountInfoResult
 	});
@@ -17161,7 +20475,7 @@ var vrf = (function (exports) {
 	 * @internal
 	 */
 
-	type({
+	const StakeActivationResult = type({
 	  state: union([literal('active'), literal('inactive'), literal('activating'), literal('deactivating')]),
 	  active: number(),
 	  inactive: number()
@@ -17170,7 +20484,7 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for the "getConfirmedSignaturesForAddress2" message
 	 */
 
-	jsonRpcResult(array(type({
+	const GetConfirmedSignaturesForAddress2RpcResult = jsonRpcResult(array(type({
 	  signature: string(),
 	  slot: number(),
 	  err: TransactionErrorResult,
@@ -17181,7 +20495,7 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for the "getSignaturesForAddress" message
 	 */
 
-	jsonRpcResult(array(type({
+	const GetSignaturesForAddressRpcResult = jsonRpcResult(array(type({
 	  signature: string(),
 	  slot: number(),
 	  err: TransactionErrorResult,
@@ -17192,7 +20506,7 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for the "accountNotification" message
 	 */
 
-	type({
+	const AccountNotificationResult = type({
 	  subscription: number(),
 	  result: notificationResultAndContext(AccountInfoResult)
 	});
@@ -17208,7 +20522,7 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for the "programNotification" message
 	 */
 
-	type({
+	const ProgramAccountNotificationResult = type({
 	  subscription: number(),
 	  result: notificationResultAndContext(ProgramAccountInfoResult)
 	});
@@ -17225,7 +20539,7 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for the "slotNotification" message
 	 */
 
-	type({
+	const SlotNotificationResult = type({
 	  subscription: number(),
 	  result: SlotInfoResult
 	});
@@ -17276,7 +20590,7 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for the "slotsUpdatesNotification" message
 	 */
 
-	type({
+	const SlotUpdateNotificationResult = type({
 	  subscription: number(),
 	  result: SlotUpdateResult
 	});
@@ -17284,7 +20598,7 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for the "signatureNotification" message
 	 */
 
-	type({
+	const SignatureNotificationResult = type({
 	  subscription: number(),
 	  result: notificationResultAndContext(union([SignatureStatusResult, SignatureReceivedResult]))
 	});
@@ -17292,11 +20606,11 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for the "rootNotification" message
 	 */
 
-	type({
+	const RootNotificationResult = type({
 	  subscription: number(),
 	  result: number()
 	});
-	type({
+	const ContactInfoResult = type({
 	  pubkey: string(),
 	  gossip: nullable(string()),
 	  tpu: nullable(string()),
@@ -17317,7 +20631,7 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for the "getVoteAccounts" message
 	 */
 
-	jsonRpcResult(type({
+	const GetVoteAccounts = jsonRpcResult(type({
 	  current: array(VoteAccountInfoResult),
 	  delinquent: array(VoteAccountInfoResult)
 	}));
@@ -17332,12 +20646,12 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for the "getSignatureStatuses" message
 	 */
 
-	jsonRpcResultAndContext(array(nullable(SignatureStatusResponse)));
+	const GetSignatureStatusesRpcResult = jsonRpcResultAndContext(array(nullable(SignatureStatusResponse)));
 	/**
 	 * Expected JSON RPC response for the "getMinimumBalanceForRentExemption" message
 	 */
 
-	jsonRpcResult(number());
+	const GetMinimumBalanceForRentExemptionRpcResult = jsonRpcResult(number());
 	const ConfirmedTransactionResult = type({
 	  signatures: array(string()),
 	  message: type({
@@ -17446,7 +20760,7 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for the "getBlock" message
 	 */
 
-	jsonRpcResult(nullable(type({
+	const GetBlockRpcResult = jsonRpcResult(nullable(type({
 	  blockhash: string(),
 	  previousBlockhash: string(),
 	  parentSlot: number(),
@@ -17469,7 +20783,7 @@ var vrf = (function (exports) {
 	 * @deprecated Deprecated since Solana v1.8.0. Please use {@link GetBlockRpcResult} instead.
 	 */
 
-	jsonRpcResult(nullable(type({
+	const GetConfirmedBlockRpcResult = jsonRpcResult(nullable(type({
 	  blockhash: string(),
 	  previousBlockhash: string(),
 	  parentSlot: number(),
@@ -17489,7 +20803,7 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for the "getBlock" message
 	 */
 
-	jsonRpcResult(nullable(type({
+	const GetBlockSignaturesRpcResult = jsonRpcResult(nullable(type({
 	  blockhash: string(),
 	  previousBlockhash: string(),
 	  parentSlot: number(),
@@ -17500,7 +20814,7 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for the "getTransaction" message
 	 */
 
-	jsonRpcResult(nullable(type({
+	const GetTransactionRpcResult = jsonRpcResult(nullable(type({
 	  slot: number(),
 	  meta: ConfirmedTransactionMetaResult,
 	  blockTime: optional(nullable(number())),
@@ -17510,7 +20824,7 @@ var vrf = (function (exports) {
 	 * Expected parsed JSON RPC response for the "getTransaction" message
 	 */
 
-	jsonRpcResult(nullable(type({
+	const GetParsedTransactionRpcResult = jsonRpcResult(nullable(type({
 	  slot: number(),
 	  transaction: ParsedConfirmedTransactionResult,
 	  meta: nullable(ParsedConfirmedTransactionMetaResult),
@@ -17522,7 +20836,7 @@ var vrf = (function (exports) {
 	 * @deprecated Deprecated since Solana v1.8.0. Please use {@link GetLatestBlockhashRpcResult} instead.
 	 */
 
-	jsonRpcResultAndContext(type({
+	const GetRecentBlockhashAndContextRpcResult = jsonRpcResultAndContext(type({
 	  blockhash: string(),
 	  feeCalculator: type({
 	    lamportsPerSignature: number()
@@ -17532,7 +20846,7 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for the "getLatestBlockhash" message
 	 */
 
-	jsonRpcResultAndContext(type({
+	const GetLatestBlockhashRpcResult = jsonRpcResultAndContext(type({
 	  blockhash: string(),
 	  lastValidBlockHeight: number()
 	}));
@@ -17546,12 +20860,12 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for "getRecentPerformanceSamples" message
 	 */
 
-	jsonRpcResult(array(PerfSampleResult));
+	const GetRecentPerformanceSamplesRpcResult = jsonRpcResult(array(PerfSampleResult));
 	/**
 	 * Expected JSON RPC response for the "getFeeCalculatorForBlockhash" message
 	 */
 
-	jsonRpcResultAndContext(nullable(type({
+	const GetFeeCalculatorRpcResult = jsonRpcResultAndContext(nullable(type({
 	  feeCalculator: type({
 	    lamportsPerSignature: number()
 	  })
@@ -17560,12 +20874,12 @@ var vrf = (function (exports) {
 	 * Expected JSON RPC response for the "requestAirdrop" message
 	 */
 
-	jsonRpcResult(string());
+	const RequestAirdropRpcResult = jsonRpcResult(string());
 	/**
 	 * Expected JSON RPC response for the "sendTransaction" message
 	 */
 
-	jsonRpcResult(string());
+	const SendTransactionRpcResult = jsonRpcResult(string());
 	/**
 	 * Information about the latest slot being processed by a node
 	 */
@@ -17585,10 +20899,2446 @@ var vrf = (function (exports) {
 	/**
 	 * Expected JSON RPC response for the "logsNotification" message.
 	 */
-	type({
+	const LogsNotificationResult = type({
 	  result: notificationResultAndContext(LogsResult),
 	  subscription: number()
 	});
+	/**
+	 * Filter for log subscriptions.
+	 */
+
+	/**
+	 * A connection to a fullnode JSON RPC endpoint
+	 */
+	class Connection {
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /** @internal */
+
+	  /**
+	   * Establish a JSON RPC connection
+	   *
+	   * @param endpoint URL to the fullnode JSON RPC endpoint
+	   * @param commitmentOrConfig optional default commitment level or optional ConnectionConfig configuration object
+	   */
+	  constructor(endpoint, commitmentOrConfig) {
+	    this._commitment = void 0;
+	    this._confirmTransactionInitialTimeout = void 0;
+	    this._rpcEndpoint = void 0;
+	    this._rpcWsEndpoint = void 0;
+	    this._rpcClient = void 0;
+	    this._rpcRequest = void 0;
+	    this._rpcBatchRequest = void 0;
+	    this._rpcWebSocket = void 0;
+	    this._rpcWebSocketConnected = false;
+	    this._rpcWebSocketHeartbeat = null;
+	    this._rpcWebSocketIdleTimeout = null;
+	    this._disableBlockhashCaching = false;
+	    this._pollingBlockhash = false;
+	    this._blockhashInfo = {
+	      recentBlockhash: null,
+	      lastFetch: 0,
+	      transactionSignatures: [],
+	      simulatedSignatures: []
+	    };
+	    this._accountChangeSubscriptionCounter = 0;
+	    this._accountChangeSubscriptions = {};
+	    this._programAccountChangeSubscriptionCounter = 0;
+	    this._programAccountChangeSubscriptions = {};
+	    this._rootSubscriptionCounter = 0;
+	    this._rootSubscriptions = {};
+	    this._signatureSubscriptionCounter = 0;
+	    this._signatureSubscriptions = {};
+	    this._slotSubscriptionCounter = 0;
+	    this._slotSubscriptions = {};
+	    this._logsSubscriptionCounter = 0;
+	    this._logsSubscriptions = {};
+	    this._slotUpdateSubscriptionCounter = 0;
+	    this._slotUpdateSubscriptions = {};
+	    let url = new URL(endpoint);
+	    const useHttps = url.protocol === 'https:';
+	    let wsEndpoint;
+	    let httpHeaders;
+	    let fetchMiddleware;
+	    let disableRetryOnRateLimit;
+
+	    if (commitmentOrConfig && typeof commitmentOrConfig === 'string') {
+	      this._commitment = commitmentOrConfig;
+	    } else if (commitmentOrConfig) {
+	      this._commitment = commitmentOrConfig.commitment;
+	      this._confirmTransactionInitialTimeout = commitmentOrConfig.confirmTransactionInitialTimeout;
+	      wsEndpoint = commitmentOrConfig.wsEndpoint;
+	      httpHeaders = commitmentOrConfig.httpHeaders;
+	      fetchMiddleware = commitmentOrConfig.fetchMiddleware;
+	      disableRetryOnRateLimit = commitmentOrConfig.disableRetryOnRateLimit;
+	    }
+
+	    this._rpcEndpoint = endpoint;
+	    this._rpcWsEndpoint = wsEndpoint || makeWebsocketUrl(endpoint);
+	    this._rpcClient = createRpcClient(url.toString(), useHttps, httpHeaders, fetchMiddleware, disableRetryOnRateLimit);
+	    this._rpcRequest = createRpcRequest(this._rpcClient);
+	    this._rpcBatchRequest = createRpcBatchRequest(this._rpcClient);
+	    this._rpcWebSocket = new Client_1(this._rpcWsEndpoint, {
+	      autoconnect: false,
+	      max_reconnects: Infinity
+	    });
+
+	    this._rpcWebSocket.on('open', this._wsOnOpen.bind(this));
+
+	    this._rpcWebSocket.on('error', this._wsOnError.bind(this));
+
+	    this._rpcWebSocket.on('close', this._wsOnClose.bind(this));
+
+	    this._rpcWebSocket.on('accountNotification', this._wsOnAccountNotification.bind(this));
+
+	    this._rpcWebSocket.on('programNotification', this._wsOnProgramAccountNotification.bind(this));
+
+	    this._rpcWebSocket.on('slotNotification', this._wsOnSlotNotification.bind(this));
+
+	    this._rpcWebSocket.on('slotsUpdatesNotification', this._wsOnSlotUpdatesNotification.bind(this));
+
+	    this._rpcWebSocket.on('signatureNotification', this._wsOnSignatureNotification.bind(this));
+
+	    this._rpcWebSocket.on('rootNotification', this._wsOnRootNotification.bind(this));
+
+	    this._rpcWebSocket.on('logsNotification', this._wsOnLogsNotification.bind(this));
+	  }
+	  /**
+	   * The default commitment used for requests
+	   */
+
+
+	  get commitment() {
+	    return this._commitment;
+	  }
+	  /**
+	   * Fetch the balance for the specified public key, return with context
+	   */
+
+
+	  async getBalanceAndContext(publicKey, commitment) {
+	    const args = this._buildArgs([publicKey.toBase58()], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getBalance', args);
+	    const res = create(unsafeRes, jsonRpcResultAndContext(number()));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get balance for ' + publicKey.toBase58() + ': ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the balance for the specified public key
+	   */
+
+
+	  async getBalance(publicKey, commitment) {
+	    return await this.getBalanceAndContext(publicKey, commitment).then(x => x.value).catch(e => {
+	      throw new Error('failed to get balance of account ' + publicKey.toBase58() + ': ' + e);
+	    });
+	  }
+	  /**
+	   * Fetch the estimated production time of a block
+	   */
+
+
+	  async getBlockTime(slot) {
+	    const unsafeRes = await this._rpcRequest('getBlockTime', [slot]);
+	    const res = create(unsafeRes, jsonRpcResult(nullable(number())));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get block time for slot ' + slot + ': ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the lowest slot that the node has information about in its ledger.
+	   * This value may increase over time if the node is configured to purge older ledger data
+	   */
+
+
+	  async getMinimumLedgerSlot() {
+	    const unsafeRes = await this._rpcRequest('minimumLedgerSlot', []);
+	    const res = create(unsafeRes, jsonRpcResult(number()));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get minimum ledger slot: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the slot of the lowest confirmed block that has not been purged from the ledger
+	   */
+
+
+	  async getFirstAvailableBlock() {
+	    const unsafeRes = await this._rpcRequest('getFirstAvailableBlock', []);
+	    const res = create(unsafeRes, SlotRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get first available block: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch information about the current supply
+	   */
+
+
+	  async getSupply(config) {
+	    let configArg = {};
+
+	    if (typeof config === 'string') {
+	      configArg = {
+	        commitment: config
+	      };
+	    } else if (config) {
+	      configArg = { ...config,
+	        commitment: config && config.commitment || this.commitment
+	      };
+	    } else {
+	      configArg = {
+	        commitment: this.commitment
+	      };
+	    }
+
+	    const unsafeRes = await this._rpcRequest('getSupply', [configArg]);
+	    const res = create(unsafeRes, GetSupplyRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get supply: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the current supply of a token mint
+	   */
+
+
+	  async getTokenSupply(tokenMintAddress, commitment) {
+	    const args = this._buildArgs([tokenMintAddress.toBase58()], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getTokenSupply', args);
+	    const res = create(unsafeRes, jsonRpcResultAndContext(TokenAmountResult));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get token supply: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the current balance of a token account
+	   */
+
+
+	  async getTokenAccountBalance(tokenAddress, commitment) {
+	    const args = this._buildArgs([tokenAddress.toBase58()], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getTokenAccountBalance', args);
+	    const res = create(unsafeRes, jsonRpcResultAndContext(TokenAmountResult));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get token account balance: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch all the token accounts owned by the specified account
+	   *
+	   * @return {Promise<RpcResponseAndContext<Array<{pubkey: PublicKey, account: AccountInfo<Buffer>}>>>}
+	   */
+
+
+	  async getTokenAccountsByOwner(ownerAddress, filter, commitment) {
+	    let _args = [ownerAddress.toBase58()];
+
+	    if ('mint' in filter) {
+	      _args.push({
+	        mint: filter.mint.toBase58()
+	      });
+	    } else {
+	      _args.push({
+	        programId: filter.programId.toBase58()
+	      });
+	    }
+
+	    const args = this._buildArgs(_args, commitment, 'base64');
+
+	    const unsafeRes = await this._rpcRequest('getTokenAccountsByOwner', args);
+	    const res = create(unsafeRes, GetTokenAccountsByOwner);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get token accounts owned by account ' + ownerAddress.toBase58() + ': ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch parsed token accounts owned by the specified account
+	   *
+	   * @return {Promise<RpcResponseAndContext<Array<{pubkey: PublicKey, account: AccountInfo<ParsedAccountData>}>>>}
+	   */
+
+
+	  async getParsedTokenAccountsByOwner(ownerAddress, filter, commitment) {
+	    let _args = [ownerAddress.toBase58()];
+
+	    if ('mint' in filter) {
+	      _args.push({
+	        mint: filter.mint.toBase58()
+	      });
+	    } else {
+	      _args.push({
+	        programId: filter.programId.toBase58()
+	      });
+	    }
+
+	    const args = this._buildArgs(_args, commitment, 'jsonParsed');
+
+	    const unsafeRes = await this._rpcRequest('getTokenAccountsByOwner', args);
+	    const res = create(unsafeRes, GetParsedTokenAccountsByOwner);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get token accounts owned by account ' + ownerAddress.toBase58() + ': ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the 20 largest accounts with their current balances
+	   */
+
+
+	  async getLargestAccounts(config) {
+	    const arg = { ...config,
+	      commitment: config && config.commitment || this.commitment
+	    };
+	    const args = arg.filter || arg.commitment ? [arg] : [];
+	    const unsafeRes = await this._rpcRequest('getLargestAccounts', args);
+	    const res = create(unsafeRes, GetLargestAccountsRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get largest accounts: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the 20 largest token accounts with their current balances
+	   * for a given mint.
+	   */
+
+
+	  async getTokenLargestAccounts(mintAddress, commitment) {
+	    const args = this._buildArgs([mintAddress.toBase58()], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getTokenLargestAccounts', args);
+	    const res = create(unsafeRes, GetTokenLargestAccountsResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get token largest accounts: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch all the account info for the specified public key, return with context
+	   */
+
+
+	  async getAccountInfoAndContext(publicKey, commitment) {
+	    const args = this._buildArgs([publicKey.toBase58()], commitment, 'base64');
+
+	    const unsafeRes = await this._rpcRequest('getAccountInfo', args);
+	    const res = create(unsafeRes, jsonRpcResultAndContext(nullable(AccountInfoResult)));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get info about account ' + publicKey.toBase58() + ': ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch parsed account info for the specified public key
+	   */
+
+
+	  async getParsedAccountInfo(publicKey, commitment) {
+	    const args = this._buildArgs([publicKey.toBase58()], commitment, 'jsonParsed');
+
+	    const unsafeRes = await this._rpcRequest('getAccountInfo', args);
+	    const res = create(unsafeRes, jsonRpcResultAndContext(nullable(ParsedAccountInfoResult)));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get info about account ' + publicKey.toBase58() + ': ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch all the account info for the specified public key
+	   */
+
+
+	  async getAccountInfo(publicKey, commitment) {
+	    try {
+	      const res = await this.getAccountInfoAndContext(publicKey, commitment);
+	      return res.value;
+	    } catch (e) {
+	      throw new Error('failed to get info about account ' + publicKey.toBase58() + ': ' + e);
+	    }
+	  }
+	  /**
+	   * Fetch all the account info for multiple accounts specified by an array of public keys, return with context
+	   */
+
+
+	  async getMultipleAccountsInfoAndContext(publicKeys, commitment) {
+	    const keys = publicKeys.map(key => key.toBase58());
+
+	    const args = this._buildArgs([keys], commitment, 'base64');
+
+	    const unsafeRes = await this._rpcRequest('getMultipleAccounts', args);
+	    const res = create(unsafeRes, jsonRpcResultAndContext(array(nullable(AccountInfoResult))));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get info for accounts ' + keys + ': ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch all the account info for multiple accounts specified by an array of public keys
+	   */
+
+
+	  async getMultipleAccountsInfo(publicKeys, commitment) {
+	    const res = await this.getMultipleAccountsInfoAndContext(publicKeys, commitment);
+	    return res.value;
+	  }
+	  /**
+	   * Returns epoch activation information for a stake account that has been delegated
+	   */
+
+
+	  async getStakeActivation(publicKey, commitment, epoch) {
+	    const args = this._buildArgs([publicKey.toBase58()], commitment, undefined, epoch !== undefined ? {
+	      epoch
+	    } : undefined);
+
+	    const unsafeRes = await this._rpcRequest('getStakeActivation', args);
+	    const res = create(unsafeRes, jsonRpcResult(StakeActivationResult));
+
+	    if ('error' in res) {
+	      throw new Error(`failed to get Stake Activation ${publicKey.toBase58()}: ${res.error.message}`);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch all the accounts owned by the specified program id
+	   *
+	   * @return {Promise<Array<{pubkey: PublicKey, account: AccountInfo<Buffer>}>>}
+	   */
+
+
+	  async getProgramAccounts(programId, configOrCommitment) {
+	    const extra = {};
+	    let commitment;
+	    let encoding;
+
+	    if (configOrCommitment) {
+	      if (typeof configOrCommitment === 'string') {
+	        commitment = configOrCommitment;
+	      } else {
+	        commitment = configOrCommitment.commitment;
+	        encoding = configOrCommitment.encoding;
+
+	        if (configOrCommitment.dataSlice) {
+	          extra.dataSlice = configOrCommitment.dataSlice;
+	        }
+
+	        if (configOrCommitment.filters) {
+	          extra.filters = configOrCommitment.filters;
+	        }
+	      }
+	    }
+
+	    const args = this._buildArgs([programId.toBase58()], commitment, encoding || 'base64', extra);
+
+	    const unsafeRes = await this._rpcRequest('getProgramAccounts', args);
+	    const res = create(unsafeRes, jsonRpcResult(array(KeyedAccountInfoResult)));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get accounts owned by program ' + programId.toBase58() + ': ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch and parse all the accounts owned by the specified program id
+	   *
+	   * @return {Promise<Array<{pubkey: PublicKey, account: AccountInfo<Buffer | ParsedAccountData>}>>}
+	   */
+
+
+	  async getParsedProgramAccounts(programId, configOrCommitment) {
+	    const extra = {};
+	    let commitment;
+
+	    if (configOrCommitment) {
+	      if (typeof configOrCommitment === 'string') {
+	        commitment = configOrCommitment;
+	      } else {
+	        commitment = configOrCommitment.commitment;
+
+	        if (configOrCommitment.filters) {
+	          extra.filters = configOrCommitment.filters;
+	        }
+	      }
+	    }
+
+	    const args = this._buildArgs([programId.toBase58()], commitment, 'jsonParsed', extra);
+
+	    const unsafeRes = await this._rpcRequest('getProgramAccounts', args);
+	    const res = create(unsafeRes, jsonRpcResult(array(KeyedParsedAccountInfoResult)));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get accounts owned by program ' + programId.toBase58() + ': ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Confirm the transaction identified by the specified signature.
+	   */
+
+
+	  async confirmTransaction(signature, commitment) {
+	    let decodedSignature;
+
+	    try {
+	      decodedSignature = bs58$1.decode(signature);
+	    } catch (err) {
+	      throw new Error('signature must be base58 encoded: ' + signature);
+	    }
+
+	    assert(decodedSignature.length === 64, 'signature has invalid length');
+	    const start = Date.now();
+	    const subscriptionCommitment = commitment || this.commitment;
+	    let subscriptionId;
+	    let response = null;
+	    const confirmPromise = new Promise((resolve, reject) => {
+	      try {
+	        subscriptionId = this.onSignature(signature, (result, context) => {
+	          subscriptionId = undefined;
+	          response = {
+	            context,
+	            value: result
+	          };
+	          resolve(null);
+	        }, subscriptionCommitment);
+	      } catch (err) {
+	        reject(err);
+	      }
+	    });
+	    let timeoutMs = this._confirmTransactionInitialTimeout || 60 * 1000;
+
+	    switch (subscriptionCommitment) {
+	      case 'processed':
+	      case 'recent':
+	      case 'single':
+	      case 'confirmed':
+	      case 'singleGossip':
+	        {
+	          timeoutMs = this._confirmTransactionInitialTimeout || 30 * 1000;
+	          break;
+	        }
+	    }
+
+	    try {
+	      await promiseTimeout(confirmPromise, timeoutMs);
+	    } finally {
+	      if (subscriptionId) {
+	        this.removeSignatureListener(subscriptionId);
+	      }
+	    }
+
+	    if (response === null) {
+	      const duration = (Date.now() - start) / 1000;
+	      throw new Error(`Transaction was not confirmed in ${duration.toFixed(2)} seconds. It is unknown if it succeeded or failed. Check signature ${signature} using the Solana Explorer or CLI tools.`);
+	    }
+
+	    return response;
+	  }
+	  /**
+	   * Return the list of nodes that are currently participating in the cluster
+	   */
+
+
+	  async getClusterNodes() {
+	    const unsafeRes = await this._rpcRequest('getClusterNodes', []);
+	    const res = create(unsafeRes, jsonRpcResult(array(ContactInfoResult)));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get cluster nodes: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Return the list of nodes that are currently participating in the cluster
+	   */
+
+
+	  async getVoteAccounts(commitment) {
+	    const args = this._buildArgs([], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getVoteAccounts', args);
+	    const res = create(unsafeRes, GetVoteAccounts);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get vote accounts: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the current slot that the node is processing
+	   */
+
+
+	  async getSlot(commitment) {
+	    const args = this._buildArgs([], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getSlot', args);
+	    const res = create(unsafeRes, jsonRpcResult(number()));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get slot: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the current slot leader of the cluster
+	   */
+
+
+	  async getSlotLeader(commitment) {
+	    const args = this._buildArgs([], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getSlotLeader', args);
+	    const res = create(unsafeRes, jsonRpcResult(string()));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get slot leader: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch `limit` number of slot leaders starting from `startSlot`
+	   *
+	   * @param startSlot fetch slot leaders starting from this slot
+	   * @param limit number of slot leaders to return
+	   */
+
+
+	  async getSlotLeaders(startSlot, limit) {
+	    const args = [startSlot, limit];
+	    const unsafeRes = await this._rpcRequest('getSlotLeaders', args);
+	    const res = create(unsafeRes, jsonRpcResult(array(PublicKeyFromString)));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get slot leaders: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the current status of a signature
+	   */
+
+
+	  async getSignatureStatus(signature, config) {
+	    const {
+	      context,
+	      value: values
+	    } = await this.getSignatureStatuses([signature], config);
+	    assert(values.length === 1);
+	    const value = values[0];
+	    return {
+	      context,
+	      value
+	    };
+	  }
+	  /**
+	   * Fetch the current statuses of a batch of signatures
+	   */
+
+
+	  async getSignatureStatuses(signatures, config) {
+	    const params = [signatures];
+
+	    if (config) {
+	      params.push(config);
+	    }
+
+	    const unsafeRes = await this._rpcRequest('getSignatureStatuses', params);
+	    const res = create(unsafeRes, GetSignatureStatusesRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get signature status: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the current transaction count of the cluster
+	   */
+
+
+	  async getTransactionCount(commitment) {
+	    const args = this._buildArgs([], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getTransactionCount', args);
+	    const res = create(unsafeRes, jsonRpcResult(number()));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get transaction count: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the current total currency supply of the cluster in lamports
+	   *
+	   * @deprecated Deprecated since v1.2.8. Please use {@link getSupply} instead.
+	   */
+
+
+	  async getTotalSupply(commitment) {
+	    const result = await this.getSupply({
+	      commitment,
+	      excludeNonCirculatingAccountsList: true
+	    });
+	    return result.value.total;
+	  }
+	  /**
+	   * Fetch the cluster InflationGovernor parameters
+	   */
+
+
+	  async getInflationGovernor(commitment) {
+	    const args = this._buildArgs([], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getInflationGovernor', args);
+	    const res = create(unsafeRes, GetInflationGovernorRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get inflation: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the inflation reward for a list of addresses for an epoch
+	   */
+
+
+	  async getInflationReward(addresses, epoch, commitment) {
+	    const args = this._buildArgs([addresses.map(pubkey => pubkey.toBase58())], commitment, undefined, {
+	      epoch
+	    });
+
+	    const unsafeRes = await this._rpcRequest('getInflationReward', args);
+	    const res = create(unsafeRes, GetInflationRewardResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get inflation reward: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the Epoch Info parameters
+	   */
+
+
+	  async getEpochInfo(commitment) {
+	    const args = this._buildArgs([], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getEpochInfo', args);
+	    const res = create(unsafeRes, GetEpochInfoRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get epoch info: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the Epoch Schedule parameters
+	   */
+
+
+	  async getEpochSchedule() {
+	    const unsafeRes = await this._rpcRequest('getEpochSchedule', []);
+	    const res = create(unsafeRes, GetEpochScheduleRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get epoch schedule: ' + res.error.message);
+	    }
+
+	    const epochSchedule = res.result;
+	    return new EpochSchedule(epochSchedule.slotsPerEpoch, epochSchedule.leaderScheduleSlotOffset, epochSchedule.warmup, epochSchedule.firstNormalEpoch, epochSchedule.firstNormalSlot);
+	  }
+	  /**
+	   * Fetch the leader schedule for the current epoch
+	   * @return {Promise<RpcResponseAndContext<LeaderSchedule>>}
+	   */
+
+
+	  async getLeaderSchedule() {
+	    const unsafeRes = await this._rpcRequest('getLeaderSchedule', []);
+	    const res = create(unsafeRes, GetLeaderScheduleRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get leader schedule: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the minimum balance needed to exempt an account of `dataLength`
+	   * size from rent
+	   */
+
+
+	  async getMinimumBalanceForRentExemption(dataLength, commitment) {
+	    const args = this._buildArgs([dataLength], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getMinimumBalanceForRentExemption', args);
+	    const res = create(unsafeRes, GetMinimumBalanceForRentExemptionRpcResult);
+
+	    if ('error' in res) {
+	      console.warn('Unable to fetch minimum balance for rent exemption');
+	      return 0;
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch a recent blockhash from the cluster, return with context
+	   * @return {Promise<RpcResponseAndContext<{blockhash: Blockhash, feeCalculator: FeeCalculator}>>}
+	   *
+	   * @deprecated Deprecated since Solana v1.8.0. Please use {@link getLatestBlockhash} instead.
+	   */
+
+
+	  async getRecentBlockhashAndContext(commitment) {
+	    const args = this._buildArgs([], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getRecentBlockhash', args);
+	    const res = create(unsafeRes, GetRecentBlockhashAndContextRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get recent blockhash: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch recent performance samples
+	   * @return {Promise<Array<PerfSample>>}
+	   */
+
+
+	  async getRecentPerformanceSamples(limit) {
+	    const args = this._buildArgs(limit ? [limit] : []);
+
+	    const unsafeRes = await this._rpcRequest('getRecentPerformanceSamples', args);
+	    const res = create(unsafeRes, GetRecentPerformanceSamplesRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get recent performance samples: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the fee calculator for a recent blockhash from the cluster, return with context
+	   *
+	   * @deprecated Deprecated since Solana v1.8.0. Please use {@link getFeeForMessage} instead.
+	   */
+
+
+	  async getFeeCalculatorForBlockhash(blockhash, commitment) {
+	    const args = this._buildArgs([blockhash], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getFeeCalculatorForBlockhash', args);
+	    const res = create(unsafeRes, GetFeeCalculatorRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get fee calculator: ' + res.error.message);
+	    }
+
+	    const {
+	      context,
+	      value
+	    } = res.result;
+	    return {
+	      context,
+	      value: value !== null ? value.feeCalculator : null
+	    };
+	  }
+	  /**
+	   * Fetch the fee for a message from the cluster, return with context
+	   */
+
+
+	  async getFeeForMessage(message, commitment) {
+	    const wireMessage = message.serialize().toString('base64');
+
+	    const args = this._buildArgs([wireMessage], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getFeeForMessage', args);
+	    const res = create(unsafeRes, jsonRpcResultAndContext(nullable(number())));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get slot: ' + res.error.message);
+	    }
+
+	    if (res.result === null) {
+	      throw new Error('invalid blockhash');
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch a recent blockhash from the cluster
+	   * @return {Promise<{blockhash: Blockhash, feeCalculator: FeeCalculator}>}
+	   *
+	   * @deprecated Deprecated since Solana v1.8.0. Please use {@link getLatestBlockhash} instead.
+	   */
+
+
+	  async getRecentBlockhash(commitment) {
+	    try {
+	      const res = await this.getRecentBlockhashAndContext(commitment);
+	      return res.value;
+	    } catch (e) {
+	      throw new Error('failed to get recent blockhash: ' + e);
+	    }
+	  }
+	  /**
+	   * Fetch the latest blockhash from the cluster
+	   * @return {Promise<{blockhash: Blockhash, lastValidBlockHeight: number}>}
+	   */
+
+
+	  async getLatestBlockhash(commitment) {
+	    try {
+	      const res = await this.getLatestBlockhashAndContext(commitment);
+	      return res.value;
+	    } catch (e) {
+	      throw new Error('failed to get recent blockhash: ' + e);
+	    }
+	  }
+	  /**
+	   * Fetch the latest blockhash from the cluster
+	   * @return {Promise<{blockhash: Blockhash, lastValidBlockHeight: number}>}
+	   */
+
+
+	  async getLatestBlockhashAndContext(commitment) {
+	    const args = this._buildArgs([], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getLatestBlockhash', args);
+	    const res = create(unsafeRes, GetLatestBlockhashRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get latest blockhash: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the node version
+	   */
+
+
+	  async getVersion() {
+	    const unsafeRes = await this._rpcRequest('getVersion', []);
+	    const res = create(unsafeRes, jsonRpcResult(VersionResult));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get version: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the genesis hash
+	   */
+
+
+	  async getGenesisHash() {
+	    const unsafeRes = await this._rpcRequest('getGenesisHash', []);
+	    const res = create(unsafeRes, jsonRpcResult(string()));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get genesis hash: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch a processed block from the cluster.
+	   */
+
+
+	  async getBlock(slot, opts) {
+	    const args = this._buildArgsAtLeastConfirmed([slot], opts && opts.commitment);
+
+	    const unsafeRes = await this._rpcRequest('getBlock', args);
+	    const res = create(unsafeRes, GetBlockRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get confirmed block: ' + res.error.message);
+	    }
+
+	    const result = res.result;
+	    if (!result) return result;
+	    return { ...result,
+	      transactions: result.transactions.map(({
+	        transaction,
+	        meta
+	      }) => {
+	        const message = new Message(transaction.message);
+	        return {
+	          meta,
+	          transaction: { ...transaction,
+	            message
+	          }
+	        };
+	      })
+	    };
+	  }
+	  /**
+	   * Fetch a confirmed or finalized transaction from the cluster.
+	   */
+
+
+	  async getTransaction(signature, opts) {
+	    const args = this._buildArgsAtLeastConfirmed([signature], opts && opts.commitment);
+
+	    const unsafeRes = await this._rpcRequest('getTransaction', args);
+	    const res = create(unsafeRes, GetTransactionRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get transaction: ' + res.error.message);
+	    }
+
+	    const result = res.result;
+	    if (!result) return result;
+	    return { ...result,
+	      transaction: { ...result.transaction,
+	        message: new Message(result.transaction.message)
+	      }
+	    };
+	  }
+	  /**
+	   * Fetch parsed transaction details for a confirmed or finalized transaction
+	   */
+
+
+	  async getParsedTransaction(signature, commitment) {
+	    const args = this._buildArgsAtLeastConfirmed([signature], commitment, 'jsonParsed');
+
+	    const unsafeRes = await this._rpcRequest('getTransaction', args);
+	    const res = create(unsafeRes, GetParsedTransactionRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get transaction: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch parsed transaction details for a batch of confirmed transactions
+	   */
+
+
+	  async getParsedTransactions(signatures, commitment) {
+	    const batch = signatures.map(signature => {
+	      const args = this._buildArgsAtLeastConfirmed([signature], commitment, 'jsonParsed');
+
+	      return {
+	        methodName: 'getTransaction',
+	        args
+	      };
+	    });
+	    const unsafeRes = await this._rpcBatchRequest(batch);
+	    const res = unsafeRes.map(unsafeRes => {
+	      const res = create(unsafeRes, GetParsedTransactionRpcResult);
+
+	      if ('error' in res) {
+	        throw new Error('failed to get transactions: ' + res.error.message);
+	      }
+
+	      return res.result;
+	    });
+	    return res;
+	  }
+	  /**
+	   * Fetch a list of Transactions and transaction statuses from the cluster
+	   * for a confirmed block.
+	   *
+	   * @deprecated Deprecated since v1.13.0. Please use {@link getBlock} instead.
+	   */
+
+
+	  async getConfirmedBlock(slot, commitment) {
+	    const args = this._buildArgsAtLeastConfirmed([slot], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getConfirmedBlock', args);
+	    const res = create(unsafeRes, GetConfirmedBlockRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get confirmed block: ' + res.error.message);
+	    }
+
+	    const result = res.result;
+
+	    if (!result) {
+	      throw new Error('Confirmed block ' + slot + ' not found');
+	    }
+
+	    const block = { ...result,
+	      transactions: result.transactions.map(({
+	        transaction,
+	        meta
+	      }) => {
+	        const message = new Message(transaction.message);
+	        return {
+	          meta,
+	          transaction: { ...transaction,
+	            message
+	          }
+	        };
+	      })
+	    };
+	    return { ...block,
+	      transactions: block.transactions.map(({
+	        transaction,
+	        meta
+	      }) => {
+	        return {
+	          meta,
+	          transaction: Transaction.populate(transaction.message, transaction.signatures)
+	        };
+	      })
+	    };
+	  }
+	  /**
+	   * Fetch confirmed blocks between two slots
+	   */
+
+
+	  async getBlocks(startSlot, endSlot, commitment) {
+	    const args = this._buildArgsAtLeastConfirmed(endSlot !== undefined ? [startSlot, endSlot] : [startSlot], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getBlocks', args);
+	    const res = create(unsafeRes, jsonRpcResult(array(number())));
+
+	    if ('error' in res) {
+	      throw new Error('failed to get blocks: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch a list of Signatures from the cluster for a block, excluding rewards
+	   */
+
+
+	  async getBlockSignatures(slot, commitment) {
+	    const args = this._buildArgsAtLeastConfirmed([slot], commitment, undefined, {
+	      transactionDetails: 'signatures',
+	      rewards: false
+	    });
+
+	    const unsafeRes = await this._rpcRequest('getBlock', args);
+	    const res = create(unsafeRes, GetBlockSignaturesRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get block: ' + res.error.message);
+	    }
+
+	    const result = res.result;
+
+	    if (!result) {
+	      throw new Error('Block ' + slot + ' not found');
+	    }
+
+	    return result;
+	  }
+	  /**
+	   * Fetch a list of Signatures from the cluster for a confirmed block, excluding rewards
+	   *
+	   * @deprecated Deprecated since Solana v1.8.0. Please use {@link getBlockSignatures} instead.
+	   */
+
+
+	  async getConfirmedBlockSignatures(slot, commitment) {
+	    const args = this._buildArgsAtLeastConfirmed([slot], commitment, undefined, {
+	      transactionDetails: 'signatures',
+	      rewards: false
+	    });
+
+	    const unsafeRes = await this._rpcRequest('getConfirmedBlock', args);
+	    const res = create(unsafeRes, GetBlockSignaturesRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get confirmed block: ' + res.error.message);
+	    }
+
+	    const result = res.result;
+
+	    if (!result) {
+	      throw new Error('Confirmed block ' + slot + ' not found');
+	    }
+
+	    return result;
+	  }
+	  /**
+	   * Fetch a transaction details for a confirmed transaction
+	   *
+	   * @deprecated Deprecated since Solana v1.8.0. Please use {@link getTransaction} instead.
+	   */
+
+
+	  async getConfirmedTransaction(signature, commitment) {
+	    const args = this._buildArgsAtLeastConfirmed([signature], commitment);
+
+	    const unsafeRes = await this._rpcRequest('getConfirmedTransaction', args);
+	    const res = create(unsafeRes, GetTransactionRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get transaction: ' + res.error.message);
+	    }
+
+	    const result = res.result;
+	    if (!result) return result;
+	    const message = new Message(result.transaction.message);
+	    const signatures = result.transaction.signatures;
+	    return { ...result,
+	      transaction: Transaction.populate(message, signatures)
+	    };
+	  }
+	  /**
+	   * Fetch parsed transaction details for a confirmed transaction
+	   *
+	   * @deprecated Deprecated since Solana v1.8.0. Please use {@link getParsedTransaction} instead.
+	   */
+
+
+	  async getParsedConfirmedTransaction(signature, commitment) {
+	    const args = this._buildArgsAtLeastConfirmed([signature], commitment, 'jsonParsed');
+
+	    const unsafeRes = await this._rpcRequest('getConfirmedTransaction', args);
+	    const res = create(unsafeRes, GetParsedTransactionRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get confirmed transaction: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch parsed transaction details for a batch of confirmed transactions
+	   *
+	   * @deprecated Deprecated since Solana v1.8.0. Please use {@link getParsedTransactions} instead.
+	   */
+
+
+	  async getParsedConfirmedTransactions(signatures, commitment) {
+	    const batch = signatures.map(signature => {
+	      const args = this._buildArgsAtLeastConfirmed([signature], commitment, 'jsonParsed');
+
+	      return {
+	        methodName: 'getConfirmedTransaction',
+	        args
+	      };
+	    });
+	    const unsafeRes = await this._rpcBatchRequest(batch);
+	    const res = unsafeRes.map(unsafeRes => {
+	      const res = create(unsafeRes, GetParsedTransactionRpcResult);
+
+	      if ('error' in res) {
+	        throw new Error('failed to get confirmed transactions: ' + res.error.message);
+	      }
+
+	      return res.result;
+	    });
+	    return res;
+	  }
+	  /**
+	   * Fetch a list of all the confirmed signatures for transactions involving an address
+	   * within a specified slot range. Max range allowed is 10,000 slots.
+	   *
+	   * @deprecated Deprecated since v1.3. Please use {@link getConfirmedSignaturesForAddress2} instead.
+	   *
+	   * @param address queried address
+	   * @param startSlot start slot, inclusive
+	   * @param endSlot end slot, inclusive
+	   */
+
+
+	  async getConfirmedSignaturesForAddress(address, startSlot, endSlot) {
+	    let options = {};
+	    let firstAvailableBlock = await this.getFirstAvailableBlock();
+
+	    while (!('until' in options)) {
+	      startSlot--;
+
+	      if (startSlot <= 0 || startSlot < firstAvailableBlock) {
+	        break;
+	      }
+
+	      try {
+	        const block = await this.getConfirmedBlockSignatures(startSlot, 'finalized');
+
+	        if (block.signatures.length > 0) {
+	          options.until = block.signatures[block.signatures.length - 1].toString();
+	        }
+	      } catch (err) {
+	        if (err instanceof Error && err.message.includes('skipped')) {
+	          continue;
+	        } else {
+	          throw err;
+	        }
+	      }
+	    }
+
+	    let highestConfirmedRoot = await this.getSlot('finalized');
+
+	    while (!('before' in options)) {
+	      endSlot++;
+
+	      if (endSlot > highestConfirmedRoot) {
+	        break;
+	      }
+
+	      try {
+	        const block = await this.getConfirmedBlockSignatures(endSlot);
+
+	        if (block.signatures.length > 0) {
+	          options.before = block.signatures[block.signatures.length - 1].toString();
+	        }
+	      } catch (err) {
+	        if (err instanceof Error && err.message.includes('skipped')) {
+	          continue;
+	        } else {
+	          throw err;
+	        }
+	      }
+	    }
+
+	    const confirmedSignatureInfo = await this.getConfirmedSignaturesForAddress2(address, options);
+	    return confirmedSignatureInfo.map(info => info.signature);
+	  }
+	  /**
+	   * Returns confirmed signatures for transactions involving an
+	   * address backwards in time from the provided signature or most recent confirmed block
+	   *
+	   *
+	   * @param address queried address
+	   * @param options
+	   */
+
+
+	  async getConfirmedSignaturesForAddress2(address, options, commitment) {
+	    const args = this._buildArgsAtLeastConfirmed([address.toBase58()], commitment, undefined, options);
+
+	    const unsafeRes = await this._rpcRequest('getConfirmedSignaturesForAddress2', args);
+	    const res = create(unsafeRes, GetConfirmedSignaturesForAddress2RpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get confirmed signatures for address: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Returns confirmed signatures for transactions involving an
+	   * address backwards in time from the provided signature or most recent confirmed block
+	   *
+	   *
+	   * @param address queried address
+	   * @param options
+	   */
+
+
+	  async getSignaturesForAddress(address, options, commitment) {
+	    const args = this._buildArgsAtLeastConfirmed([address.toBase58()], commitment, undefined, options);
+
+	    const unsafeRes = await this._rpcRequest('getSignaturesForAddress', args);
+	    const res = create(unsafeRes, GetSignaturesForAddressRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('failed to get signatures for address: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Fetch the contents of a Nonce account from the cluster, return with context
+	   */
+
+
+	  async getNonceAndContext(nonceAccount, commitment) {
+	    const {
+	      context,
+	      value: accountInfo
+	    } = await this.getAccountInfoAndContext(nonceAccount, commitment);
+	    let value = null;
+
+	    if (accountInfo !== null) {
+	      value = NonceAccount.fromAccountData(accountInfo.data);
+	    }
+
+	    return {
+	      context,
+	      value
+	    };
+	  }
+	  /**
+	   * Fetch the contents of a Nonce account from the cluster
+	   */
+
+
+	  async getNonce(nonceAccount, commitment) {
+	    return await this.getNonceAndContext(nonceAccount, commitment).then(x => x.value).catch(e => {
+	      throw new Error('failed to get nonce for account ' + nonceAccount.toBase58() + ': ' + e);
+	    });
+	  }
+	  /**
+	   * Request an allocation of lamports to the specified address
+	   *
+	   * ```typescript
+	   * import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
+	   *
+	   * (async () => {
+	   *   const connection = new Connection("https://api.testnet.solana.com", "confirmed");
+	   *   const myAddress = new PublicKey("2nr1bHFT86W9tGnyvmYW4vcHKsQB3sVQfnddasz4kExM");
+	   *   const signature = await connection.requestAirdrop(myAddress, LAMPORTS_PER_SOL);
+	   *   await connection.confirmTransaction(signature);
+	   * })();
+	   * ```
+	   */
+
+
+	  async requestAirdrop(to, lamports) {
+	    const unsafeRes = await this._rpcRequest('requestAirdrop', [to.toBase58(), lamports]);
+	    const res = create(unsafeRes, RequestAirdropRpcResult);
+
+	    if ('error' in res) {
+	      throw new Error('airdrop to ' + to.toBase58() + ' failed: ' + res.error.message);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * @internal
+	   */
+
+
+	  async _recentBlockhash(disableCache) {
+	    if (!disableCache) {
+	      // Wait for polling to finish
+	      while (this._pollingBlockhash) {
+	        await sleep(100);
+	      }
+
+	      const timeSinceFetch = Date.now() - this._blockhashInfo.lastFetch;
+
+	      const expired = timeSinceFetch >= BLOCKHASH_CACHE_TIMEOUT_MS;
+
+	      if (this._blockhashInfo.recentBlockhash !== null && !expired) {
+	        return this._blockhashInfo.recentBlockhash;
+	      }
+	    }
+
+	    return await this._pollNewBlockhash();
+	  }
+	  /**
+	   * @internal
+	   */
+
+
+	  async _pollNewBlockhash() {
+	    this._pollingBlockhash = true;
+
+	    try {
+	      const startTime = Date.now();
+
+	      for (let i = 0; i < 50; i++) {
+	        const {
+	          blockhash
+	        } = await this.getRecentBlockhash('finalized');
+
+	        if (this._blockhashInfo.recentBlockhash != blockhash) {
+	          this._blockhashInfo = {
+	            recentBlockhash: blockhash,
+	            lastFetch: Date.now(),
+	            transactionSignatures: [],
+	            simulatedSignatures: []
+	          };
+	          return blockhash;
+	        } // Sleep for approximately half a slot
+
+
+	        await sleep(MS_PER_SLOT / 2);
+	      }
+
+	      throw new Error(`Unable to obtain a new blockhash after ${Date.now() - startTime}ms`);
+	    } finally {
+	      this._pollingBlockhash = false;
+	    }
+	  }
+	  /**
+	   * Simulate a transaction
+	   */
+
+
+	  async simulateTransaction(transactionOrMessage, signers, includeAccounts) {
+	    let transaction;
+
+	    if (transactionOrMessage instanceof Transaction) {
+	      transaction = transactionOrMessage;
+	    } else {
+	      transaction = Transaction.populate(transactionOrMessage);
+	    }
+
+	    if (transaction.nonceInfo && signers) {
+	      transaction.sign(...signers);
+	    } else {
+	      let disableCache = this._disableBlockhashCaching;
+
+	      for (;;) {
+	        transaction.recentBlockhash = await this._recentBlockhash(disableCache);
+	        if (!signers) break;
+	        transaction.sign(...signers);
+
+	        if (!transaction.signature) {
+	          throw new Error('!signature'); // should never happen
+	        }
+
+	        const signature = transaction.signature.toString('base64');
+
+	        if (!this._blockhashInfo.simulatedSignatures.includes(signature) && !this._blockhashInfo.transactionSignatures.includes(signature)) {
+	          // The signature of this transaction has not been seen before with the
+	          // current recentBlockhash, all done. Let's break
+	          this._blockhashInfo.simulatedSignatures.push(signature);
+
+	          break;
+	        } else {
+	          // This transaction would be treated as duplicate (its derived signature
+	          // matched to one of already recorded signatures).
+	          // So, we must fetch a new blockhash for a different signature by disabling
+	          // our cache not to wait for the cache expiration (BLOCKHASH_CACHE_TIMEOUT_MS).
+	          disableCache = true;
+	        }
+	      }
+	    }
+
+	    const message = transaction._compile();
+
+	    const signData = message.serialize();
+
+	    const wireTransaction = transaction._serialize(signData);
+
+	    const encodedTransaction = wireTransaction.toString('base64');
+	    const config = {
+	      encoding: 'base64',
+	      commitment: this.commitment
+	    };
+
+	    if (includeAccounts) {
+	      const addresses = (Array.isArray(includeAccounts) ? includeAccounts : message.nonProgramIds()).map(key => key.toBase58());
+	      config['accounts'] = {
+	        encoding: 'base64',
+	        addresses
+	      };
+	    }
+
+	    if (signers) {
+	      config.sigVerify = true;
+	    }
+
+	    const args = [encodedTransaction, config];
+	    const unsafeRes = await this._rpcRequest('simulateTransaction', args);
+	    const res = create(unsafeRes, SimulatedTransactionResponseStruct);
+
+	    if ('error' in res) {
+	      let logs;
+
+	      if ('data' in res.error) {
+	        logs = res.error.data.logs;
+
+	        if (logs && Array.isArray(logs)) {
+	          const traceIndent = '\n    ';
+	          const logTrace = traceIndent + logs.join(traceIndent);
+	          console.error(res.error.message, logTrace);
+	        }
+	      }
+
+	      throw new SendTransactionError('failed to simulate transaction: ' + res.error.message, logs);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * Sign and send a transaction
+	   */
+
+
+	  async sendTransaction(transaction, signers, options) {
+	    if (transaction.nonceInfo) {
+	      transaction.sign(...signers);
+	    } else {
+	      let disableCache = this._disableBlockhashCaching;
+
+	      for (;;) {
+	        transaction.recentBlockhash = await this._recentBlockhash(disableCache);
+	        transaction.sign(...signers);
+
+	        if (!transaction.signature) {
+	          throw new Error('!signature'); // should never happen
+	        }
+
+	        const signature = transaction.signature.toString('base64');
+
+	        if (!this._blockhashInfo.transactionSignatures.includes(signature)) {
+	          // The signature of this transaction has not been seen before with the
+	          // current recentBlockhash, all done. Let's break
+	          this._blockhashInfo.transactionSignatures.push(signature);
+
+	          break;
+	        } else {
+	          // This transaction would be treated as duplicate (its derived signature
+	          // matched to one of already recorded signatures).
+	          // So, we must fetch a new blockhash for a different signature by disabling
+	          // our cache not to wait for the cache expiration (BLOCKHASH_CACHE_TIMEOUT_MS).
+	          disableCache = true;
+	        }
+	      }
+	    }
+
+	    const wireTransaction = transaction.serialize();
+	    return await this.sendRawTransaction(wireTransaction, options);
+	  }
+	  /**
+	   * Send a transaction that has already been signed and serialized into the
+	   * wire format
+	   */
+
+
+	  async sendRawTransaction(rawTransaction, options) {
+	    const encodedTransaction = toBuffer(rawTransaction).toString('base64');
+	    const result = await this.sendEncodedTransaction(encodedTransaction, options);
+	    return result;
+	  }
+	  /**
+	   * Send a transaction that has already been signed, serialized into the
+	   * wire format, and encoded as a base64 string
+	   */
+
+
+	  async sendEncodedTransaction(encodedTransaction, options) {
+	    const config = {
+	      encoding: 'base64'
+	    };
+	    const skipPreflight = options && options.skipPreflight;
+	    const preflightCommitment = options && options.preflightCommitment || this.commitment;
+
+	    if (options && options.maxRetries) {
+	      config.maxRetries = options.maxRetries;
+	    }
+
+	    if (skipPreflight) {
+	      config.skipPreflight = skipPreflight;
+	    }
+
+	    if (preflightCommitment) {
+	      config.preflightCommitment = preflightCommitment;
+	    }
+
+	    const args = [encodedTransaction, config];
+	    const unsafeRes = await this._rpcRequest('sendTransaction', args);
+	    const res = create(unsafeRes, SendTransactionRpcResult);
+
+	    if ('error' in res) {
+	      let logs;
+
+	      if ('data' in res.error) {
+	        logs = res.error.data.logs;
+
+	        if (logs && Array.isArray(logs)) {
+	          const traceIndent = '\n    ';
+	          const logTrace = traceIndent + logs.join(traceIndent);
+	          console.error(res.error.message, logTrace);
+	        }
+	      }
+
+	      throw new SendTransactionError('failed to send transaction: ' + res.error.message, logs);
+	    }
+
+	    return res.result;
+	  }
+	  /**
+	   * @internal
+	   */
+
+
+	  _wsOnOpen() {
+	    this._rpcWebSocketConnected = true;
+	    this._rpcWebSocketHeartbeat = setInterval(() => {
+	      // Ping server every 5s to prevent idle timeouts
+	      this._rpcWebSocket.notify('ping').catch(() => {});
+	    }, 5000);
+
+	    this._updateSubscriptions();
+	  }
+	  /**
+	   * @internal
+	   */
+
+
+	  _wsOnError(err) {
+	    console.error('ws error:', err.message);
+	  }
+	  /**
+	   * @internal
+	   */
+
+
+	  _wsOnClose(code) {
+	    if (this._rpcWebSocketHeartbeat) {
+	      clearInterval(this._rpcWebSocketHeartbeat);
+	      this._rpcWebSocketHeartbeat = null;
+	    }
+
+	    if (code === 1000) {
+	      // explicit close, check if any subscriptions have been made since close
+	      this._updateSubscriptions();
+
+	      return;
+	    } // implicit close, prepare subscriptions for auto-reconnect
+
+
+	    this._resetSubscriptions();
+	  }
+	  /**
+	   * @internal
+	   */
+
+
+	  async _subscribe(sub, rpcMethod, rpcArgs) {
+	    if (sub.subscriptionId == null) {
+	      sub.subscriptionId = 'subscribing';
+
+	      try {
+	        const id = await this._rpcWebSocket.call(rpcMethod, rpcArgs);
+
+	        if (typeof id === 'number' && sub.subscriptionId === 'subscribing') {
+	          // eslint-disable-next-line require-atomic-updates
+	          sub.subscriptionId = id;
+	        }
+	      } catch (err) {
+	        if (sub.subscriptionId === 'subscribing') {
+	          // eslint-disable-next-line require-atomic-updates
+	          sub.subscriptionId = null;
+	        }
+
+	        if (err instanceof Error) {
+	          console.error(`${rpcMethod} error for argument`, rpcArgs, err.message);
+	        }
+	      }
+	    }
+	  }
+	  /**
+	   * @internal
+	   */
+
+
+	  async _unsubscribe(sub, rpcMethod) {
+	    const subscriptionId = sub.subscriptionId;
+
+	    if (subscriptionId != null && typeof subscriptionId != 'string') {
+	      const unsubscribeId = subscriptionId;
+
+	      try {
+	        await this._rpcWebSocket.call(rpcMethod, [unsubscribeId]);
+	      } catch (err) {
+	        if (err instanceof Error) {
+	          console.error(`${rpcMethod} error:`, err.message);
+	        }
+	      }
+	    }
+	  }
+	  /**
+	   * @internal
+	   */
+
+
+	  _resetSubscriptions() {
+	    Object.values(this._accountChangeSubscriptions).forEach(s => s.subscriptionId = null);
+	    Object.values(this._programAccountChangeSubscriptions).forEach(s => s.subscriptionId = null);
+	    Object.values(this._rootSubscriptions).forEach(s => s.subscriptionId = null);
+	    Object.values(this._signatureSubscriptions).forEach(s => s.subscriptionId = null);
+	    Object.values(this._slotSubscriptions).forEach(s => s.subscriptionId = null);
+	    Object.values(this._slotUpdateSubscriptions).forEach(s => s.subscriptionId = null);
+	  }
+	  /**
+	   * @internal
+	   */
+
+
+	  _updateSubscriptions() {
+	    const accountKeys = Object.keys(this._accountChangeSubscriptions).map(Number);
+	    const programKeys = Object.keys(this._programAccountChangeSubscriptions).map(Number);
+	    const slotKeys = Object.keys(this._slotSubscriptions).map(Number);
+	    const slotUpdateKeys = Object.keys(this._slotUpdateSubscriptions).map(Number);
+	    const signatureKeys = Object.keys(this._signatureSubscriptions).map(Number);
+	    const rootKeys = Object.keys(this._rootSubscriptions).map(Number);
+	    const logsKeys = Object.keys(this._logsSubscriptions).map(Number);
+
+	    if (accountKeys.length === 0 && programKeys.length === 0 && slotKeys.length === 0 && slotUpdateKeys.length === 0 && signatureKeys.length === 0 && rootKeys.length === 0 && logsKeys.length === 0) {
+	      if (this._rpcWebSocketConnected) {
+	        this._rpcWebSocketConnected = false;
+	        this._rpcWebSocketIdleTimeout = setTimeout(() => {
+	          this._rpcWebSocketIdleTimeout = null;
+
+	          try {
+	            this._rpcWebSocket.close();
+	          } catch (err) {
+	            // swallow error if socket has already been closed.
+	            if (err instanceof Error) {
+	              console.log(`Error when closing socket connection: ${err.message}`);
+	            }
+	          }
+	        }, 500);
+	      }
+
+	      return;
+	    }
+
+	    if (this._rpcWebSocketIdleTimeout !== null) {
+	      clearTimeout(this._rpcWebSocketIdleTimeout);
+	      this._rpcWebSocketIdleTimeout = null;
+	      this._rpcWebSocketConnected = true;
+	    }
+
+	    if (!this._rpcWebSocketConnected) {
+	      this._rpcWebSocket.connect();
+
+	      return;
+	    }
+
+	    for (let id of accountKeys) {
+	      const sub = this._accountChangeSubscriptions[id];
+
+	      this._subscribe(sub, 'accountSubscribe', this._buildArgs([sub.publicKey], sub.commitment, 'base64'));
+	    }
+
+	    for (let id of programKeys) {
+	      const sub = this._programAccountChangeSubscriptions[id];
+
+	      this._subscribe(sub, 'programSubscribe', this._buildArgs([sub.programId], sub.commitment, 'base64', {
+	        filters: sub.filters
+	      }));
+	    }
+
+	    for (let id of slotKeys) {
+	      const sub = this._slotSubscriptions[id];
+
+	      this._subscribe(sub, 'slotSubscribe', []);
+	    }
+
+	    for (let id of slotUpdateKeys) {
+	      const sub = this._slotUpdateSubscriptions[id];
+
+	      this._subscribe(sub, 'slotsUpdatesSubscribe', []);
+	    }
+
+	    for (let id of signatureKeys) {
+	      const sub = this._signatureSubscriptions[id];
+	      const args = [sub.signature];
+	      if (sub.options) args.push(sub.options);
+
+	      this._subscribe(sub, 'signatureSubscribe', args);
+	    }
+
+	    for (let id of rootKeys) {
+	      const sub = this._rootSubscriptions[id];
+
+	      this._subscribe(sub, 'rootSubscribe', []);
+	    }
+
+	    for (let id of logsKeys) {
+	      const sub = this._logsSubscriptions[id];
+	      let filter;
+
+	      if (typeof sub.filter === 'object') {
+	        filter = {
+	          mentions: [sub.filter.toString()]
+	        };
+	      } else {
+	        filter = sub.filter;
+	      }
+
+	      this._subscribe(sub, 'logsSubscribe', this._buildArgs([filter], sub.commitment));
+	    }
+	  }
+	  /**
+	   * @internal
+	   */
+
+
+	  _wsOnAccountNotification(notification) {
+	    const res = create(notification, AccountNotificationResult);
+
+	    for (const sub of Object.values(this._accountChangeSubscriptions)) {
+	      if (sub.subscriptionId === res.subscription) {
+	        sub.callback(res.result.value, res.result.context);
+	        return;
+	      }
+	    }
+	  }
+	  /**
+	   * Register a callback to be invoked whenever the specified account changes
+	   *
+	   * @param publicKey Public key of the account to monitor
+	   * @param callback Function to invoke whenever the account is changed
+	   * @param commitment Specify the commitment level account changes must reach before notification
+	   * @return subscription id
+	   */
+
+
+	  onAccountChange(publicKey, callback, commitment) {
+	    const id = ++this._accountChangeSubscriptionCounter;
+	    this._accountChangeSubscriptions[id] = {
+	      publicKey: publicKey.toBase58(),
+	      callback,
+	      commitment,
+	      subscriptionId: null
+	    };
+
+	    this._updateSubscriptions();
+
+	    return id;
+	  }
+	  /**
+	   * Deregister an account notification callback
+	   *
+	   * @param id subscription id to deregister
+	   */
+
+
+	  async removeAccountChangeListener(id) {
+	    if (this._accountChangeSubscriptions[id]) {
+	      const subInfo = this._accountChangeSubscriptions[id];
+	      delete this._accountChangeSubscriptions[id];
+	      await this._unsubscribe(subInfo, 'accountUnsubscribe');
+
+	      this._updateSubscriptions();
+	    } else {
+	      throw new Error(`Unknown account change id: ${id}`);
+	    }
+	  }
+	  /**
+	   * @internal
+	   */
+
+
+	  _wsOnProgramAccountNotification(notification) {
+	    const res = create(notification, ProgramAccountNotificationResult);
+
+	    for (const sub of Object.values(this._programAccountChangeSubscriptions)) {
+	      if (sub.subscriptionId === res.subscription) {
+	        const {
+	          value,
+	          context
+	        } = res.result;
+	        sub.callback({
+	          accountId: value.pubkey,
+	          accountInfo: value.account
+	        }, context);
+	        return;
+	      }
+	    }
+	  }
+	  /**
+	   * Register a callback to be invoked whenever accounts owned by the
+	   * specified program change
+	   *
+	   * @param programId Public key of the program to monitor
+	   * @param callback Function to invoke whenever the account is changed
+	   * @param commitment Specify the commitment level account changes must reach before notification
+	   * @param filters The program account filters to pass into the RPC method
+	   * @return subscription id
+	   */
+
+
+	  onProgramAccountChange(programId, callback, commitment, filters) {
+	    const id = ++this._programAccountChangeSubscriptionCounter;
+	    this._programAccountChangeSubscriptions[id] = {
+	      programId: programId.toBase58(),
+	      callback,
+	      commitment,
+	      subscriptionId: null,
+	      filters
+	    };
+
+	    this._updateSubscriptions();
+
+	    return id;
+	  }
+	  /**
+	   * Deregister an account notification callback
+	   *
+	   * @param id subscription id to deregister
+	   */
+
+
+	  async removeProgramAccountChangeListener(id) {
+	    if (this._programAccountChangeSubscriptions[id]) {
+	      const subInfo = this._programAccountChangeSubscriptions[id];
+	      delete this._programAccountChangeSubscriptions[id];
+	      await this._unsubscribe(subInfo, 'programUnsubscribe');
+
+	      this._updateSubscriptions();
+	    } else {
+	      throw new Error(`Unknown program account change id: ${id}`);
+	    }
+	  }
+	  /**
+	   * Registers a callback to be invoked whenever logs are emitted.
+	   */
+
+
+	  onLogs(filter, callback, commitment) {
+	    const id = ++this._logsSubscriptionCounter;
+	    this._logsSubscriptions[id] = {
+	      filter,
+	      callback,
+	      commitment,
+	      subscriptionId: null
+	    };
+
+	    this._updateSubscriptions();
+
+	    return id;
+	  }
+	  /**
+	   * Deregister a logs callback.
+	   *
+	   * @param id subscription id to deregister.
+	   */
+
+
+	  async removeOnLogsListener(id) {
+	    if (!this._logsSubscriptions[id]) {
+	      throw new Error(`Unknown logs id: ${id}`);
+	    }
+
+	    const subInfo = this._logsSubscriptions[id];
+	    delete this._logsSubscriptions[id];
+	    await this._unsubscribe(subInfo, 'logsUnsubscribe');
+
+	    this._updateSubscriptions();
+	  }
+	  /**
+	   * @internal
+	   */
+
+
+	  _wsOnLogsNotification(notification) {
+	    const res = create(notification, LogsNotificationResult);
+	    const keys = Object.keys(this._logsSubscriptions).map(Number);
+
+	    for (let id of keys) {
+	      const sub = this._logsSubscriptions[id];
+
+	      if (sub.subscriptionId === res.subscription) {
+	        sub.callback(res.result.value, res.result.context);
+	        return;
+	      }
+	    }
+	  }
+	  /**
+	   * @internal
+	   */
+
+
+	  _wsOnSlotNotification(notification) {
+	    const res = create(notification, SlotNotificationResult);
+
+	    for (const sub of Object.values(this._slotSubscriptions)) {
+	      if (sub.subscriptionId === res.subscription) {
+	        sub.callback(res.result);
+	        return;
+	      }
+	    }
+	  }
+	  /**
+	   * Register a callback to be invoked upon slot changes
+	   *
+	   * @param callback Function to invoke whenever the slot changes
+	   * @return subscription id
+	   */
+
+
+	  onSlotChange(callback) {
+	    const id = ++this._slotSubscriptionCounter;
+	    this._slotSubscriptions[id] = {
+	      callback,
+	      subscriptionId: null
+	    };
+
+	    this._updateSubscriptions();
+
+	    return id;
+	  }
+	  /**
+	   * Deregister a slot notification callback
+	   *
+	   * @param id subscription id to deregister
+	   */
+
+
+	  async removeSlotChangeListener(id) {
+	    if (this._slotSubscriptions[id]) {
+	      const subInfo = this._slotSubscriptions[id];
+	      delete this._slotSubscriptions[id];
+	      await this._unsubscribe(subInfo, 'slotUnsubscribe');
+
+	      this._updateSubscriptions();
+	    } else {
+	      throw new Error(`Unknown slot change id: ${id}`);
+	    }
+	  }
+	  /**
+	   * @internal
+	   */
+
+
+	  _wsOnSlotUpdatesNotification(notification) {
+	    const res = create(notification, SlotUpdateNotificationResult);
+
+	    for (const sub of Object.values(this._slotUpdateSubscriptions)) {
+	      if (sub.subscriptionId === res.subscription) {
+	        sub.callback(res.result);
+	        return;
+	      }
+	    }
+	  }
+	  /**
+	   * Register a callback to be invoked upon slot updates. {@link SlotUpdate}'s
+	   * may be useful to track live progress of a cluster.
+	   *
+	   * @param callback Function to invoke whenever the slot updates
+	   * @return subscription id
+	   */
+
+
+	  onSlotUpdate(callback) {
+	    const id = ++this._slotUpdateSubscriptionCounter;
+	    this._slotUpdateSubscriptions[id] = {
+	      callback,
+	      subscriptionId: null
+	    };
+
+	    this._updateSubscriptions();
+
+	    return id;
+	  }
+	  /**
+	   * Deregister a slot update notification callback
+	   *
+	   * @param id subscription id to deregister
+	   */
+
+
+	  async removeSlotUpdateListener(id) {
+	    if (this._slotUpdateSubscriptions[id]) {
+	      const subInfo = this._slotUpdateSubscriptions[id];
+	      delete this._slotUpdateSubscriptions[id];
+	      await this._unsubscribe(subInfo, 'slotsUpdatesUnsubscribe');
+
+	      this._updateSubscriptions();
+	    } else {
+	      throw new Error(`Unknown slot update id: ${id}`);
+	    }
+	  }
+
+	  _buildArgs(args, override, encoding, extra) {
+	    const commitment = override || this._commitment;
+
+	    if (commitment || encoding || extra) {
+	      let options = {};
+
+	      if (encoding) {
+	        options.encoding = encoding;
+	      }
+
+	      if (commitment) {
+	        options.commitment = commitment;
+	      }
+
+	      if (extra) {
+	        options = Object.assign(options, extra);
+	      }
+
+	      args.push(options);
+	    }
+
+	    return args;
+	  }
+	  /**
+	   * @internal
+	   */
+
+
+	  _buildArgsAtLeastConfirmed(args, override, encoding, extra) {
+	    const commitment = override || this._commitment;
+
+	    if (commitment && !['confirmed', 'finalized'].includes(commitment)) {
+	      throw new Error('Using Connection with default commitment: `' + this._commitment + '`, but method requires at least `confirmed`');
+	    }
+
+	    return this._buildArgs(args, override, encoding, extra);
+	  }
+	  /**
+	   * @internal
+	   */
+
+
+	  _wsOnSignatureNotification(notification) {
+	    const res = create(notification, SignatureNotificationResult);
+
+	    for (const [id, sub] of Object.entries(this._signatureSubscriptions)) {
+	      if (sub.subscriptionId === res.subscription) {
+	        if (res.result.value === 'receivedSignature') {
+	          sub.callback({
+	            type: 'received'
+	          }, res.result.context);
+	        } else {
+	          // Signatures subscriptions are auto-removed by the RPC service so
+	          // no need to explicitly send an unsubscribe message
+	          delete this._signatureSubscriptions[Number(id)];
+
+	          this._updateSubscriptions();
+
+	          sub.callback({
+	            type: 'status',
+	            result: res.result.value
+	          }, res.result.context);
+	        }
+
+	        return;
+	      }
+	    }
+	  }
+	  /**
+	   * Register a callback to be invoked upon signature updates
+	   *
+	   * @param signature Transaction signature string in base 58
+	   * @param callback Function to invoke on signature notifications
+	   * @param commitment Specify the commitment level signature must reach before notification
+	   * @return subscription id
+	   */
+
+
+	  onSignature(signature, callback, commitment) {
+	    const id = ++this._signatureSubscriptionCounter;
+	    this._signatureSubscriptions[id] = {
+	      signature,
+	      callback: (notification, context) => {
+	        if (notification.type === 'status') {
+	          callback(notification.result, context);
+	        }
+	      },
+	      options: {
+	        commitment
+	      },
+	      subscriptionId: null
+	    };
+
+	    this._updateSubscriptions();
+
+	    return id;
+	  }
+	  /**
+	   * Register a callback to be invoked when a transaction is
+	   * received and/or processed.
+	   *
+	   * @param signature Transaction signature string in base 58
+	   * @param callback Function to invoke on signature notifications
+	   * @param options Enable received notifications and set the commitment
+	   *   level that signature must reach before notification
+	   * @return subscription id
+	   */
+
+
+	  onSignatureWithOptions(signature, callback, options) {
+	    const id = ++this._signatureSubscriptionCounter;
+	    this._signatureSubscriptions[id] = {
+	      signature,
+	      callback,
+	      options,
+	      subscriptionId: null
+	    };
+
+	    this._updateSubscriptions();
+
+	    return id;
+	  }
+	  /**
+	   * Deregister a signature notification callback
+	   *
+	   * @param id subscription id to deregister
+	   */
+
+
+	  async removeSignatureListener(id) {
+	    if (this._signatureSubscriptions[id]) {
+	      const subInfo = this._signatureSubscriptions[id];
+	      delete this._signatureSubscriptions[id];
+	      await this._unsubscribe(subInfo, 'signatureUnsubscribe');
+
+	      this._updateSubscriptions();
+	    } else {
+	      throw new Error(`Unknown signature result id: ${id}`);
+	    }
+	  }
+	  /**
+	   * @internal
+	   */
+
+
+	  _wsOnRootNotification(notification) {
+	    const res = create(notification, RootNotificationResult);
+
+	    for (const sub of Object.values(this._rootSubscriptions)) {
+	      if (sub.subscriptionId === res.subscription) {
+	        sub.callback(res.result);
+	        return;
+	      }
+	    }
+	  }
+	  /**
+	   * Register a callback to be invoked upon root changes
+	   *
+	   * @param callback Function to invoke whenever the root changes
+	   * @return subscription id
+	   */
+
+
+	  onRootChange(callback) {
+	    const id = ++this._rootSubscriptionCounter;
+	    this._rootSubscriptions[id] = {
+	      callback,
+	      subscriptionId: null
+	    };
+
+	    this._updateSubscriptions();
+
+	    return id;
+	  }
+	  /**
+	   * Deregister a root notification callback
+	   *
+	   * @param id subscription id to deregister
+	   */
+
+
+	  async removeRootChangeListener(id) {
+	    if (this._rootSubscriptions[id]) {
+	      const subInfo = this._rootSubscriptions[id];
+	      delete this._rootSubscriptions[id];
+	      await this._unsubscribe(subInfo, 'rootUnsubscribe');
+
+	      this._updateSubscriptions();
+	    } else {
+	      throw new Error(`Unknown root change id: ${id}`);
+	    }
+	  }
+
+	}
 
 	/**
 	 * Keypair signer interface
@@ -17678,12 +23428,95 @@ var vrf = (function (exports) {
 	  }
 
 	}
+
+	const PRIVATE_KEY_BYTES$1 = 64;
+	const PUBLIC_KEY_BYTES$1 = 32;
+	const SIGNATURE_BYTES = 64;
 	/**
 	 * Params for creating an ed25519 instruction using a public key
 	 */
 
-	struct([u8('numSignatures'), u8('padding'), u16('signatureOffset'), u16('signatureInstructionIndex'), u16('publicKeyOffset'), u16('publicKeyInstructionIndex'), u16('messageDataOffset'), u16('messageDataSize'), u16('messageInstructionIndex')]);
-	new PublicKey('Ed25519SigVerify111111111111111111111111111');
+	const ED25519_INSTRUCTION_LAYOUT = struct([u8('numSignatures'), u8('padding'), u16('signatureOffset'), u16('signatureInstructionIndex'), u16('publicKeyOffset'), u16('publicKeyInstructionIndex'), u16('messageDataOffset'), u16('messageDataSize'), u16('messageInstructionIndex')]);
+	class Ed25519Program {
+	  /**
+	   * @internal
+	   */
+	  constructor() {}
+	  /**
+	   * Public key that identifies the ed25519 program
+	   */
+
+
+	  /**
+	   * Create an ed25519 instruction with a public key and signature. The
+	   * public key must be a buffer that is 32 bytes long, and the signature
+	   * must be a buffer of 64 bytes.
+	   */
+	  static createInstructionWithPublicKey(params) {
+	    const {
+	      publicKey,
+	      message,
+	      signature,
+	      instructionIndex
+	    } = params;
+	    assert(publicKey.length === PUBLIC_KEY_BYTES$1, `Public Key must be ${PUBLIC_KEY_BYTES$1} bytes but received ${publicKey.length} bytes`);
+	    assert(signature.length === SIGNATURE_BYTES, `Signature must be ${SIGNATURE_BYTES} bytes but received ${signature.length} bytes`);
+	    const publicKeyOffset = ED25519_INSTRUCTION_LAYOUT.span;
+	    const signatureOffset = publicKeyOffset + publicKey.length;
+	    const messageDataOffset = signatureOffset + signature.length;
+	    const numSignatures = 1;
+	    const instructionData = buffer.Buffer.alloc(messageDataOffset + message.length);
+	    ED25519_INSTRUCTION_LAYOUT.encode({
+	      numSignatures,
+	      padding: 0,
+	      signatureOffset,
+	      signatureInstructionIndex: instructionIndex,
+	      publicKeyOffset,
+	      publicKeyInstructionIndex: instructionIndex,
+	      messageDataOffset,
+	      messageDataSize: message.length,
+	      messageInstructionIndex: instructionIndex
+	    }, instructionData);
+	    instructionData.fill(publicKey, publicKeyOffset);
+	    instructionData.fill(signature, signatureOffset);
+	    instructionData.fill(message, messageDataOffset);
+	    return new TransactionInstruction({
+	      keys: [],
+	      programId: Ed25519Program.programId,
+	      data: instructionData
+	    });
+	  }
+	  /**
+	   * Create an ed25519 instruction with a private key. The private key
+	   * must be a buffer that is 64 bytes long.
+	   */
+
+
+	  static createInstructionWithPrivateKey(params) {
+	    const {
+	      privateKey,
+	      message,
+	      instructionIndex
+	    } = params;
+	    assert(privateKey.length === PRIVATE_KEY_BYTES$1, `Private key must be ${PRIVATE_KEY_BYTES$1} bytes but received ${privateKey.length} bytes`);
+
+	    try {
+	      const keypair = Keypair.fromSecretKey(privateKey);
+	      const publicKey = keypair.publicKey.toBytes();
+	      const signature = nacl.sign.detached(message, keypair.secretKey);
+	      return this.createInstructionWithPublicKey({
+	        publicKey,
+	        message,
+	        signature,
+	        instructionIndex
+	      });
+	    } catch (error) {
+	      throw new Error(`Error creating instruction; ${error}`);
+	    }
+	  }
+
+	}
+	Ed25519Program.programId = new PublicKey('Ed25519SigVerify111111111111111111111111111');
 
 	/**
 	 * Address of the stake config account which configures the rate
@@ -17847,9 +23680,62 @@ var vrf = (function (exports) {
 	});
 	new PublicKey('Vote111111111111111111111111111111111111111');
 
-	const vrf_program = new PublicKey("VRFS1BUivo8SDWKjsx3TVW976LXvpB1fFwTf6hGutbJ");
+	const endpoint = {
+	  http: {
+	    devnet: 'http://api.devnet.solana.com',
+	    testnet: 'http://api.testnet.solana.com',
+	    'mainnet-beta': 'http://api.mainnet-beta.solana.com/'
+	  },
+	  https: {
+	    devnet: 'https://api.devnet.solana.com',
+	    testnet: 'https://api.testnet.solana.com',
+	    'mainnet-beta': 'https://api.mainnet-beta.solana.com/'
+	  }
+	};
+
+	/**
+	 * Retrieves the RPC API URL for the specified cluster
+	 */
+	function clusterApiUrl(cluster, tls) {
+	  const key = tls === false ? 'http' : 'https';
+
+	  if (!cluster) {
+	    return endpoint[key]['devnet'];
+	  }
+
+	  const url = endpoint[key][cluster];
+
+	  if (!url) {
+	    throw new Error(`Unknown ${key} cluster: ${cluster}`);
+	  }
+
+	  return url;
+	}
+
+	const getVrfProgram = cluster => {
+	  switch (cluster) {
+	    case "devnet":
+	      {
+	        return new PublicKey("VRFS1BUivo8SDWKjsx3TVW976LXvpB1fFwTf6hGutbJ");
+	      }
+
+	    case "mainnet-beta":
+	      {
+	        return new PublicKey("VRFbts7MNgJGfc4ZznJAshGGwdJz2xcUgMhv6FJmYJR");
+	      }
+
+	    default:
+	      throw new Error(`${cluster} is not supported`);
+	  }
+	};
 	const config_account_seed = Buffer.from("orao-vrf-network-configuration");
 	const randomness_account_seed = Buffer.from("orao-vrf-randomness-request");
+
+	const deriveAccountAddress = async (seed, vrfProgram) => {
+	  let [pubkey, _] = await PublicKey.findProgramAddress([randomness_account_seed, seed], vrfProgram);
+	  return pubkey;
+	};
+
 	class RandomnessRequested {
 	  constructor(seed) {
 	    this.seed = void 0;
@@ -17869,13 +23755,9 @@ var vrf = (function (exports) {
 
 	}
 
-	const deriveAccountAddress = async seed => {
-	  let [pubkey, _] = await PublicKey.findProgramAddress([randomness_account_seed, seed], vrf_program);
-	  return pubkey;
-	};
-
-	const deriveConfigAccountAddress = async () => {
-	  let [pubkey, _] = await PublicKey.findProgramAddress([config_account_seed], vrf_program);
+	const deriveConfigAccountAddress = async cluster => {
+	  const vrfProgram = getVrfProgram(cluster);
+	  let [pubkey, _] = await PublicKey.findProgramAddress([config_account_seed], vrfProgram);
 	  return pubkey;
 	};
 
@@ -17899,7 +23781,11 @@ var vrf = (function (exports) {
 	  }
 	};
 
-	const createOrGetRandomnessRequest = async (payer, connection, seed = undefined) => {
+	const createOrGetRandomnessRequest = async (payer, cluster, seed = undefined) => {
+	  // Create a connection to to Solana's network
+	  const connection = new Connection(clusterApiUrl(cluster));
+	  const vrfProgram = getVrfProgram(cluster);
+
 	  if (seed === undefined) {
 	    // generate random seed if none was provided
 	    seed = Keypair.generate().publicKey.toBuffer();
@@ -17908,7 +23794,7 @@ var vrf = (function (exports) {
 	    console.log("user user-provided seed for randomness request: ", seed);
 	  }
 
-	  const randomnessAddress = await deriveAccountAddress(seed);
+	  const randomnessAddress = await deriveAccountAddress(seed, vrfProgram);
 	  const randomnessAccount = await connection.getAccountInfo(randomnessAddress);
 
 	  if (randomnessAccount === null) {
@@ -17919,7 +23805,7 @@ var vrf = (function (exports) {
 	    writer.writeU8(0); // RequestRandomness Instruction
 
 	    writer.writeFixedArray(seed);
-	    const configAddress = await deriveConfigAccountAddress();
+	    const configAddress = await deriveConfigAccountAddress(cluster);
 	    const configAccount = await connection.getAccountInfo(configAddress);
 	    const treasuryAddress = decodeTreasuryFromConfig(configAccount.data);
 	    const tx = new TransactionInstruction({
@@ -17948,7 +23834,7 @@ var vrf = (function (exports) {
 	        isSigner: false,
 	        isWritable: false
 	      }],
-	      programId: vrf_program,
+	      programId: vrfProgram,
 	      data: Buffer.from(writer.toArray())
 	    });
 	    return new Transaction().add(tx);
@@ -17958,9 +23844,684 @@ var vrf = (function (exports) {
 	  }
 	};
 
+	class NotFoundError extends Error {
+	  constructor(msg) {
+	    super(msg);
+	    Object.setPrototypeOf(this, NotFoundError.prototype);
+	  }
+
+	}
+	class RandomnessVerifyError extends Error {
+	  constructor(msg) {
+	    super(msg);
+	    Object.setPrototypeOf(this, RandomnessVerifyError.prototype);
+	  }
+
+	}
+
+	/*! noble-ed25519 - MIT License (c) 2019 Paul Miller (paulmillr.com) */
+	const _0n = BigInt(0);
+	const _1n = BigInt(1);
+	const _2n = BigInt(2);
+	const _255n = BigInt(255);
+	const CURVE_ORDER = _2n ** BigInt(252) + BigInt('27742317777372353535851937790883648493');
+	const CURVE = {
+	    a: BigInt(-1),
+	    d: BigInt('37095705934669439343138083508754565189542113879843219016388785533085940283555'),
+	    P: _2n ** _255n - BigInt(19),
+	    l: CURVE_ORDER,
+	    n: CURVE_ORDER,
+	    h: BigInt(8),
+	    Gx: BigInt('15112221349535400772501151409588531511454012693041857206046113283949847762202'),
+	    Gy: BigInt('46316835694926478169428394003475163141307993866256225615783033603165251855960'),
+	};
+	const MAX_256B = _2n ** BigInt(256);
+	const SQRT_M1 = BigInt('19681161376707505956807079304988542015446066515923890162744021073123829784752');
+	BigInt('6853475219497561581579357271197624642482790079785650197046958215289687604742');
+	BigInt('25063068953384623474111414158702152701244531502492656460079210482610430750235');
+	BigInt('54469307008909316920995813868745141605393597292927456921205312896311721017578');
+	BigInt('1159843021668779879193775521855586647937357759715417654439879720876111806838');
+	BigInt('40440834346308536858101042469323190826248399146238708352240133220865137265952');
+	class ExtendedPoint {
+	    constructor(x, y, z, t) {
+	        this.x = x;
+	        this.y = y;
+	        this.z = z;
+	        this.t = t;
+	    }
+	    static fromAffine(p) {
+	        if (!(p instanceof Point)) {
+	            throw new TypeError('ExtendedPoint#fromAffine: expected Point');
+	        }
+	        if (p.equals(Point.ZERO))
+	            return ExtendedPoint.ZERO;
+	        return new ExtendedPoint(p.x, p.y, _1n, mod(p.x * p.y));
+	    }
+	    static toAffineBatch(points) {
+	        const toInv = invertBatch(points.map((p) => p.z));
+	        return points.map((p, i) => p.toAffine(toInv[i]));
+	    }
+	    static normalizeZ(points) {
+	        return this.toAffineBatch(points).map(this.fromAffine);
+	    }
+	    equals(other) {
+	        assertExtPoint(other);
+	        const { x: X1, y: Y1, z: Z1 } = this;
+	        const { x: X2, y: Y2, z: Z2 } = other;
+	        const X1Z2 = mod(X1 * Z2);
+	        const X2Z1 = mod(X2 * Z1);
+	        const Y1Z2 = mod(Y1 * Z2);
+	        const Y2Z1 = mod(Y2 * Z1);
+	        return X1Z2 === X2Z1 && Y1Z2 === Y2Z1;
+	    }
+	    negate() {
+	        return new ExtendedPoint(mod(-this.x), this.y, this.z, mod(-this.t));
+	    }
+	    double() {
+	        const { x: X1, y: Y1, z: Z1 } = this;
+	        const { a } = CURVE;
+	        const A = mod(X1 ** _2n);
+	        const B = mod(Y1 ** _2n);
+	        const C = mod(_2n * mod(Z1 ** _2n));
+	        const D = mod(a * A);
+	        const E = mod(mod((X1 + Y1) ** _2n) - A - B);
+	        const G = D + B;
+	        const F = G - C;
+	        const H = D - B;
+	        const X3 = mod(E * F);
+	        const Y3 = mod(G * H);
+	        const T3 = mod(E * H);
+	        const Z3 = mod(F * G);
+	        return new ExtendedPoint(X3, Y3, Z3, T3);
+	    }
+	    add(other) {
+	        assertExtPoint(other);
+	        const { x: X1, y: Y1, z: Z1, t: T1 } = this;
+	        const { x: X2, y: Y2, z: Z2, t: T2 } = other;
+	        const A = mod((Y1 - X1) * (Y2 + X2));
+	        const B = mod((Y1 + X1) * (Y2 - X2));
+	        const F = mod(B - A);
+	        if (F === _0n)
+	            return this.double();
+	        const C = mod(Z1 * _2n * T2);
+	        const D = mod(T1 * _2n * Z2);
+	        const E = D + C;
+	        const G = B + A;
+	        const H = D - C;
+	        const X3 = mod(E * F);
+	        const Y3 = mod(G * H);
+	        const T3 = mod(E * H);
+	        const Z3 = mod(F * G);
+	        return new ExtendedPoint(X3, Y3, Z3, T3);
+	    }
+	    subtract(other) {
+	        return this.add(other.negate());
+	    }
+	    precomputeWindow(W) {
+	        const windows = 1 + 256 / W;
+	        const points = [];
+	        let p = this;
+	        let base = p;
+	        for (let window = 0; window < windows; window++) {
+	            base = p;
+	            points.push(base);
+	            for (let i = 1; i < 2 ** (W - 1); i++) {
+	                base = base.add(p);
+	                points.push(base);
+	            }
+	            p = base.double();
+	        }
+	        return points;
+	    }
+	    wNAF(n, affinePoint) {
+	        if (!affinePoint && this.equals(ExtendedPoint.BASE))
+	            affinePoint = Point.BASE;
+	        const W = (affinePoint && affinePoint._WINDOW_SIZE) || 1;
+	        if (256 % W) {
+	            throw new Error('Point#wNAF: Invalid precomputation window, must be power of 2');
+	        }
+	        let precomputes = affinePoint && pointPrecomputes.get(affinePoint);
+	        if (!precomputes) {
+	            precomputes = this.precomputeWindow(W);
+	            if (affinePoint && W !== 1) {
+	                precomputes = ExtendedPoint.normalizeZ(precomputes);
+	                pointPrecomputes.set(affinePoint, precomputes);
+	            }
+	        }
+	        let p = ExtendedPoint.ZERO;
+	        let f = ExtendedPoint.ZERO;
+	        const windows = 1 + 256 / W;
+	        const windowSize = 2 ** (W - 1);
+	        const mask = BigInt(2 ** W - 1);
+	        const maxNumber = 2 ** W;
+	        const shiftBy = BigInt(W);
+	        for (let window = 0; window < windows; window++) {
+	            const offset = window * windowSize;
+	            let wbits = Number(n & mask);
+	            n >>= shiftBy;
+	            if (wbits > windowSize) {
+	                wbits -= maxNumber;
+	                n += _1n;
+	            }
+	            if (wbits === 0) {
+	                let pr = precomputes[offset];
+	                if (window % 2)
+	                    pr = pr.negate();
+	                f = f.add(pr);
+	            }
+	            else {
+	                let cached = precomputes[offset + Math.abs(wbits) - 1];
+	                if (wbits < 0)
+	                    cached = cached.negate();
+	                p = p.add(cached);
+	            }
+	        }
+	        return ExtendedPoint.normalizeZ([p, f])[0];
+	    }
+	    multiply(scalar, affinePoint) {
+	        return this.wNAF(normalizeScalar(scalar, CURVE.l), affinePoint);
+	    }
+	    multiplyUnsafe(scalar) {
+	        let n = normalizeScalar(scalar, CURVE.l, false);
+	        const G = ExtendedPoint.BASE;
+	        const P0 = ExtendedPoint.ZERO;
+	        if (n === _0n)
+	            return P0;
+	        if (this.equals(P0) || n === _1n)
+	            return this;
+	        if (this.equals(G))
+	            return this.wNAF(n);
+	        let p = P0;
+	        let d = this;
+	        while (n > _0n) {
+	            if (n & _1n)
+	                p = p.add(d);
+	            d = d.double();
+	            n >>= _1n;
+	        }
+	        return p;
+	    }
+	    isSmallOrder() {
+	        return this.multiplyUnsafe(CURVE.h).equals(ExtendedPoint.ZERO);
+	    }
+	    isTorsionFree() {
+	        return this.multiplyUnsafe(CURVE.l).equals(ExtendedPoint.ZERO);
+	    }
+	    toAffine(invZ = invert(this.z)) {
+	        const { x, y, z } = this;
+	        const ax = mod(x * invZ);
+	        const ay = mod(y * invZ);
+	        const zz = mod(z * invZ);
+	        if (zz !== _1n)
+	            throw new Error('invZ was invalid');
+	        return new Point(ax, ay);
+	    }
+	    fromRistrettoBytes() {
+	        legacyRist();
+	    }
+	    toRistrettoBytes() {
+	        legacyRist();
+	    }
+	    fromRistrettoHash() {
+	        legacyRist();
+	    }
+	}
+	ExtendedPoint.BASE = new ExtendedPoint(CURVE.Gx, CURVE.Gy, _1n, mod(CURVE.Gx * CURVE.Gy));
+	ExtendedPoint.ZERO = new ExtendedPoint(_0n, _1n, _1n, _0n);
+	function assertExtPoint(other) {
+	    if (!(other instanceof ExtendedPoint))
+	        throw new TypeError('ExtendedPoint expected');
+	}
+	function legacyRist() {
+	    throw new Error('Legacy method: switch to RistrettoPoint');
+	}
+	const pointPrecomputes = new WeakMap();
+	class Point {
+	    constructor(x, y) {
+	        this.x = x;
+	        this.y = y;
+	    }
+	    _setWindowSize(windowSize) {
+	        this._WINDOW_SIZE = windowSize;
+	        pointPrecomputes.delete(this);
+	    }
+	    static fromHex(hex, strict = true) {
+	        const { d, P } = CURVE;
+	        hex = ensureBytes(hex, 32);
+	        const normed = hex.slice();
+	        normed[31] = hex[31] & ~0x80;
+	        const y = bytesToNumberLE(normed);
+	        if (strict && y >= P)
+	            throw new Error('Expected 0 < hex < P');
+	        if (!strict && y >= MAX_256B)
+	            throw new Error('Expected 0 < hex < 2**256');
+	        const y2 = mod(y * y);
+	        const u = mod(y2 - _1n);
+	        const v = mod(d * y2 + _1n);
+	        let { isValid, value: x } = uvRatio(u, v);
+	        if (!isValid)
+	            throw new Error('Point.fromHex: invalid y coordinate');
+	        const isXOdd = (x & _1n) === _1n;
+	        const isLastByteOdd = (hex[31] & 0x80) !== 0;
+	        if (isLastByteOdd !== isXOdd) {
+	            x = mod(-x);
+	        }
+	        return new Point(x, y);
+	    }
+	    static async fromPrivateKey(privateKey) {
+	        return (await getExtendedPublicKey(privateKey)).point;
+	    }
+	    toRawBytes() {
+	        const bytes = numberTo32BytesLE(this.y);
+	        bytes[31] |= this.x & _1n ? 0x80 : 0;
+	        return bytes;
+	    }
+	    toHex() {
+	        return bytesToHex(this.toRawBytes());
+	    }
+	    toX25519() {
+	        const { y } = this;
+	        const u = mod((_1n + y) * invert(_1n - y));
+	        return numberTo32BytesLE(u);
+	    }
+	    isTorsionFree() {
+	        return ExtendedPoint.fromAffine(this).isTorsionFree();
+	    }
+	    equals(other) {
+	        return this.x === other.x && this.y === other.y;
+	    }
+	    negate() {
+	        return new Point(mod(-this.x), this.y);
+	    }
+	    add(other) {
+	        return ExtendedPoint.fromAffine(this).add(ExtendedPoint.fromAffine(other)).toAffine();
+	    }
+	    subtract(other) {
+	        return this.add(other.negate());
+	    }
+	    multiply(scalar) {
+	        return ExtendedPoint.fromAffine(this).multiply(scalar, this).toAffine();
+	    }
+	}
+	Point.BASE = new Point(CURVE.Gx, CURVE.Gy);
+	Point.ZERO = new Point(_0n, _1n);
+	class Signature {
+	    constructor(r, s) {
+	        this.r = r;
+	        this.s = s;
+	        this.assertValidity();
+	    }
+	    static fromHex(hex) {
+	        const bytes = ensureBytes(hex, 64);
+	        const r = Point.fromHex(bytes.slice(0, 32), false);
+	        const s = bytesToNumberLE(bytes.slice(32, 64));
+	        return new Signature(r, s);
+	    }
+	    assertValidity() {
+	        const { r, s } = this;
+	        if (!(r instanceof Point))
+	            throw new Error('Expected Point instance');
+	        normalizeScalar(s, CURVE.l, false);
+	        return this;
+	    }
+	    toRawBytes() {
+	        const u8 = new Uint8Array(64);
+	        u8.set(this.r.toRawBytes());
+	        u8.set(numberTo32BytesLE(this.s), 32);
+	        return u8;
+	    }
+	    toHex() {
+	        return bytesToHex(this.toRawBytes());
+	    }
+	}
+	function concatBytes(...arrays) {
+	    if (!arrays.every((a) => a instanceof Uint8Array))
+	        throw new Error('Expected Uint8Array list');
+	    if (arrays.length === 1)
+	        return arrays[0];
+	    const length = arrays.reduce((a, arr) => a + arr.length, 0);
+	    const result = new Uint8Array(length);
+	    for (let i = 0, pad = 0; i < arrays.length; i++) {
+	        const arr = arrays[i];
+	        result.set(arr, pad);
+	        pad += arr.length;
+	    }
+	    return result;
+	}
+	const hexes = Array.from({ length: 256 }, (v, i) => i.toString(16).padStart(2, '0'));
+	function bytesToHex(uint8a) {
+	    if (!(uint8a instanceof Uint8Array))
+	        throw new Error('Uint8Array expected');
+	    let hex = '';
+	    for (let i = 0; i < uint8a.length; i++) {
+	        hex += hexes[uint8a[i]];
+	    }
+	    return hex;
+	}
+	function hexToBytes(hex) {
+	    if (typeof hex !== 'string') {
+	        throw new TypeError('hexToBytes: expected string, got ' + typeof hex);
+	    }
+	    if (hex.length % 2)
+	        throw new Error('hexToBytes: received invalid unpadded hex');
+	    const array = new Uint8Array(hex.length / 2);
+	    for (let i = 0; i < array.length; i++) {
+	        const j = i * 2;
+	        const hexByte = hex.slice(j, j + 2);
+	        const byte = Number.parseInt(hexByte, 16);
+	        if (Number.isNaN(byte) || byte < 0)
+	            throw new Error('Invalid byte sequence');
+	        array[i] = byte;
+	    }
+	    return array;
+	}
+	function numberTo32BytesBE(num) {
+	    const length = 32;
+	    const hex = num.toString(16).padStart(length * 2, '0');
+	    return hexToBytes(hex);
+	}
+	function numberTo32BytesLE(num) {
+	    return numberTo32BytesBE(num).reverse();
+	}
+	function edIsNegative(num) {
+	    return (mod(num) & _1n) === _1n;
+	}
+	function bytesToNumberLE(uint8a) {
+	    if (!(uint8a instanceof Uint8Array))
+	        throw new Error('Expected Uint8Array');
+	    return BigInt('0x' + bytesToHex(Uint8Array.from(uint8a).reverse()));
+	}
+	function mod(a, b = CURVE.P) {
+	    const res = a % b;
+	    return res >= _0n ? res : b + res;
+	}
+	function invert(number, modulo = CURVE.P) {
+	    if (number === _0n || modulo <= _0n) {
+	        throw new Error(`invert: expected positive integers, got n=${number} mod=${modulo}`);
+	    }
+	    let a = mod(number, modulo);
+	    let b = modulo;
+	    let x = _0n, u = _1n;
+	    while (a !== _0n) {
+	        const q = b / a;
+	        const r = b % a;
+	        const m = x - u * q;
+	        b = a, a = r, x = u, u = m;
+	    }
+	    const gcd = b;
+	    if (gcd !== _1n)
+	        throw new Error('invert: does not exist');
+	    return mod(x, modulo);
+	}
+	function invertBatch(nums, p = CURVE.P) {
+	    const tmp = new Array(nums.length);
+	    const lastMultiplied = nums.reduce((acc, num, i) => {
+	        if (num === _0n)
+	            return acc;
+	        tmp[i] = acc;
+	        return mod(acc * num, p);
+	    }, _1n);
+	    const inverted = invert(lastMultiplied, p);
+	    nums.reduceRight((acc, num, i) => {
+	        if (num === _0n)
+	            return acc;
+	        tmp[i] = mod(acc * tmp[i], p);
+	        return mod(acc * num, p);
+	    }, inverted);
+	    return tmp;
+	}
+	function pow2(x, power) {
+	    const { P } = CURVE;
+	    let res = x;
+	    while (power-- > _0n) {
+	        res *= res;
+	        res %= P;
+	    }
+	    return res;
+	}
+	function pow_2_252_3(x) {
+	    const { P } = CURVE;
+	    const _5n = BigInt(5);
+	    const _10n = BigInt(10);
+	    const _20n = BigInt(20);
+	    const _40n = BigInt(40);
+	    const _80n = BigInt(80);
+	    const x2 = (x * x) % P;
+	    const b2 = (x2 * x) % P;
+	    const b4 = (pow2(b2, _2n) * b2) % P;
+	    const b5 = (pow2(b4, _1n) * x) % P;
+	    const b10 = (pow2(b5, _5n) * b5) % P;
+	    const b20 = (pow2(b10, _10n) * b10) % P;
+	    const b40 = (pow2(b20, _20n) * b20) % P;
+	    const b80 = (pow2(b40, _40n) * b40) % P;
+	    const b160 = (pow2(b80, _80n) * b80) % P;
+	    const b240 = (pow2(b160, _80n) * b80) % P;
+	    const b250 = (pow2(b240, _10n) * b10) % P;
+	    const pow_p_5_8 = (pow2(b250, _2n) * x) % P;
+	    return { pow_p_5_8, b2 };
+	}
+	function uvRatio(u, v) {
+	    const v3 = mod(v * v * v);
+	    const v7 = mod(v3 * v3 * v);
+	    const pow = pow_2_252_3(u * v7).pow_p_5_8;
+	    let x = mod(u * v3 * pow);
+	    const vx2 = mod(v * x * x);
+	    const root1 = x;
+	    const root2 = mod(x * SQRT_M1);
+	    const useRoot1 = vx2 === u;
+	    const useRoot2 = vx2 === mod(-u);
+	    const noRoot = vx2 === mod(-u * SQRT_M1);
+	    if (useRoot1)
+	        x = root1;
+	    if (useRoot2 || noRoot)
+	        x = root2;
+	    if (edIsNegative(x))
+	        x = mod(-x);
+	    return { isValid: useRoot1 || useRoot2, value: x };
+	}
+	async function sha512ModqLE(...args) {
+	    const hash = await utils.sha512(concatBytes(...args));
+	    const value = bytesToNumberLE(hash);
+	    return mod(value, CURVE.l);
+	}
+	function ensureBytes(hex, expectedLength) {
+	    const bytes = hex instanceof Uint8Array ? Uint8Array.from(hex) : hexToBytes(hex);
+	    if (typeof expectedLength === 'number' && bytes.length !== expectedLength)
+	        throw new Error(`Expected ${expectedLength} bytes`);
+	    return bytes;
+	}
+	function normalizeScalar(num, max, strict = true) {
+	    if (!max)
+	        throw new TypeError('Specify max value');
+	    if (typeof num === 'number' && Number.isSafeInteger(num))
+	        num = BigInt(num);
+	    if (typeof num === 'bigint' && num < max) {
+	        if (strict) {
+	            if (_0n < num)
+	                return num;
+	        }
+	        else {
+	            if (_0n <= num)
+	                return num;
+	        }
+	    }
+	    throw new TypeError('Expected valid scalar: 0 < scalar < max');
+	}
+	function adjustBytes25519(bytes) {
+	    bytes[0] &= 248;
+	    bytes[31] &= 127;
+	    bytes[31] |= 64;
+	    return bytes;
+	}
+	async function getExtendedPublicKey(key) {
+	    key =
+	        typeof key === 'bigint' || typeof key === 'number'
+	            ? numberTo32BytesBE(normalizeScalar(key, MAX_256B))
+	            : ensureBytes(key);
+	    if (key.length !== 32)
+	        throw new Error(`Expected 32 bytes`);
+	    const hashed = await utils.sha512(key);
+	    const head = adjustBytes25519(hashed.slice(0, 32));
+	    const prefix = hashed.slice(32, 64);
+	    const scalar = mod(bytesToNumberLE(head), CURVE.l);
+	    const point = Point.BASE.multiply(scalar);
+	    const pointBytes = point.toRawBytes();
+	    return { head, prefix, scalar, point, pointBytes };
+	}
+	async function verify(sig, message, publicKey) {
+	    message = ensureBytes(message);
+	    if (!(publicKey instanceof Point))
+	        publicKey = Point.fromHex(publicKey, false);
+	    const { r, s } = sig instanceof Signature ? sig.assertValidity() : Signature.fromHex(sig);
+	    const SB = ExtendedPoint.BASE.multiplyUnsafe(s);
+	    const k = await sha512ModqLE(r.toRawBytes(), publicKey.toRawBytes(), message);
+	    const kA = ExtendedPoint.fromAffine(publicKey).multiplyUnsafe(k);
+	    const RkA = ExtendedPoint.fromAffine(r).add(kA);
+	    return RkA.subtract(SB).multiplyUnsafe(CURVE.h).equals(ExtendedPoint.ZERO);
+	}
+	Point.BASE._setWindowSize(8);
+	const crypto$1 = {
+	    node: nodeCrypto,
+	    web: typeof self === 'object' && 'crypto' in self ? self.crypto : undefined,
+	};
+	const utils = {
+	    TORSION_SUBGROUP: [
+	        '0100000000000000000000000000000000000000000000000000000000000000',
+	        'c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac037a',
+	        '0000000000000000000000000000000000000000000000000000000000000080',
+	        '26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc05',
+	        'ecffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7f',
+	        '26e8958fc2b227b045c3f489f2ef98f0d5dfac05d3c63339b13802886d53fc85',
+	        '0000000000000000000000000000000000000000000000000000000000000000',
+	        'c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa',
+	    ],
+	    bytesToHex,
+	    getExtendedPublicKey,
+	    mod,
+	    invert,
+	    hashToPrivateScalar: (hash) => {
+	        hash = ensureBytes(hash);
+	        if (hash.length < 40 || hash.length > 1024)
+	            throw new Error('Expected 40-1024 bytes of private key as per FIPS 186');
+	        const num = mod(bytesToNumberLE(hash), CURVE.l);
+	        if (num === _0n || num === _1n)
+	            throw new Error('Invalid private key');
+	        return num;
+	    },
+	    randomBytes: (bytesLength = 32) => {
+	        if (crypto$1.web) {
+	            return crypto$1.web.getRandomValues(new Uint8Array(bytesLength));
+	        }
+	        else if (crypto$1.node) {
+	            const { randomBytes } = crypto$1.node;
+	            return new Uint8Array(randomBytes(bytesLength).buffer);
+	        }
+	        else {
+	            throw new Error("The environment doesn't have randomBytes function");
+	        }
+	    },
+	    randomPrivateKey: () => {
+	        return utils.randomBytes(32);
+	    },
+	    sha512: async (message) => {
+	        if (crypto$1.web) {
+	            const buffer = await crypto$1.web.subtle.digest('SHA-512', message.buffer);
+	            return new Uint8Array(buffer);
+	        }
+	        else if (crypto$1.node) {
+	            return Uint8Array.from(crypto$1.node.createHash('sha512').update(message).digest());
+	        }
+	        else {
+	            throw new Error("The environment doesn't have sha512 function");
+	        }
+	    },
+	    precompute(windowSize = 8, point = Point.BASE) {
+	        const cached = point.equals(Point.BASE) ? point : new Point(point.x, point.y);
+	        cached._setWindowSize(windowSize);
+	        cached.multiply(_2n);
+	        return cached;
+	    },
+	};
+
+	const isOraoVrfFulfilled = (tx, vrfProgram) => {
+	  const instructions = tx.transaction.message.instructions;
+
+	  if (instructions.length !== 2) {
+	    return false;
+	  }
+
+	  return instructions[0].programId.toString() === Ed25519Program.programId.toString() && instructions[1].programId.toString() === vrfProgram.toString();
+	};
+
+	const extractPublicKeyUsed = tx => {
+	  const SIGNATURE_OFFSETS_SERIALIZED_SIZE = 14;
+	  const SIGNATURE_OFFSETS_START = 2;
+	  const DATA_START = SIGNATURE_OFFSETS_SERIALIZED_SIZE + SIGNATURE_OFFSETS_START;
+	  const instructionData = tx.transaction.message.instructions[0].data || "";
+	  const data = bs58$1.decode(instructionData).toJSON().data;
+	  const pubKeyBytes = data.slice(DATA_START, DATA_START + 32);
+	  return new Uint8Array(pubKeyBytes);
+	};
+	/**
+	 * Verify `Randomness` with `PublicKey` and `Seed` provided.
+	 *
+	 * Fetch `PublicKey` from `FulfillRandomness` transaction which contains EdSigVerify
+	 * and FulfillRandomness instruction. Then, verify `Randomness` (signauture) generated
+	 * from `seed` (message) and `PublicKey`. An invalid `Randomness` will throw `RandomnessVerifyError`.
+	 *
+	 * _Note: This step is optional as `Randomness` would have been verified onchain via
+	 * native EdSigverify program._
+	 *
+	 * @param connection Connection to to full node JSON RPC endpoint
+	 * @param seed 32 bytes seed (message)
+	 * @param randomness 64 bytes signature
+	 * @returns
+	 */
+
+
+	const verifyRandomnessOffchain = async (cluster, seed, randomness) => {
+	  const connection = new Connection(clusterApiUrl(cluster));
+	  const vrfProgram = getVrfProgram(cluster); // Get randomness account
+
+	  const randomnessAddress = await deriveAccountAddress(seed, vrfProgram);
+	  const randomnessAccount = await connection.getAccountInfo(randomnessAddress);
+
+	  if (randomnessAccount == null) {
+	    throw new NotFoundError(`No Randomness found for seed ${seed}`);
+	  } // List all confirmed Transactions
+
+
+	  const signatures = await connection.getSignaturesForAddress(randomnessAddress);
+
+	  if (signatures.length === 0) {
+	    throw new NotFoundError(`No transactions found for seed ${seed}.`);
+	  }
+
+	  for (const signature of signatures) {
+	    const tx = await connection.getParsedTransaction(signature.signature); // Skip if it isn't FulfillRandomness transaction.
+
+	    if (tx === null || !isOraoVrfFulfilled(tx, vrfProgram)) {
+	      continue;
+	    } // Verify!
+
+
+	    const pubKey = extractPublicKeyUsed(tx);
+	    const isVerified = await verify(randomness, seed, pubKey);
+
+	    if (!isVerified) {
+	      throw new RandomnessVerifyError("Verification failed.");
+	    }
+
+	    return;
+	  }
+
+	  throw new RandomnessVerifyError("No transaction with EdSigVerify instruction found.");
+	};
+
 	exports.RandomnessFullfilled = RandomnessFullfilled;
 	exports.RandomnessRequested = RandomnessRequested;
 	exports.createOrGetRandomnessRequest = createOrGetRandomnessRequest;
+	exports.verifyRandomnessOffchain = verifyRandomnessOffchain;
 
 	Object.defineProperty(exports, '__esModule', { value: true });
 
