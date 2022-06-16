@@ -79,7 +79,7 @@ There is a CLI helper that is able to invoke a round and show player state.
 # Play a round:
 $ cargo run --bin russian_roulette --features="cli" -- play
 
-Using RPC https://api.devnet.solana.com, keypair /home/tali/.config/solana/id.json
+Using RPC https://api.devnet.solana.com, keypair /Users/set/.config/solana/id.json
 Loading a bullet and spinning a cylinder..
 Waiting for the round to finish..
 The cylinder is still spinning..
