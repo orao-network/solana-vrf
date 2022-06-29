@@ -7,3 +7,5 @@ edition = "2021"
 orao-solana-vrf = "0.1.2"
 solana-sdk = "1.10.20"
 solana-client = "1.10.20"
+
+[workspace]
