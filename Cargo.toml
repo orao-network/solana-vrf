@@ -1,0 +1,3 @@
+[workspace]
+members = ["rust/sdk", "rust/examples/off-chain"]
+exclude = ["rust/examples/russian-roulette"]

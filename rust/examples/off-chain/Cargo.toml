@@ -1,0 +1,13 @@
+[package]
+name = "off-chain"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anchor-client = "0.25.0"
+anchor-lang = "0.25.0"
+orao-solana-vrf = { path = "../../sdk" }
+rand = "0.7.3"
+solana-cli-config = "1.10"

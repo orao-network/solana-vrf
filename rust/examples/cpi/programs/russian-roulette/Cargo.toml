@@ -1,0 +1,19 @@
+[package]
+name = "russian-roulette"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "russian_roulette"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = { version = "0.25.0", features = ["init-if-needed"] }
+orao-solana-vrf = { path = "../../../../sdk", default-features = false, features = ["cpi"] }
