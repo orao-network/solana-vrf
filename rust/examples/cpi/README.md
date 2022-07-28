@@ -7,7 +7,7 @@ of the ORAO VRF contract.
 
 This contract implements a trivial single-player Russian Roulette. The outcome
 of a round is based on the randomness, requested from ORAO VRF contract via CPI.
-The contract has only one instruction called "SpinAndPullTheTrigger { force }"
+The contract have only one instruction called "SpinAndPullTheTrigger { force }"
 (see [`programs/russian-roulette/src/lib.rs`](programs/russian-roulette/src/lib.rs)).
 This instruction asserts that the player is able to play and invokes ORAO VRF
 via CPI. The "force" value (generated randomly) is used as a VRF seed.
@@ -28,3 +28,38 @@ There are three possible player states:
 ### How to play
 
 [Tests](tests/russian-roulette.ts) shows the contract logic in action.
+
+Also there are a simple CLI for this contract (it is published on `devnet`):
+
+```sh
+# The `state` subcommand shows the current player state:
+$ cargo run -q --package roulette-cli -- state
+-- Using RPC https://api.devnet.solana.com, keypair /tmp/id.json
+-- ------
+Player HSCqQaDHGNc2kdPD2NTUKi3S953WZEJCnbrF4RHoxGjz is alive after 2 round(s)
+
+# The `play` subcommand runs a single round:
+$ cargo run -q --package roulette-cli -- play
+-- Using RPC https://api.devnet.solana.com, keypair /tmp/id.json
+-- ------
+Loading a bullet and spinning the cylinder..
+Waiting for the round to finish..
+CLICK! Player HSCqQaDHGNc2kdPD2NTUKi3S953WZEJCnbrF4RHoxGjz is alive after 3 round(s)
+```
+
+### How to deploy
+
+Note that the contract is already deployed on the `devnet`, however you can
+change it's ID and deploy on another address:
+
+```sh
+# Generete a new keypair
+$ solana-keygen new -o /tmp/new_keypair.json
+
+# Update contract ID with the public key of the new keypair
+vim programs/russian-roulette/lib.rs # update `declare_id!` macro value
+vim Anchor.toml # update `programs.localnet.russian_roulette` address
+
+# Deploy on the new address (add more funds to your wallet in case of 0x1 error)
+anchor deploy --program-keypair /tmp/new_keypair.json --program-name russian-roulette
+```

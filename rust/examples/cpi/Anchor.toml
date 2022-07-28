@@ -2,7 +2,7 @@
 seeds = false
 skip-lint = false
 [programs.localnet]
-russian_roulette = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+russian_roulette = "DTHCPBTw6tFZDwbiSzKXXK8wQ7n7v5zJAH3Ex3uvoSK5"
 
 [registry]
 url = "https://api.apr.dev"

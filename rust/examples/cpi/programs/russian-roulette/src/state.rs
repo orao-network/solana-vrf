@@ -13,12 +13,24 @@ pub struct PlayerState {
 impl PlayerState {
     pub const SIZE: usize = std::mem::size_of::<Self>();
 
+    /// Creates a new state for the `player`.
+    pub fn new(player: Pubkey) -> Self {
+        Self {
+            player,
+            force: Default::default(),
+            rounds: Default::default(),
+        }
+    }
+
+    /// Asserts that the player is able to play.
+    ///
+    /// Returns `Ok` on success.
     pub fn assert_can_play(&self, prev_round_acc: &AccountInfo) -> Result<()> {
         if self.rounds == 0 {
             return Ok(());
         }
         let rand_acc = crate::misc::get_account_data(prev_round_acc)?;
-        match current_state(rand_acc) {
+        match current_state(&rand_acc) {
             CurrentState::Alive => Ok(()),
             CurrentState::Dead => Err(crate::Error::PlayerDead.into()),
             CurrentState::Playing => Err(crate::Error::TheCylinderIsStillSpinning.into()),
@@ -38,7 +50,7 @@ pub enum CurrentState {
 }
 
 /// Derives last round outcome.
-fn current_state(randomness: Randomness) -> CurrentState {
+pub fn current_state(randomness: &Randomness) -> CurrentState {
     if let Some(randomness) = randomness.fulfilled() {
         if is_dead(randomness) {
             CurrentState::Dead

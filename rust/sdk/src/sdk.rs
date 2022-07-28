@@ -17,18 +17,8 @@ use anchor_spl::token;
 use crate::{
     quorum,
     state::{NetworkConfiguration, NetworkState, OraoTokenFeeConfig, Randomness},
-    xor_array, CONFIG_ACCOUNT_SEED, RANDOMNESS_ACCOUNT_SEED,
+    xor_array,
 };
-
-/// Returns network state account address.
-pub fn network_state_account_address() -> Pubkey {
-    Pubkey::find_program_address(&[CONFIG_ACCOUNT_SEED.as_ref()], &crate::id()).0
-}
-
-/// Returns randomness account address for the given seed.
-pub fn randomness_account_address(seed: &[u8; 32]) -> Pubkey {
-    Pubkey::find_program_address(&[RANDOMNESS_ACCOUNT_SEED.as_ref(), &seed[..]], &crate::id()).0
-}
 
 #[derive(Debug)]
 pub struct InitBuilder {
@@ -65,7 +55,7 @@ impl InitBuilder {
         self,
         orao_vrf: &anchor_client::Program,
     ) -> Result<anchor_client::RequestBuilder, anchor_client::ClientError> {
-        let network_state_address = network_state_account_address();
+        let network_state_address = crate::network_state_account_address();
 
         let builder = orao_vrf
             .request()
@@ -143,7 +133,7 @@ impl UpdateBuilder {
         self,
         orao_vrf: &anchor_client::Program,
     ) -> Result<anchor_client::RequestBuilder, anchor_client::ClientError> {
-        let network_state_address = network_state_account_address();
+        let network_state_address = crate::network_state_account_address();
         let network_state: NetworkState = orao_vrf.account(network_state_address)?;
         let mut config = network_state.config;
 
@@ -216,8 +206,8 @@ impl RequestBuilder {
         self,
         orao_vrf: &anchor_client::Program,
     ) -> Result<anchor_client::RequestBuilder, anchor_client::ClientError> {
-        let network_state_address = network_state_account_address();
-        let request_address = randomness_account_address(&self.seed);
+        let network_state_address = crate::network_state_account_address();
+        let request_address = crate::randomness_account_address(&self.seed);
 
         let network_state: NetworkState = orao_vrf.account(network_state_address)?;
         let config = network_state.config;
@@ -270,8 +260,8 @@ impl FulfillBuilder {
         orao_vrf: &'a anchor_client::Program,
         fullfill_authority: &Keypair,
     ) -> anchor_client::RequestBuilder<'a> {
-        let network_state_address = network_state_account_address();
-        let request_address = randomness_account_address(&self.seed);
+        let network_state_address = crate::network_state_account_address();
+        let request_address = crate::randomness_account_address(&self.seed);
 
         let fullfill_authority =
             ed25519_dalek::Keypair::from_bytes(fullfill_authority.to_bytes().as_ref()).unwrap();

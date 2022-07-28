@@ -22,6 +22,16 @@ pub const CONFIG_ACCOUNT_SEED: &[u8] = b"orao-vrf-network-configuration";
 // this is the number of public keys that are allowed to generate randomness
 pub const MAX_FULFILLMENT_AUTHORITIES_COUNT: usize = 10;
 
+/// Returns network state account address.
+pub fn network_state_account_address() -> Pubkey {
+    Pubkey::find_program_address(&[CONFIG_ACCOUNT_SEED.as_ref()], &crate::id()).0
+}
+
+/// Returns randomness account address for the given seed.
+pub fn randomness_account_address(seed: &[u8; 32]) -> Pubkey {
+    Pubkey::find_program_address(&[RANDOMNESS_ACCOUNT_SEED.as_ref(), &seed[..]], &crate::id()).0
+}
+
 /// Helper that XORes `r` into `l`.
 pub fn xor_array<const N: usize>(l: &mut [u8; N], r: &[u8; N]) {
     for i in 0..N {
