@@ -15,11 +15,63 @@ use anchor_lang::{
 use anchor_spl::token;
 
 use crate::{
-    quorum,
+    network_state_account_address, quorum, randomness_account_address,
     state::{NetworkConfiguration, NetworkState, OraoTokenFeeConfig, Randomness},
     xor_array,
 };
 
+/// Fetches VRF on-chain state.
+///
+/// ```no_run
+/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// # use orao_vrf as orao_solana_vrf;
+/// use anchor_client::*;
+///
+/// # let payer = panic!();
+/// let client = Client::new(Cluster::Devnet, payer);
+/// let program = client.program(orao_solana_vrf::id());
+///
+/// let network_state = orao_solana_vrf::get_network_state(&program)?;
+///
+/// println!("The tresury is {}", network_state.config.treasury);
+/// # Ok(()) }
+/// ```
+pub fn get_network_state(
+    orao_vrf: &anchor_client::Program,
+) -> Result<NetworkState, anchor_client::ClientError> {
+    let network_state_address = network_state_account_address();
+    orao_vrf.account(network_state_address)
+}
+
+/// Fetches randomness request state for the given seed.
+///
+/// ```no_run
+/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// # use orao_vrf as orao_solana_vrf;
+/// use anchor_client::*;
+///
+/// # let (payer, seed) = panic!();
+/// let client = Client::new(Cluster::Devnet, payer);
+/// let program = client.program(orao_solana_vrf::id());
+///
+/// let randomness_account = orao_solana_vrf::get_randomness(&program, &seed)?;
+///
+/// if let Some(randomness) = randomness_account.fulfilled() {
+///     println!("Randomness fulfilled: {:?}", randomness);
+/// } else {
+///     println!("Randomness is not yet fulfilled");
+/// }
+/// # Ok(()) }
+/// ```
+pub fn get_randomness(
+    orao_vrf: &anchor_client::Program,
+    seed: &[u8; 32],
+) -> Result<Randomness, anchor_client::ClientError> {
+    let request_address = randomness_account_address(seed);
+    orao_vrf.account(request_address)
+}
+
+/// `init_network` instruction builder.
 #[derive(Debug)]
 pub struct InitBuilder {
     config: NetworkConfiguration,
@@ -55,7 +107,7 @@ impl InitBuilder {
         self,
         orao_vrf: &anchor_client::Program,
     ) -> Result<anchor_client::RequestBuilder, anchor_client::ClientError> {
-        let network_state_address = crate::network_state_account_address();
+        let network_state_address = network_state_account_address();
 
         let builder = orao_vrf
             .request()
@@ -83,6 +135,7 @@ impl InitBuilder {
     }
 }
 
+/// `update_network` instruction builder.
 #[derive(Debug, Default)]
 pub struct UpdateBuilder {
     authority: Option<Pubkey>,
@@ -133,7 +186,7 @@ impl UpdateBuilder {
         self,
         orao_vrf: &anchor_client::Program,
     ) -> Result<anchor_client::RequestBuilder, anchor_client::ClientError> {
-        let network_state_address = crate::network_state_account_address();
+        let network_state_address = network_state_account_address();
         let network_state: NetworkState = orao_vrf.account(network_state_address)?;
         let mut config = network_state.config;
 
@@ -178,6 +231,25 @@ impl UpdateBuilder {
     }
 }
 
+/// `request` instruction builder.
+///
+/// ```no_run
+/// # fn main() -> Result<(), Box<dyn std::error::Error>> {
+/// # use orao_vrf as orao_solana_vrf;
+/// use anchor_client::*;
+///
+/// # let payer = panic!();
+/// let client = Client::new(Cluster::Devnet, payer);
+/// let program = client.program(orao_solana_vrf::id());
+///
+/// let seed = rand::random();
+/// let tx = orao_solana_vrf::RequestBuilder::new(seed)
+///     .build(&program)?
+///     .send()?;
+///
+/// println!("Your transaction is {}", tx);
+/// # Ok(()) }
+/// ```
 #[derive(Debug, Default)]
 pub struct RequestBuilder {
     seed: [u8; 32],
@@ -206,8 +278,8 @@ impl RequestBuilder {
         self,
         orao_vrf: &anchor_client::Program,
     ) -> Result<anchor_client::RequestBuilder, anchor_client::ClientError> {
-        let network_state_address = crate::network_state_account_address();
-        let request_address = crate::randomness_account_address(&self.seed);
+        let network_state_address = network_state_account_address();
+        let request_address = randomness_account_address(&self.seed);
 
         let network_state: NetworkState = orao_vrf.account(network_state_address)?;
         let config = network_state.config;
@@ -243,6 +315,7 @@ impl RequestBuilder {
     }
 }
 
+/// `fulfill` instruction builder.
 #[derive(Debug, Default)]
 pub struct FulfillBuilder {
     seed: [u8; 32],
@@ -260,8 +333,8 @@ impl FulfillBuilder {
         orao_vrf: &'a anchor_client::Program,
         fullfill_authority: &Keypair,
     ) -> anchor_client::RequestBuilder<'a> {
-        let network_state_address = crate::network_state_account_address();
-        let request_address = crate::randomness_account_address(&self.seed);
+        let network_state_address = network_state_account_address();
+        let request_address = randomness_account_address(&self.seed);
 
         let fullfill_authority =
             ed25519_dalek::Keypair::from_bytes(fullfill_authority.to_bytes().as_ref()).unwrap();

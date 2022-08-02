@@ -1,5 +1,5 @@
 [package]
-name = "off-chain"
+name = "roulette-cli"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,8 +7,10 @@ edition = "2021"
 
 [dependencies]
 anchor-client = "0.25.0"
-anchor-lang = "0.25.0"
+anyhow = "1"
+env_logger = "0.9"
 indicatif = "0.17"
-orao-solana-vrf = { path = "../../sdk" }
-rand = "0.7.3"
+orao-solana-vrf = { path = "../../../../sdk" }
+russian-roulette = { path = "../../programs/russian-roulette", features = ["sdk"] }
 solana-cli-config = "1.10"
+structopt = "0.3"

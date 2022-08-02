@@ -2,9 +2,7 @@ mod misc;
 pub mod state;
 
 use anchor_lang::prelude::*;
-use orao_solana_vrf::network_state_account_address;
 use orao_solana_vrf::program::OraoVrf;
-use orao_solana_vrf::randomness_account_address;
 use orao_solana_vrf::state::NetworkState;
 use orao_solana_vrf::CONFIG_ACCOUNT_SEED;
 use orao_solana_vrf::RANDOMNESS_ACCOUNT_SEED;
@@ -141,9 +139,9 @@ pub fn spin_and_pull_the_trigger<'a>(
     };
 
     // vrf accounts
-    let network_state_address = network_state_account_address();
-    let prev_request_address = randomness_account_address(&player_state.force);
-    let request_address = randomness_account_address(&seed);
+    let network_state_address = orao_solana_vrf::network_state_account_address();
+    let prev_request_address = orao_solana_vrf::randomness_account_address(&player_state.force);
+    let request_address = orao_solana_vrf::randomness_account_address(&seed);
 
     let vrf_config = vrf.account::<NetworkState>(network_state_address)?.config;
 

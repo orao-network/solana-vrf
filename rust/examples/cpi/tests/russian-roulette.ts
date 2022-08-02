@@ -1,16 +1,19 @@
 import assert from "assert";
 import * as anchor from "@project-serum/anchor";
-import { Program, BN, Spl } from "@project-serum/anchor";
+import { Program, BN } from "@project-serum/anchor";
 import {
     Keypair,
     PublicKey,
     SystemProgram,
     LAMPORTS_PER_SOL,
-    SYSVAR_RENT_PUBKEY,
-    SYSVAR_INSTRUCTIONS_PUBKEY,
-    Ed25519Program,
 } from "@solana/web3.js";
-import { Orao, networkStateAccountAddress, randomnessAccountAddress } from "../../../../js/dist";
+import {
+    Orao,
+    networkStateAccountAddress,
+    randomnessAccountAddress,
+    FulfillBuilder,
+    InitBuilder,
+} from "orao-solana-vrf";
 import { RussianRoulette } from "../target/types/russian_roulette";
 import nacl from "tweetnacl";
 
@@ -18,7 +21,8 @@ describe("russian-roulette", () => {
     const provider = anchor.AnchorProvider.env();
     anchor.setProvider(provider);
 
-    const program = anchor.workspace.RussianRoulette as Program<RussianRoulette>;
+    const program = anchor.workspace
+        .RussianRoulette as Program<RussianRoulette>;
     const vrf = new Orao(provider);
 
     // This accounts are for test VRF.
@@ -58,51 +62,37 @@ describe("russian-roulette", () => {
 
     // This helper will fulfill randomness for our test VRF.
     async function emulateFulfill(seed: Buffer) {
-        let signature = nacl.sign.detached(seed, fulfillmentAuthority.secretKey);
-        await vrf.methods
-            .fulfill()
-            .accounts({
-                instructionAcc: SYSVAR_INSTRUCTIONS_PUBKEY,
-                networkState: networkStateAccountAddress(),
-                request: randomnessAccountAddress(seed),
-            })
-            .preInstructions([
-                Ed25519Program.createInstructionWithPublicKey({
-                    publicKey: fulfillmentAuthority.publicKey.toBytes(),
-                    message: seed,
-                    signature,
-                }),
-            ])
-            .rpc();
+        let signature = nacl.sign.detached(
+            seed,
+            fulfillmentAuthority.secretKey
+        );
+        await new FulfillBuilder(vrf, seed).rpc(
+            fulfillmentAuthority.publicKey,
+            signature
+        );
     }
-
 
     before(async () => {
         // Initialize test VRF
         const fee = 2 * LAMPORTS_PER_SOL;
-        const fullfillmentAuthorities = [
-            fulfillmentAuthority.publicKey,
-        ];
+        const fulfillmentAuthorities = [fulfillmentAuthority.publicKey];
         const configAuthority = Keypair.generate();
 
-        await vrf.methods
-            .initNetwork(
-                new BN(fee),
-                configAuthority.publicKey,
-                fullfillmentAuthorities,
-                null
-            )
-            .accounts({
-                networkState: networkStateAccountAddress(),
-                treasury: treasury.publicKey,
-            })
-            .rpc();
+        await new InitBuilder(
+            vrf,
+            configAuthority.publicKey,
+            treasury.publicKey,
+            fulfillmentAuthorities,
+            new BN(fee)
+        ).rpc();
     });
 
     it("spin and pull the trigger", async () => {
         await spinAndPullTheTrigger(Buffer.alloc(32), force.toBuffer());
 
-        const playerStateAcc = await program.account.playerState.fetch(playerState);
+        const playerStateAcc = await program.account.playerState.fetch(
+            playerState
+        );
 
         assert.ok(Buffer.from(playerStateAcc.force).equals(force.toBuffer()));
         assert.ok(playerStateAcc.rounds.eq(new BN(1)));
@@ -116,9 +106,15 @@ describe("russian-roulette", () => {
             await emulateFulfill(force.toBuffer());
 
             const randomness = await vrf.getRandomness(force.toBuffer());
-            assert.ok(!Buffer.from(randomness.randomness).equals(Buffer.alloc(64)));
+            assert.ok(
+                !Buffer.from(randomness.randomness).equals(Buffer.alloc(64))
+            );
 
-            if (Buffer.from(randomness.randomness).readBigUInt64LE() % BigInt(6) === BigInt(0)) {
+            if (
+                Buffer.from(randomness.randomness).readBigUInt64LE() %
+                BigInt(6) ===
+                BigInt(0)
+            ) {
                 console.log("The player is dead");
                 break;
             } else {
@@ -130,10 +126,16 @@ describe("russian-roulette", () => {
             force = Keypair.generate().publicKey;
             await spinAndPullTheTrigger(prevForce.toBuffer(), force.toBuffer());
 
-            const playerStateAcc = await program.account.playerState.fetch(playerState);
+            const playerStateAcc = await program.account.playerState.fetch(
+                playerState
+            );
 
-            assert.ok(Buffer.from(playerStateAcc.force).equals(force.toBuffer()));
-            assert.ok(playerStateAcc.rounds.eq(new BN(++currentNumberOfRounds)));
+            assert.ok(
+                Buffer.from(playerStateAcc.force).equals(force.toBuffer())
+            );
+            assert.ok(
+                playerStateAcc.rounds.eq(new BN(++currentNumberOfRounds))
+            );
         }
     });
 
@@ -143,8 +145,8 @@ describe("russian-roulette", () => {
         try {
             await spinAndPullTheTrigger(prevForce.toBuffer(), force.toBuffer());
         } catch (e) {
-            assert.equal(e.error.errorCode.code, 'PlayerDead');
-            return
+            assert.equal(e.error.errorCode.code, "PlayerDead");
+            return;
         }
 
         assert.ok(false, "Instruction invocation should fail");

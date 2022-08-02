@@ -9,6 +9,7 @@ use anchor_client::{
     Client, Cluster, Program,
 };
 use anchor_lang::prelude::Pubkey;
+use indicatif::ProgressBar;
 use orao_solana_vrf::{
     state::{NetworkState, Randomness},
     RequestBuilder,
@@ -38,7 +39,6 @@ pub fn main() -> std::io::Result<()> {
         .expect("Transaction hash");
     println!("Request performed in {}", tx);
 
-    println!("Waiting for randomness being fulfilled..");
     let randomness = wait_fulfilled(&program, &seed);
     println!(
         "Randomness: {}",
@@ -96,6 +96,9 @@ fn get_program() -> (Pubkey, Program) {
 
 /// This helper will loop until randomness gets fulfilled.
 pub fn wait_fulfilled(program: &Program, seed: &[u8; 32]) -> Randomness {
+    let progress = ProgressBar::new_spinner();
+    progress.enable_steady_tick(std::time::Duration::from_millis(120));
+    progress.set_message("Waiting for randomness being fulfilled..");
     let randomness_address = orao_solana_vrf::randomness_account_address(&seed);
     loop {
         match program.account::<Randomness>(randomness_address) {

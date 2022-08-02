@@ -7,3 +7,14 @@ Provides interface to request for a verifiable randomness (Ed25519 Signature) on
 ## Usage examples
 
 [CPI example tests](../rust/examples/cpi/tests/russian-roulette.ts) are based on this SDK.
+
+### Randomness request
+
+```typescript
+const provider = AnchorProvider.env();
+const vrf = new Orao(provider);
+
+// Request using a random seed.
+const [seed, tx] = await vrf.request().rpc();
+console.log("Your transaction is " + tx);
+```
