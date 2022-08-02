@@ -1,5 +1,5 @@
 {
-  "name": "orao-solana-vrf",
+  "name": "solana-vrf",
   "version": "0.2.0",
   "description": "ORAO Verifiable Random Function for Solana.",
   "main": "dist/index.js",
