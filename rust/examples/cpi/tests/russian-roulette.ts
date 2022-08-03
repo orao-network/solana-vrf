@@ -13,7 +13,7 @@ import {
     randomnessAccountAddress,
     FulfillBuilder,
     InitBuilder,
-} from "orao-solana-vrf";
+} from "@orao-network/solana-vrf";
 import { RussianRoulette } from "../target/types/russian_roulette";
 import nacl from "tweetnacl";
 
