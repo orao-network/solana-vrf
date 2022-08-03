@@ -6,7 +6,7 @@ Provides interface to request for a verifiable randomness (Ed25519 Signature) on
 
 ## Usage examples
 
-[CPI example tests](../rust/examples/cpi/tests/russian-roulette.ts) are based on this SDK.
+[CPI example tests](https://github.com/orao-network/solana-vrf/blob/master/rust/examples/cpi/tests/russian-roulette.ts) are based on this SDK.
 
 ### Randomness request
 
