@@ -68,3 +68,14 @@ export declare class Randomness {
      */
     verifyOffchain(fulfillmentAuthorities: web3.PublicKey[]): boolean;
 }
+export declare class FulfilledRandomness extends Randomness {
+    private constructor();
+    /**
+     * Creates an instance of FulfilledRandomness from the given randomness
+     *
+     * It's a caller's responsibility to assert that it's actually filfilled.
+     */
+    static unchecked(inner: Randomness): FulfilledRandomness;
+    /** Returns fulfilled randomness */
+    fulfilled(): Uint8Array;
+}

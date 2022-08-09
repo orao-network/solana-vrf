@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Randomness = exports.RandomnessResponse = exports.OraoTokenFeeConfig = exports.NetworkConfiguration = exports.NetworkState = void 0;
+exports.FulfilledRandomness = exports.Randomness = exports.RandomnessResponse = exports.OraoTokenFeeConfig = exports.NetworkConfiguration = exports.NetworkState = void 0;
 const tweetnacl_1 = __importDefault(require("tweetnacl"));
 const _1 = require(".");
 /**
@@ -58,7 +58,7 @@ class Randomness {
     }
     /** Returns fulfilled randomness or `null` if not yet fulfilled */
     fulfilled() {
-        if (Buffer.from(this.randomness).equals(Buffer.alloc(64))) {
+        if (Buffer.alloc(64).equals(this.randomness)) {
             return null;
         }
         return this.randomness;
@@ -89,3 +89,21 @@ class Randomness {
     }
 }
 exports.Randomness = Randomness;
+class FulfilledRandomness extends Randomness {
+    constructor(inner) {
+        super([...inner.seed], [...inner.randomness], inner.responses);
+    }
+    /**
+     * Creates an instance of FulfilledRandomness from the given randomness
+     *
+     * It's a caller's responsibility to assert that it's actually filfilled.
+     */
+    static unchecked(inner) {
+        return new FulfilledRandomness(inner);
+    }
+    /** Returns fulfilled randomness */
+    fulfilled() {
+        return this.randomness;
+    }
+}
+exports.FulfilledRandomness = FulfilledRandomness;

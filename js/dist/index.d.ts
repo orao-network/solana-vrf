@@ -1,8 +1,8 @@
 /// <reference types="node" />
 import { BN, Program, Provider, web3 } from "@project-serum/anchor";
-import { NetworkConfiguration, NetworkState, OraoTokenFeeConfig, Randomness } from "./state";
+import { NetworkConfiguration, NetworkState, OraoTokenFeeConfig, Randomness, FulfilledRandomness } from "./state";
 import { OraoVrf } from "./types/orao_vrf";
-export { Randomness, RandomnessResponse, NetworkConfiguration, NetworkState, OraoTokenFeeConfig, } from "./state";
+export { Randomness, FulfilledRandomness, RandomnessResponse, NetworkConfiguration, NetworkState, OraoTokenFeeConfig, } from "./state";
 export declare const PROGRAM_ADDRESS: string;
 export declare const PROGRAM_ID: web3.PublicKey;
 export declare const RANDOMNESS_ACCOUNT_SEED: Buffer;
@@ -88,6 +88,7 @@ export declare class Orao extends Program<OraoVrf> {
      * @returns a [[RequestBuilder]] instance.
      */
     request(seed?: Buffer | Uint8Array): Promise<RequestBuilder>;
+    waitFulfilled(seed: Buffer | Uint8Array, commitment?: web3.Commitment): Promise<FulfilledRandomness>;
 }
 export declare class InitBuilder {
     vrf: Orao;

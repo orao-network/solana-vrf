@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FulfillBuilder = exports.RequestBuilder = exports.UpdateBuilder = exports.InitBuilder = exports.Orao = exports.quorum = exports.randomnessAccountAddress = exports.networkStateAccountAddress = exports.CONFIG_ACCOUNT_SEED = exports.RANDOMNESS_ACCOUNT_SEED = exports.PROGRAM_ID = exports.PROGRAM_ADDRESS = exports.OraoTokenFeeConfig = exports.NetworkState = exports.NetworkConfiguration = exports.RandomnessResponse = exports.Randomness = void 0;
+exports.FulfillBuilder = exports.RequestBuilder = exports.UpdateBuilder = exports.InitBuilder = exports.Orao = exports.quorum = exports.randomnessAccountAddress = exports.networkStateAccountAddress = exports.CONFIG_ACCOUNT_SEED = exports.RANDOMNESS_ACCOUNT_SEED = exports.PROGRAM_ID = exports.PROGRAM_ADDRESS = exports.OraoTokenFeeConfig = exports.NetworkState = exports.NetworkConfiguration = exports.RandomnessResponse = exports.FulfilledRandomness = exports.Randomness = void 0;
 const anchor_1 = require("@project-serum/anchor");
 const web3_js_1 = require("@solana/web3.js");
 const tweetnacl_1 = __importDefault(require("tweetnacl"));
@@ -20,6 +20,7 @@ const state_1 = require("./state");
 const orao_vrf_1 = require("./types/orao_vrf");
 var state_2 = require("./state");
 Object.defineProperty(exports, "Randomness", { enumerable: true, get: function () { return state_2.Randomness; } });
+Object.defineProperty(exports, "FulfilledRandomness", { enumerable: true, get: function () { return state_2.FulfilledRandomness; } });
 Object.defineProperty(exports, "RandomnessResponse", { enumerable: true, get: function () { return state_2.RandomnessResponse; } });
 Object.defineProperty(exports, "NetworkConfiguration", { enumerable: true, get: function () { return state_2.NetworkConfiguration; } });
 Object.defineProperty(exports, "NetworkState", { enumerable: true, get: function () { return state_2.NetworkState; } });
@@ -151,6 +152,41 @@ class Orao extends anchor_1.Program {
                 actualSeed = tweetnacl_1.default.randomBytes(32);
             }
             return new RequestBuilder(this, actualSeed);
+        });
+    }
+    waitFulfilled(seed, commitment) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let account = randomnessAccountAddress(seed);
+            let actualCommitment = "finalized";
+            if (commitment) {
+                actualCommitment = commitment;
+            }
+            return new Promise((_resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                let resolved = false;
+                let maybeResolve = (subscriptionId, randomness) => {
+                    if (!randomness.fulfilled()) {
+                        return;
+                    }
+                    if (resolved) {
+                        return;
+                    }
+                    resolved = true;
+                    this.provider.connection.removeAccountChangeListener(subscriptionId);
+                    _resolve(state_1.FulfilledRandomness.unchecked(randomness));
+                };
+                try {
+                    let subscriptionId = this.provider.connection.onAccountChange(account, (accountInfo, _ctx) => {
+                        let randomness = this.account.randomness.coder.accounts.decode("randomness", accountInfo.data);
+                        maybeResolve(subscriptionId, new state_1.Randomness(randomness.seed, randomness.randomness, randomness.responses.map((x) => new state_1.RandomnessResponse(x.pubkey, x.randomness))));
+                    }, commitment);
+                    // In case it's already fulfilled
+                    let randomness = yield this.getRandomness(seed, commitment);
+                    maybeResolve(subscriptionId, randomness);
+                }
+                catch (e) {
+                    reject(e);
+                }
+            }));
         });
     }
 }

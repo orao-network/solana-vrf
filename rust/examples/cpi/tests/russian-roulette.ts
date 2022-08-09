@@ -103,15 +103,14 @@ describe("russian-roulette", () => {
         let prevForce = force;
 
         while (true) {
-            await emulateFulfill(force.toBuffer());
+            let [randomness, _] = await Promise.all([vrf.waitFulfilled(force.toBuffer()), emulateFulfill(force.toBuffer())]);
 
-            const randomness = await vrf.getRandomness(force.toBuffer());
             assert.ok(
                 !Buffer.from(randomness.randomness).equals(Buffer.alloc(64))
             );
 
             if (
-                Buffer.from(randomness.randomness).readBigUInt64LE() %
+                Buffer.from(randomness.fulfilled()).readBigUInt64LE() %
                 BigInt(6) ===
                 BigInt(0)
             ) {

@@ -7,11 +7,13 @@ import {
     OraoTokenFeeConfig,
     Randomness,
     RandomnessResponse,
+    FulfilledRandomness,
 } from "./state";
 import { IDL, OraoVrf } from "./types/orao_vrf";
 
 export {
     Randomness,
+    FulfilledRandomness,
     RandomnessResponse,
     NetworkConfiguration,
     NetworkState,
@@ -71,6 +73,12 @@ export function quorum(count: number, total: number): boolean {
 interface IRandomnessResponse {
     pubkey: web3.PublicKey;
     randomness: number[];
+}
+
+interface IRandomness {
+    seed: number[];
+    randomness: number[];
+    responses: IRandomnessResponse[];
 }
 
 /** Orao VRF program */
@@ -179,6 +187,62 @@ export class Orao extends Program<OraoVrf> {
         }
 
         return new RequestBuilder(this, actualSeed);
+    }
+
+    async waitFulfilled(
+        seed: Buffer | Uint8Array,
+        commitment?: web3.Commitment
+    ): Promise<FulfilledRandomness> {
+        let account = randomnessAccountAddress(seed);
+        let actualCommitment = "finalized";
+        if (commitment) {
+            actualCommitment = commitment;
+        }
+
+        return new Promise(async (_resolve, reject) => {
+            let resolved = false;
+
+            let maybeResolve = (subscriptionId: number, randomness: Randomness) => {
+                if (!randomness.fulfilled()) {
+                    return;
+                }
+                if (resolved) {
+                    return;
+                }
+                resolved = true;
+                this.provider.connection.removeAccountChangeListener(subscriptionId);
+                _resolve(FulfilledRandomness.unchecked(randomness));
+            };
+
+            try {
+                let subscriptionId = this.provider.connection.onAccountChange(
+                    account,
+                    (accountInfo, _ctx) => {
+                        let randomness = this.account.randomness.coder.accounts.decode(
+                            "randomness",
+                            accountInfo.data
+                        ) as IRandomness;
+                        maybeResolve(
+                            subscriptionId,
+                            new Randomness(
+                                randomness.seed,
+                                randomness.randomness,
+                                randomness.responses.map(
+                                    (x) => new RandomnessResponse(x.pubkey, x.randomness)
+                                )
+                            )
+                        );
+                    },
+                    commitment
+                );
+
+                // In case it's already fulfilled
+                let randomness = await this.getRandomness(seed, commitment);
+                maybeResolve(subscriptionId, randomness);
+            } catch (e) {
+                reject(e);
+            }
+        });
     }
 }
 

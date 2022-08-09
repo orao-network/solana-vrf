@@ -17,4 +17,8 @@ const vrf = new Orao(provider);
 // Request using a random seed.
 const [seed, tx] = await vrf.request().rpc();
 console.log("Your transaction is " + tx);
+
+// Await fulfilled randomness (default commitment is "finalized"):
+const randomness = await vrf.waitFulfilled(seed);
+console.log("Your randomness is " + randomness.fulfilled());
 ```

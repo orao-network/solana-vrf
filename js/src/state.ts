@@ -104,7 +104,7 @@ export class Randomness {
 
     /** Returns fulfilled randomness or `null` if not yet fulfilled */
     fulfilled(): Uint8Array | null {
-        if (Buffer.from(this.randomness).equals(Buffer.alloc(64))) {
+        if (Buffer.alloc(64).equals(this.randomness)) {
             return null;
         }
         return this.randomness;
@@ -143,5 +143,25 @@ export class Randomness {
         }
 
         return expected_randomness.equals(this.randomness);
+    }
+}
+
+export class FulfilledRandomness extends Randomness {
+    private constructor(inner: Randomness) {
+        super([...inner.seed], [...inner.randomness], inner.responses);
+    }
+
+    /**
+     * Creates an instance of FulfilledRandomness from the given randomness
+     *
+     * It's a caller's responsibility to assert that the randomness is actually filfilled.
+     */
+    static unchecked(inner: Randomness): FulfilledRandomness {
+        return new FulfilledRandomness(inner);
+    }
+
+    /** Returns fulfilled randomness */
+    fulfilled(): Uint8Array {
+        return this.randomness;
     }
 }

@@ -36,7 +36,7 @@
   integrity sha512-Gptpue6qPmg7p1E5LBO5GDtXw5WMc2DVtUmu4EQequOcoCvum1dT9sY6s9M8aSJWq9YopCN4jmTOAvqMdw3q7w==
 
 "@orao-network/solana-vrf@file:../../../js":
-  version "0.2.1"
+  version "0.2.2"
   dependencies:
     "@noble/ed25519" "^1.6.1"
     "@project-serum/anchor" "^0.25.0"
