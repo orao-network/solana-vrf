@@ -243,7 +243,7 @@ pub struct Request<'info> {
     #[account(
         init,
         payer = payer,
-        space = 10240,
+        space = 8 + 32 + 64 + 4 + (32 + 64) * 7,
         seeds = [RANDOMNESS_ACCOUNT_SEED.as_ref(), &seed],
         bump,
     )]
