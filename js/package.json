@@ -1,6 +1,6 @@
 {
   "name": "@orao-network/solana-vrf",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "ORAO Verifiable Random Function for Solana.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@noble/ed25519": "^1.6.1",
+    "tweetnacl": "^1.0.3",
     "@project-serum/anchor": "^0.25.0"
   }
 }
