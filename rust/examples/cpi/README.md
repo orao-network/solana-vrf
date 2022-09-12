@@ -47,18 +47,20 @@ Waiting for the round to finish..
 CLICK! Player HSCqQaDHGNc2kdPD2NTUKi3S953WZEJCnbrF4RHoxGjz is alive after 3 round(s)
 ```
 
-### How to deploy
-
-Note that the contract is already deployed on the `devnet`, however you can
-change it's ID and deploy on another address:
+### How to deploy the contract
+Note: these instructions assume you have a working solana-cli, rust, anchor installation and that all env and paths are set.
+The contract is already deployed on both the `devnet` and `mainnet`, however you can change it's ID and deploy to another address:
 
 ```sh
 # Generete a new keypair
 $ solana-keygen new -o /tmp/new_keypair.json
 
 # Update contract ID with the public key of the new keypair
-vim programs/russian-roulette/lib.rs # update `declare_id!` macro value
+vim programs/russian-roulette/src/lib.rs # update `declare_id!` macro value
 vim Anchor.toml # update `programs.localnet.russian_roulette` address
+
+# Build the contract, from the ./rust/examples/cpi directory
+$ anchor build
 
 # Deploy on the new address (add more funds to your wallet in case of 0x1 error)
 anchor deploy --program-keypair /tmp/new_keypair.json --program-name russian-roulette
