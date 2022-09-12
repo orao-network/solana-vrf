@@ -73,7 +73,7 @@ export declare class FulfilledRandomness extends Randomness {
     /**
      * Creates an instance of FulfilledRandomness from the given randomness
      *
-     * It's a caller's responsibility to assert that it's actually filfilled.
+     * It's a caller's responsibility to assert that the randomness is actually filfilled.
      */
     static unchecked(inner: Randomness): FulfilledRandomness;
     /** Returns fulfilled randomness */

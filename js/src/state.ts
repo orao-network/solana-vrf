@@ -104,7 +104,7 @@ export class Randomness {
 
     /** Returns fulfilled randomness or `null` if not yet fulfilled */
     fulfilled(): Uint8Array | null {
-        if (Buffer.alloc(64).equals(this.randomness)) {
+        if (Buffer.alloc(64).equals(Buffer.from(this.randomness))) {
             return null;
         }
         return this.randomness;
@@ -142,7 +142,7 @@ export class Randomness {
             }
         }
 
-        return expected_randomness.equals(this.randomness);
+        return expected_randomness.equals(Buffer.from(this.randomness));
     }
 }
 

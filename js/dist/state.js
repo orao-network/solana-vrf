@@ -58,7 +58,7 @@ class Randomness {
     }
     /** Returns fulfilled randomness or `null` if not yet fulfilled */
     fulfilled() {
-        if (Buffer.alloc(64).equals(this.randomness)) {
+        if (Buffer.alloc(64).equals(Buffer.from(this.randomness))) {
             return null;
         }
         return this.randomness;
@@ -85,7 +85,7 @@ class Randomness {
                 expected_randomness[i] ^= response.randomness[i];
             }
         }
-        return expected_randomness.equals(this.randomness);
+        return expected_randomness.equals(Buffer.from(this.randomness));
     }
 }
 exports.Randomness = Randomness;
@@ -96,7 +96,7 @@ class FulfilledRandomness extends Randomness {
     /**
      * Creates an instance of FulfilledRandomness from the given randomness
      *
-     * It's a caller's responsibility to assert that it's actually filfilled.
+     * It's a caller's responsibility to assert that the randomness is actually filfilled.
      */
     static unchecked(inner) {
         return new FulfilledRandomness(inner);
