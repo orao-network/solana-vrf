@@ -3,7 +3,7 @@
 This repository provides off-chain Rust and JS web3 SDKs for requesting on-chain
 randomness using ORAO VRF contract.
 
-Browse through `js` and `rust` subdirectories for more info.
+Browse through [js SDK](https://github.com/orao-network/solana-vrf/tree/master/js) and [rust SDK](https://github.com/orao-network/solana-vrf/tree/master/rust) subdirectories for more info. We've made an [in-depth VRF integration guide](https://solanacookbook.com/integrations/orao-vrf.html#basic-usage-scenario) on Solana's Cookbook.
 
 ### How to run a test validator.
 
