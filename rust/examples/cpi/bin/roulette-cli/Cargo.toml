@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anchor-client = "0.25.0"
+anchor-client = "0.26.0"
 anyhow = "1"
 env_logger = "0.9"
 indicatif = "0.17"

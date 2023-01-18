@@ -6,8 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anchor-client = "0.25.0"
-anchor-lang = "0.25.0"
+anchor-client = "0.26.0"
+anchor-lang = "0.26.0"
 indicatif = "0.17"
 orao-solana-vrf = { path = "../../sdk" }
 rand = "0.7.3"
