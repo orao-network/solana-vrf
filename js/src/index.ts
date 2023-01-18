@@ -1,4 +1,4 @@
-import { BN, Program, Provider, web3 } from "@project-serum/anchor";
+import { BN, Program, Provider, web3 } from "@coral-xyz/anchor";
 import { Ed25519Program, SYSVAR_INSTRUCTIONS_PUBKEY } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import {

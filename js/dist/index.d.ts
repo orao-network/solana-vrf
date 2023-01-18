@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { BN, Program, Provider, web3 } from "@project-serum/anchor";
+import { BN, Program, Provider, web3 } from "@coral-xyz/anchor";
 import { NetworkConfiguration, NetworkState, OraoTokenFeeConfig, Randomness, FulfilledRandomness } from "./state";
 import { OraoVrf } from "./types/orao_vrf";
 export { Randomness, FulfilledRandomness, RandomnessResponse, NetworkConfiguration, NetworkState, OraoTokenFeeConfig, } from "./state";

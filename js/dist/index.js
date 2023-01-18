@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FulfillBuilder = exports.RequestBuilder = exports.UpdateBuilder = exports.InitBuilder = exports.Orao = exports.quorum = exports.randomnessAccountAddress = exports.networkStateAccountAddress = exports.CONFIG_ACCOUNT_SEED = exports.RANDOMNESS_ACCOUNT_SEED = exports.PROGRAM_ID = exports.PROGRAM_ADDRESS = exports.OraoTokenFeeConfig = exports.NetworkState = exports.NetworkConfiguration = exports.RandomnessResponse = exports.FulfilledRandomness = exports.Randomness = void 0;
-const anchor_1 = require("@project-serum/anchor");
+const anchor_1 = require("@coral-xyz/anchor");
 const web3_js_1 = require("@solana/web3.js");
 const tweetnacl_1 = __importDefault(require("tweetnacl"));
 const state_1 = require("./state");

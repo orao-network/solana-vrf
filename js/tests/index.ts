@@ -1,5 +1,5 @@
 import assert from "assert";
-import { AnchorProvider, web3, BN } from "@project-serum/anchor";
+import { AnchorProvider, web3, BN } from "@coral-xyz/anchor";
 import {
     Orao,
     networkStateAccountAddress,
