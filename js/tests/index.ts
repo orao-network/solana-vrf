@@ -10,7 +10,7 @@ import {
 import { describe, it } from "mocha";
 
 describe("vrf", () => {
-    const provider = AnchorProvider.local();
+    const provider = AnchorProvider.local('http://127.0.0.1:8899');
     const program = new Orao(provider);
 
     const networkState = networkStateAccountAddress();

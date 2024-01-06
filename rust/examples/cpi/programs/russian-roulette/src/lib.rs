@@ -1,6 +1,9 @@
 mod misc;
 pub mod state;
 
+#[cfg(feature = "sdk")]
+use std::ops::Deref;
+
 use anchor_lang::prelude::*;
 use orao_solana_vrf::program::OraoVrf;
 use orao_solana_vrf::state::NetworkState;
@@ -123,10 +126,13 @@ pub enum Error {
 
 /// Helper that builds the instruction.
 #[cfg(feature = "sdk")]
-pub fn spin_and_pull_the_trigger<'a>(
-    roulette: &'a anchor_client::Program,
-    vrf: &anchor_client::Program,
-) -> std::result::Result<anchor_client::RequestBuilder<'a>, anchor_client::ClientError> {
+pub fn spin_and_pull_the_trigger<
+    'a,
+    C: Deref<Target = impl anchor_client::solana_sdk::signer::Signer> + Clone,
+>(
+    roulette: &'a anchor_client::Program<C>,
+    vrf: &anchor_client::Program<C>,
+) -> std::result::Result<anchor_client::RequestBuilder<'a, C>, anchor_client::ClientError> {
     let seed = rand::random();
 
     // roulette accounts

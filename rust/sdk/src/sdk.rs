@@ -5,6 +5,7 @@ use anchor_client::{
     solana_sdk::{
         ed25519_instruction,
         signature::{Keypair, Signature},
+        signer::Signer,
         sysvar,
     },
 };
@@ -20,24 +21,25 @@ use crate::{
     xor_array,
 };
 
+use std::ops::Deref;
+
 /// Fetches VRF on-chain state.
 ///
 /// ```no_run
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-/// # use orao_vrf as orao_solana_vrf;
 /// use anchor_client::*;
 ///
-/// # let payer = panic!();
+/// # let payer: std::rc::Rc<solana_sdk::signer::keypair::Keypair> = panic!();
 /// let client = Client::new(Cluster::Devnet, payer);
-/// let program = client.program(orao_solana_vrf::id());
+/// let program = client.program(orao_solana_vrf::id()).expect("unable to get a program");
 ///
 /// let network_state = orao_solana_vrf::get_network_state(&program)?;
 ///
 /// println!("The tresury is {}", network_state.config.treasury);
 /// # Ok(()) }
 /// ```
-pub fn get_network_state(
-    orao_vrf: &anchor_client::Program,
+pub fn get_network_state<C: Deref<Target = impl Signer> + Clone>(
+    orao_vrf: &anchor_client::Program<C>,
 ) -> Result<NetworkState, anchor_client::ClientError> {
     let network_state_address = network_state_account_address();
     orao_vrf.account(network_state_address)
@@ -47,12 +49,12 @@ pub fn get_network_state(
 ///
 /// ```no_run
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-/// # use orao_vrf as orao_solana_vrf;
 /// use anchor_client::*;
 ///
-/// # let (payer, seed) = panic!();
+/// # let payer: std::rc::Rc<solana_sdk::signer::keypair::Keypair> = panic!();
+/// # let seed: [u8; 32] = panic!();
 /// let client = Client::new(Cluster::Devnet, payer);
-/// let program = client.program(orao_solana_vrf::id());
+/// let program = client.program(orao_solana_vrf::id()).expect("unable to get a program");
 ///
 /// let randomness_account = orao_solana_vrf::get_randomness(&program, &seed)?;
 ///
@@ -63,8 +65,8 @@ pub fn get_network_state(
 /// }
 /// # Ok(()) }
 /// ```
-pub fn get_randomness(
-    orao_vrf: &anchor_client::Program,
+pub fn get_randomness<C: Deref<Target = impl Signer> + Clone>(
+    orao_vrf: &anchor_client::Program<C>,
     seed: &[u8; 32],
 ) -> Result<Randomness, anchor_client::ClientError> {
     let request_address = randomness_account_address(seed);
@@ -103,10 +105,10 @@ impl InitBuilder {
     }
 
     /// Builds the request.
-    pub fn build(
+    pub fn build<C: Deref<Target = impl Signer> + Clone>(
         self,
-        orao_vrf: &anchor_client::Program,
-    ) -> Result<anchor_client::RequestBuilder, anchor_client::ClientError> {
+        orao_vrf: &anchor_client::Program<C>,
+    ) -> Result<anchor_client::RequestBuilder<C>, anchor_client::ClientError> {
         let network_state_address = network_state_account_address();
 
         let builder = orao_vrf
@@ -182,10 +184,10 @@ impl UpdateBuilder {
     }
 
     /// Builds the request.
-    pub fn build(
+    pub fn build<C: Deref<Target = impl Signer> + Clone>(
         self,
-        orao_vrf: &anchor_client::Program,
-    ) -> Result<anchor_client::RequestBuilder, anchor_client::ClientError> {
+        orao_vrf: &anchor_client::Program<C>,
+    ) -> Result<anchor_client::RequestBuilder<C>, anchor_client::ClientError> {
         let network_state_address = network_state_account_address();
         let network_state: NetworkState = orao_vrf.account(network_state_address)?;
         let mut config = network_state.config;
@@ -235,12 +237,11 @@ impl UpdateBuilder {
 ///
 /// ```no_run
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-/// # use orao_vrf as orao_solana_vrf;
 /// use anchor_client::*;
 ///
-/// # let payer = panic!();
+/// # let payer: std::rc::Rc<solana_sdk::signer::keypair::Keypair> = panic!();
 /// let client = Client::new(Cluster::Devnet, payer);
-/// let program = client.program(orao_solana_vrf::id());
+/// let program = client.program(orao_solana_vrf::id()).expect("unable to get a program");
 ///
 /// let seed = rand::random();
 /// let tx = orao_solana_vrf::RequestBuilder::new(seed)
@@ -274,10 +275,10 @@ impl RequestBuilder {
     }
 
     /// Builds the request.
-    pub fn build(
+    pub fn build<C: Deref<Target = impl Signer> + Clone>(
         self,
-        orao_vrf: &anchor_client::Program,
-    ) -> Result<anchor_client::RequestBuilder, anchor_client::ClientError> {
+        orao_vrf: &anchor_client::Program<C>,
+    ) -> Result<anchor_client::RequestBuilder<C>, anchor_client::ClientError> {
         let network_state_address = network_state_account_address();
         let request_address = randomness_account_address(&self.seed);
 
@@ -328,11 +329,11 @@ impl FulfillBuilder {
     }
 
     /// Builds the request.
-    pub fn build<'a>(
+    pub fn build<'a, C: Deref<Target = impl Signer> + Clone>(
         self,
-        orao_vrf: &'a anchor_client::Program,
+        orao_vrf: &'a anchor_client::Program<C>,
         fullfill_authority: &Keypair,
-    ) -> anchor_client::RequestBuilder<'a> {
+    ) -> anchor_client::RequestBuilder<'a, C> {
         let network_state_address = network_state_account_address();
         let request_address = randomness_account_address(&self.seed);
 
@@ -368,7 +369,7 @@ impl Randomness {
                 return false;
             }
 
-            let sig = Signature::new(&response.randomness);
+            let sig = Signature::from(response.randomness);
 
             if !sig.verify(response.pubkey.as_ref(), &self.seed) {
                 return false;

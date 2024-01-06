@@ -4,7 +4,7 @@ use anchor_client::{
     solana_client::rpc_config::RpcSendTransactionConfig,
     solana_sdk::{
         bs58, commitment_config::CommitmentConfig, native_token::LAMPORTS_PER_SOL,
-        signature::read_keypair_file, signer::Signer,
+        signature::read_keypair_file, signer::keypair::Keypair, signer::Signer,
     },
     Client, Cluster, Program,
 };
@@ -15,6 +15,9 @@ use orao_solana_vrf::{
     RequestBuilder,
 };
 use solana_cli_config::{Config, CONFIG_FILE};
+
+use std::ops::Deref;
+//use std::rc::Rc;
 
 // Replace this one with the desired network.
 const CLUSTER: Cluster = Cluster::Devnet;
@@ -57,7 +60,7 @@ pub fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-fn request_airdrop(program: &Program, pubkey: &Pubkey) {
+fn request_airdrop<C: Deref<Target = impl Signer> + Clone>(program: &Program<C>, pubkey: &Pubkey) {
     let latest_blockhash = program
         .rpc()
         .get_latest_blockhash()
@@ -79,7 +82,7 @@ fn request_airdrop(program: &Program, pubkey: &Pubkey) {
 /// This helper will create the program client. It'll panic on error to simplify the code.
 ///
 /// Returns payer public key and the [`Program`] instance.
-fn get_program() -> (Pubkey, Program) {
+fn get_program() -> (Pubkey, Program<Rc<Keypair>>) {
     let config_file = CONFIG_FILE
         .as_ref()
         .expect("unable to get config file path");
@@ -89,13 +92,18 @@ fn get_program() -> (Pubkey, Program) {
     let payer_pubkey = payer.pubkey();
 
     let client = Client::new_with_options(CLUSTER, Rc::new(payer), CommitmentConfig::finalized());
-    let program = client.program(orao_solana_vrf::id());
+    let program = client
+        .program(orao_solana_vrf::id())
+        .expect("unable to get a program");
 
     (payer_pubkey, program)
 }
 
 /// This helper will loop until randomness gets fulfilled.
-pub fn wait_fulfilled(program: &Program, seed: &[u8; 32]) -> Randomness {
+pub fn wait_fulfilled<C: Deref<Target = impl Signer> + Clone>(
+    program: &Program<C>,
+    seed: &[u8; 32],
+) -> Randomness {
     let progress = ProgressBar::new_spinner();
     progress.enable_steady_tick(std::time::Duration::from_millis(120));
     progress.set_message("Waiting for randomness being fulfilled..");

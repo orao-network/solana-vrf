@@ -1,3 +1,4 @@
+use std::ops::Deref;
 use std::{rc::Rc, thread::sleep, time::Duration};
 
 use anchor_client::solana_sdk::{
@@ -76,8 +77,12 @@ fn main() -> anyhow::Result<()> {
         CommitmentConfig::finalized(),
     );
 
-    let vrf = client.program(orao_solana_vrf::id());
-    let roulette = client.program(russian_roulette::id());
+    let vrf = client
+        .program(orao_solana_vrf::id())
+        .expect("unable to get a vrf program");
+    let roulette = client
+        .program(russian_roulette::id())
+        .expect("unable to get a roulette program");
 
     let state = roulette
         .account::<PlayerState>(player_state_account_address(&player))
@@ -130,7 +135,10 @@ fn describe_state(sound_effects: bool, state: PlayerState, prevous_round: Option
     }
 }
 
-fn play_a_round(roulette: &Program, vrf: &Program) -> anyhow::Result<Signature> {
+fn play_a_round<C: Deref<Target = impl Signer> + Clone>(
+    roulette: &Program<C>,
+    vrf: &Program<C>,
+) -> anyhow::Result<Signature> {
     println!("Loading a bullet and spinning the cylinder..");
     match spin_and_pull_the_trigger(roulette, vrf)?.send_with_spinner_and_config(Default::default())
     {
@@ -142,7 +150,10 @@ fn play_a_round(roulette: &Program, vrf: &Program) -> anyhow::Result<Signature> 
     }
 }
 
-fn wait_for_result(roulette: &Program, vrf: &Program) -> anyhow::Result<(Randomness, PlayerState)> {
+fn wait_for_result<C: Deref<Target = impl Signer> + Clone>(
+    roulette: &Program<C>,
+    vrf: &Program<C>,
+) -> anyhow::Result<(Randomness, PlayerState)> {
     let progress = ProgressBar::new_spinner();
     progress.enable_steady_tick(std::time::Duration::from_millis(120));
     progress.set_message("Waiting for the round to finish..");
