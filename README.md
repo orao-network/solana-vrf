@@ -1,5 +1,5 @@
 <h1 align="center">
-  Orao Solana VRF
+  ORAO Solana VRF
 </h1>
 
 <p>
