@@ -7,12 +7,15 @@
 </p>
 <p align="center">
   <a href="https://www.npmjs.com/package/@orao-network/solana-vrf"><img src="https://img.shields.io/npm/v/%40orao-network%2Fsolana-vrf?logo=npm&color=377CC0" /></a>
-  <a href="https://crates.io/crates/orao-solana-vrf"><img src="https://img.shields.io/crates/v/orao-solana-vrf?logo=rust&color=darkgreen" /></a>
+  <a href="https://crates.io/crates/orao-solana-vrf"><img src="https://img.shields.io/crates/v/orao-solana-vrf?logo=rust&color=darkgreen" /></a><br />
+  
 </p>
 
 
-This repository provides off-chain Rust and JS web3 SDKs for requesting on-chain
-randomness using ORAO VRF contract.
+
+This repository provides off-chain Rust and JS web3 SDKs for requesting on-chain randomness using ORAO VRF program.
+
+Program account (devnet/mainnet): `VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y`
 
 ## Developer Integration Guide - CPI Example
 CPI is an abbreviation for Cross Program Invocation on Solana – a way for one contract to call another
@@ -27,7 +30,7 @@ to design it in a way that it'll wait for randomness being fulfilled. In our exa
 won't be able to start another round until the current one is finished (until the randomness
 is fulfilled).
 
-### 1. Create the contract
+### 1. Create your contract
 
 This examples is based on the [Anchor Framework](https://github.com/coral-xyz/anchor).
 Please consult the [Anchor Book](https://book.anchor-lang.com/) on how to create a contract.
