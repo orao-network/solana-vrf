@@ -226,20 +226,20 @@ pub struct UpdateNetwork<'info> {
 #[instruction(seed: [u8; 32])]
 pub struct Request<'info> {
     #[account(mut)]
-    payer: Signer<'info>,
+    pub payer: Signer<'info>,
     #[account(
         mut,
         seeds = [CONFIG_ACCOUNT_SEED.as_ref()],
         bump,
     )]
-    network_state: Account<'info, NetworkState>,
+    pub network_state: Account<'info, NetworkState>,
     /// CHECK:
     #[account(
         mut,
         constraint = network_state.config.treasury == treasury.key() ||
         network_state.config.token_fee_config.as_ref().map(|x| x.treasury) == Some(treasury.key())
         @ Error::UnknownTreasuryGiven)]
-    treasury: AccountInfo<'info>,
+    pub treasury: AccountInfo<'info>,
     #[account(
         init,
         payer = payer,
@@ -247,8 +247,8 @@ pub struct Request<'info> {
         seeds = [RANDOMNESS_ACCOUNT_SEED.as_ref(), &seed],
         bump,
     )]
-    request: Account<'info, Randomness>,
-    system_program: Program<'info, System>,
+    pub request: Account<'info, Randomness>,
+    pub system_program: Program<'info, System>,
 }
 
 /// Fulfill randomness.
