@@ -17,7 +17,7 @@ pub const PLAYER_STATE_ACCOUNT_SEED: &[u8] = b"russian-roulette-player-state";
 
 pub fn player_state_account_address(player: &Pubkey) -> Pubkey {
     Pubkey::find_program_address(
-        &[PLAYER_STATE_ACCOUNT_SEED.as_ref(), player.as_ref()],
+        &[PLAYER_STATE_ACCOUNT_SEED, player.as_ref()],
         &crate::id(),
     )
     .0
@@ -71,7 +71,7 @@ pub mod russian_roulette {
 #[instruction(force: [u8; 32])]
 pub struct SpinAndPullTheTrigger<'info> {
     #[account(mut)]
-    player: Signer<'info>,
+    pub player: Signer<'info>,
     #[account(
         init_if_needed,
         payer = player,
@@ -82,34 +82,34 @@ pub struct SpinAndPullTheTrigger<'info> {
         ],
         bump
     )]
-    player_state: Account<'info, PlayerState>,
+    pub player_state: Account<'info, PlayerState>,
     /// CHECK:
     #[account(
-        seeds = [RANDOMNESS_ACCOUNT_SEED.as_ref(), player_state.force.as_ref()],
+        seeds = [RANDOMNESS_ACCOUNT_SEED, player_state.force.as_ref()],
         bump,
         seeds::program = orao_solana_vrf::ID
     )]
-    prev_round: AccountInfo<'info>,
+    pub prev_round: AccountInfo<'info>,
     /// CHECK:
     #[account(
         mut,
-        seeds = [RANDOMNESS_ACCOUNT_SEED.as_ref(), &force],
+        seeds = [RANDOMNESS_ACCOUNT_SEED, &force],
         bump,
         seeds::program = orao_solana_vrf::ID
     )]
-    random: AccountInfo<'info>,
+    pub random: AccountInfo<'info>,
     /// CHECK:
     #[account(mut)]
-    treasury: AccountInfo<'info>,
+    pub treasury: AccountInfo<'info>,
     #[account(
         mut,
-        seeds = [CONFIG_ACCOUNT_SEED.as_ref()],
+        seeds = [CONFIG_ACCOUNT_SEED],
         bump,
         seeds::program = orao_solana_vrf::ID
     )]
-    config: Account<'info, NetworkState>,
-    vrf: Program<'info, OraoVrf>,
-    system_program: Program<'info, System>,
+    pub config: Account<'info, NetworkState>,
+    pub vrf: Program<'info, OraoVrf>,
+    pub system_program: Program<'info, System>,
 }
 
 #[error_code]
@@ -126,7 +126,7 @@ pub enum Error {
 
 /// Helper that builds the instruction.
 #[cfg(feature = "sdk")]
-pub fn spin_and_pull_the_trigger<
+pub async fn spin_and_pull_the_trigger<
     'a,
     C: Deref<Target = impl anchor_client::solana_sdk::signer::Signer> + Clone,
 >(
@@ -138,18 +138,23 @@ pub fn spin_and_pull_the_trigger<
     // roulette accounts
     let player_state_address = player_state_account_address(&roulette.payer());
 
-    let player_state: PlayerState = match roulette.account(player_state_address) {
+    let player_state: PlayerState = match roulette.account(player_state_address).await {
         Ok(x) => x,
         Err(anchor_client::ClientError::AccountNotFound) => PlayerState::new(roulette.payer()),
         Err(err) => return Err(err),
     };
 
     // vrf accounts
-    let network_state_address = orao_solana_vrf::network_state_account_address();
-    let prev_request_address = orao_solana_vrf::randomness_account_address(&player_state.force);
-    let request_address = orao_solana_vrf::randomness_account_address(&seed);
+    let network_state_address =
+        orao_solana_vrf::network_state_account_address(&orao_solana_vrf::ID);
+    let prev_request_address =
+        orao_solana_vrf::randomness_account_address(&orao_solana_vrf::ID, &player_state.force);
+    let request_address = orao_solana_vrf::randomness_account_address(&orao_solana_vrf::ID, &seed);
 
-    let vrf_config = vrf.account::<NetworkState>(network_state_address)?.config;
+    let vrf_config = vrf
+        .account::<NetworkState>(network_state_address)
+        .await?
+        .config;
 
     Ok(roulette
         .request()

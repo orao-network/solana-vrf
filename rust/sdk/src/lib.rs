@@ -2,7 +2,7 @@
 //!
 //! Crate to interact with `orao-vrf` smart contract on Solana network.
 //!
-//! Provides an interface to request for a verifiable randomness (Ed25519 Signature)
+//! Provides an interface to request verifiable randomness (Ed25519 Signature)
 //! on the Solana network.
 //!
 //! ## Documentation
@@ -17,7 +17,7 @@
 //!
 //! ## Cross Program Invocation
 //!
-//! For CPI please look into the `cpi` example and accouns requiremens for the [`Request`]
+//! For CPI please look into the `cpi` example and account requirements for the [`Request`]
 //! instruction.
 //!
 //! **Note:** requires `cpi` feature to be enabled and `sdk` feature to be disabled.
@@ -35,6 +35,7 @@
 //! let cpi_ctx = CpiContext::new(vrf_program, request_accounts);
 //! orao_solana_vrf::cpi::request(cpi_ctx, seed)?;
 //! ```
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 use anchor_lang::prelude::*;
 use state::{NetworkState, OraoTokenFeeConfig, Randomness};
@@ -42,32 +43,40 @@ use state::{NetworkState, OraoTokenFeeConfig, Randomness};
 pub use crate::error::Error;
 
 pub mod error;
+
+pub mod events;
 pub mod state;
 
 mod sdk;
 #[cfg(feature = "sdk")]
 pub use crate::sdk::*;
 
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 declare_id!("VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y");
 
 /// This is the seed used for creating request/fulfillment accounts.
 pub const RANDOMNESS_ACCOUNT_SEED: &[u8] = b"orao-vrf-randomness-request";
 
-/// This is the seed used for creating network-wide configuration PDA
+/// This is the seed used to create network-wide configuration PDA
 /// account, that sets things like fulfillment authorities, costs, etc.
 pub const CONFIG_ACCOUNT_SEED: &[u8] = b"orao-vrf-network-configuration";
 
 // this is the number of public keys that are allowed to generate randomness
 pub const MAX_FULFILLMENT_AUTHORITIES_COUNT: usize = 10;
 
-/// Returns network state account address.
-pub fn network_state_account_address() -> Pubkey {
-    Pubkey::find_program_address(&[CONFIG_ACCOUNT_SEED.as_ref()], &crate::id()).0
+/// Returns network state account address for the given VRF address.
+///
+/// * `vrf_id` — use [`crate::id`] to get the proper address
+pub fn network_state_account_address(vrf_id: &Pubkey) -> Pubkey {
+    Pubkey::find_program_address(&[CONFIG_ACCOUNT_SEED], vrf_id).0
 }
 
-/// Returns randomness account address for the given seed.
-pub fn randomness_account_address(seed: &[u8; 32]) -> Pubkey {
-    Pubkey::find_program_address(&[RANDOMNESS_ACCOUNT_SEED.as_ref(), &seed[..]], &crate::id()).0
+/// Returns randomness account address for the given seed and VRF address.
+///
+/// * `vrf_id` — use [`crate::id`] to get the proper address
+pub fn randomness_account_address(vrf_id: &Pubkey, seed: &[u8; 32]) -> Pubkey {
+    Pubkey::find_program_address(&[RANDOMNESS_ACCOUNT_SEED, &seed[..]], vrf_id).0
 }
 
 /// Helper that XORes `r` into `l`.
@@ -158,18 +167,18 @@ pub mod orao_vrf {
 #[derive(Accounts)]
 pub struct InitNetwork<'info> {
     #[account(mut)]
-    payer: Signer<'info>,
+    pub payer: Signer<'info>,
     #[account(
         init,
         payer = payer,
         space = 8 + 464,
-        seeds = [CONFIG_ACCOUNT_SEED.as_ref()],
+        seeds = [CONFIG_ACCOUNT_SEED],
         bump,
     )]
-    network_state: Account<'info, NetworkState>,
+    pub network_state: Account<'info, NetworkState>,
     /// CHECK:
-    treasury: AccountInfo<'info>,
-    system_program: Program<'info, System>,
+    pub treasury: AccountInfo<'info>,
+    pub system_program: Program<'info, System>,
 }
 
 /// Update network configuration.
@@ -190,16 +199,16 @@ pub struct InitNetwork<'info> {
 #[derive(Accounts)]
 pub struct UpdateNetwork<'info> {
     #[account(mut)]
-    authority: Signer<'info>,
+    pub authority: Signer<'info>,
     #[account(
         mut,
-        seeds = [CONFIG_ACCOUNT_SEED.as_ref()],
+        seeds = [CONFIG_ACCOUNT_SEED],
         bump,
         constraint = network_state.config.authority == authority.key(),
     )]
-    network_state: Account<'info, NetworkState>,
+    pub network_state: Account<'info, NetworkState>,
     /// CHECK:
-    treasury: AccountInfo<'info>,
+    pub treasury: AccountInfo<'info>,
 }
 
 /// Request randomness.
@@ -222,33 +231,37 @@ pub struct UpdateNetwork<'info> {
 ///
 /// *  (writable) token_payer – payer token wallet
 /// *  token_program_account – necessary to execute the transfer
+///
+/// ### Space calculation for account creation (request)
+/// * 8 (anchor tag) + 32 (seed) + 64 (combined randomness) + 4 (response array length) + (32 (fulfiller pubkey) + 64 (fulfiller randomness))  * 7 (maximum number of responses)
+///
 #[derive(Accounts)]
 #[instruction(seed: [u8; 32])]
 pub struct Request<'info> {
     #[account(mut)]
-    payer: Signer<'info>,
+    pub payer: Signer<'info>,
     #[account(
         mut,
-        seeds = [CONFIG_ACCOUNT_SEED.as_ref()],
+        seeds = [CONFIG_ACCOUNT_SEED],
         bump,
     )]
-    network_state: Account<'info, NetworkState>,
+    pub network_state: Account<'info, NetworkState>,
     /// CHECK:
     #[account(
         mut,
         constraint = network_state.config.treasury == treasury.key() ||
         network_state.config.token_fee_config.as_ref().map(|x| x.treasury) == Some(treasury.key())
         @ Error::UnknownTreasuryGiven)]
-    treasury: AccountInfo<'info>,
+    pub treasury: AccountInfo<'info>,
     #[account(
         init,
         payer = payer,
         space = 8 + 32 + 64 + 4 + (32 + 64) * 7,
-        seeds = [RANDOMNESS_ACCOUNT_SEED.as_ref(), &seed],
+        seeds = [RANDOMNESS_ACCOUNT_SEED, &seed],
         bump,
     )]
-    request: Account<'info, Randomness>,
-    system_program: Program<'info, System>,
+    pub request: Account<'info, Randomness>,
+    pub system_program: Program<'info, System>,
 }
 
 /// Fulfill randomness.
@@ -256,7 +269,7 @@ pub struct Request<'info> {
 /// ### Required accounts
 ///
 /// *  (signer) payer – transaction fee payer
-/// *  instruction_acc – sysvar instruction accout
+/// *  instruction_acc – sysvar instruction account
 /// *  (writable) network_state – VRF on-chain config PDA
 ///    (see [`network_state_account_address`])
 /// *  (writable) request – randomness request PDA
@@ -264,19 +277,19 @@ pub struct Request<'info> {
 #[derive(Accounts)]
 pub struct Fulfill<'info> {
     #[account(mut)]
-    payer: Signer<'info>,
+    pub payer: Signer<'info>,
     /// CHECK:
-    instruction_acc: AccountInfo<'info>,
+    pub instruction_acc: AccountInfo<'info>,
     #[account(
         mut,
-        seeds = [CONFIG_ACCOUNT_SEED.as_ref()],
+        seeds = [CONFIG_ACCOUNT_SEED],
         bump,
     )]
-    network_state: Account<'info, NetworkState>,
+    pub network_state: Account<'info, NetworkState>,
     #[account(
         mut,
-        seeds = [RANDOMNESS_ACCOUNT_SEED.as_ref(), &request.seed],
+        seeds = [RANDOMNESS_ACCOUNT_SEED, &request.seed],
         bump,
     )]
-    request: Account<'info, Randomness>,
+    pub request: Account<'info, Randomness>,
 }

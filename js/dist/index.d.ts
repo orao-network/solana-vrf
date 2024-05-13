@@ -1,22 +1,26 @@
 /// <reference types="node" />
 import { BN, Program, Provider, web3 } from "@coral-xyz/anchor";
+import { TransactionInstruction } from "@solana/web3.js";
 import { NetworkConfiguration, NetworkState, OraoTokenFeeConfig, Randomness, FulfilledRandomness } from "./state";
 import { OraoVrf } from "./types/orao_vrf";
+import { MethodsBuilder } from "@coral-xyz/anchor/dist/cjs/program/namespace/methods";
 export { Randomness, FulfilledRandomness, RandomnessResponse, NetworkConfiguration, NetworkState, OraoTokenFeeConfig, } from "./state";
 export declare const PROGRAM_ADDRESS: string;
 export declare const PROGRAM_ID: web3.PublicKey;
 export declare const RANDOMNESS_ACCOUNT_SEED: Buffer;
 export declare const CONFIG_ACCOUNT_SEED: Buffer;
 /**
- * Returns VRF configuration address (see helper [[Orao.getNetworkState]]).
+ * Returns VRF configuration address (see helper {@link Orao.getNetworkState}).
  *
  * ```typescript
  * const networkStateAddress = networkStateAccountAddress();
  * ```
+ *
+ * @param [vrf_id=PROGRAM_ID] - you can override the program ID.
  */
-export declare function networkStateAccountAddress(): web3.PublicKey;
+export declare function networkStateAccountAddress(vrf_id?: web3.PublicKey): web3.PublicKey;
 /**
- * Returns randomness account address for the given `seed` (see helper [[Orao.getRandomness]]).
+ * Returns randomness account address for the given `seed` (see helper {@link Orao.getRandomness}).
  *
  * ```typescript
  * const seed = ...;
@@ -24,8 +28,9 @@ export declare function networkStateAccountAddress(): web3.PublicKey;
  * ```
  *
  * @param seed  Seed buffer.
+ * @param [vrf_id=PROGRAM_ID] - you can override the program ID.
  */
-export declare function randomnessAccountAddress(seed: Buffer | Uint8Array): web3.PublicKey;
+export declare function randomnessAccountAddress(seed: Buffer | Uint8Array, vrf_id?: web3.PublicKey): web3.PublicKey;
 /**
  * Returns `true` if Byzantine quorum is achieved.
  *
@@ -36,8 +41,18 @@ export declare function randomnessAccountAddress(seed: Buffer | Uint8Array): web
 export declare function quorum(count: number, total: number): boolean;
 /** Orao VRF program */
 export declare class Orao extends Program<OraoVrf> {
-    payer: web3.PublicKey;
-    constructor(provider: Provider);
+    readonly _payer: web3.PublicKey;
+    get payer(): web3.PublicKey;
+    /**
+     * Constructs a new program given the provider.
+     *
+     * Make sure to choose the desired `CommitmentLevel` when building your provider.
+     *
+     * @param provider - an object that implements the {@link Provider} interface.
+     *     Make sure it uses the desired `CommitmentLevel`.
+     * @param [id=PROGRAM_ID] - you can override the program ID.
+     */
+    constructor(provider: Provider, id?: web3.PublicKey);
     /**
      * Returns VRF configuration (throws if not initialized).
      *
@@ -46,11 +61,11 @@ export declare class Orao extends Program<OraoVrf> {
      * console.log("VRF treasury is " + state.config.treasury.toBase58());
      * ```
      *
-     * @param commitment (optional) commitment level.
+     * @param commitment - you can override the provider's commitment level.
      */
     getNetworkState(commitment?: web3.Commitment): Promise<NetworkState>;
     /**
-     * Returns randomness account data for the given seed (throws if account absent).
+     * Returns randomness account data for the given seed (throws if account is absent).
      *
      * ```typescript
      * const randomnessAccount = await vrf.getRandomness(seed);
@@ -62,12 +77,12 @@ export declare class Orao extends Program<OraoVrf> {
      * }
      * ```
      *
-     * @param seed      Seed buffer.
-     * @param commitment (optional) commitment level.
+     * @param seed - seed buffer.
+     * @param commitment - you can override the provider's commitment level.
      */
     getRandomness(seed: Buffer | Uint8Array, commitment?: web3.Commitment): Promise<Randomness>;
     /**
-     * Prepares a randomness request (see [[RequestBuilder]]).
+     * Prepares a randomness request (see {@link RequestBuilder}).
      *
      * ```typescript
      * const [seed, tx] = await vrf.request().rpc();
@@ -85,14 +100,30 @@ export declare class Orao extends Program<OraoVrf> {
      * ```
      *
      * @param seed seed value (32 bytes). Generated randomly, if not given.
-     * @returns a [[RequestBuilder]] instance.
+     * @returns a {@link RequestBuilder} instance.
      */
     request(seed?: Buffer | Uint8Array): Promise<RequestBuilder>;
     waitFulfilled(seed: Buffer | Uint8Array, commitment?: web3.Commitment): Promise<FulfilledRandomness>;
 }
+declare class ComputeBudgetConfig {
+    computeUnitPrice: bigint | null;
+    computeUnitPriceMultiplier: number | null;
+    computeUnitLimit: number | null;
+    constructor();
+    isEmpty(): boolean;
+    getInstructions(connection: web3.Connection): Promise<TransactionInstruction[]>;
+}
+/**
+ * A convenient builder for the `InitNetwork` instruction.
+ *
+ * Note that by default it will guess and apply a prioritization fee (see
+ * {@link InitBuilder.withComputeUnitPrice} and {@link InitBuilder.withComputeUnitLimit}
+ * to opt-out)
+ */
 export declare class InitBuilder {
     vrf: Orao;
     config: NetworkConfiguration;
+    computeBudgetConfig: ComputeBudgetConfig;
     /**
      * Creates a new init_network instruction builder.
      *
@@ -106,12 +137,56 @@ export declare class InitBuilder {
     /** Change token fee configuration. */
     withTokenFeeConfig(tokenFeeConfig: OraoTokenFeeConfig): InitBuilder;
     /**
+     * Adds a prioritization fee in micro-lamports (applied per compute unit).
+     *
+     * Adds `ComputeBudgetInstruction::SetComputeUnitPrice` to the request builder.
+     *
+     * *   if not specified, then median fee of the last 150 confirmed
+     *     slots is used (this is by default)
+     * *   if zero, then compute unit price is not applied at all.
+     */
+    withComputeUnitPrice(computeUnitPrice: bigint): InitBuilder;
+    /**
+     * Defines a multiplier that is applied to a median compute unit price.
+     *
+     * This is only applied if no compute_unit_price specified, i.e. if compute unit price
+     * is measured as a median fee of the last 150 confirmed slots.
+     *
+     * *   if not specified, then no multiplier is applied (this is by default)
+     * *   if specified, then applied as follows: `compute_unit_price = median * multiplier`
+     */
+    withComputeUnitPriceMultiplier(multiplier: number): InitBuilder;
+    /** Defines a specific compute unit limit that the transaction is allowed to consume.
+     *
+     * Adds `ComputeBudgetInstruction::SetComputeUnitLimit` to the request builder.
+     *
+     * *   if not specified, then compute unit limit is not applied at all
+     *     (this is by default)
+     * *   if specified, then applied as is
+     */
+    withComputeUnitLimit(computeUnitLimit: number): InitBuilder;
+    /**
+     * Returns a {@link MethodsBuilder} instance for the `InitNetwork` instruction.
+     *
+     * Note, that compute budget instructions will be prepended to the returned
+     * instance (use {@link InitBuilder.withComputeUnitPrice} and
+     * {@link InitBuilder.withComputeUnitLimit} to opt-out).
+     */
+    build(): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][0]>>;
+    /**
      * Performs an RPC call.
      *
      * @returns a transaction signature.
      */
     rpc(): Promise<string>;
 }
+/**
+ * A convenient builder for the `UpdateNetwork` instruction.
+ *
+ * Note that by default it will guess and apply a prioritization fee (see
+ * {@link UpdateBuilder.withComputeUnitPrice} and {@link UpdateBuilder.withComputeUnitLimit}
+ * to opt-out)
+ */
 export declare class UpdateBuilder {
     vrf: Orao;
     authority?: web3.PublicKey;
@@ -119,6 +194,7 @@ export declare class UpdateBuilder {
     requestFee?: BN;
     fulfillmentAuthorities?: web3.PublicKey[];
     tokenFeeConfig?: OraoTokenFeeConfig | null;
+    computeBudgetConfig: ComputeBudgetConfig;
     /**
      * Creates a new update_network instruction builder that updates nothing.
      *
@@ -127,7 +203,7 @@ export declare class UpdateBuilder {
     constructor(vrf: Orao);
     /** Change configuration authority. */
     with_authority(authority: web3.PublicKey): UpdateBuilder;
-    /** Change threasury account address. */
+    /** Change treasury account address. */
     with_treasury(treasury: web3.PublicKey): UpdateBuilder;
     /** Change fee (in lamports). */
     with_fee(requestFee: BN): UpdateBuilder;
@@ -136,16 +212,61 @@ export declare class UpdateBuilder {
     /** Change token fee configuration. */
     with_token_fee_config(tokenFeeConfig: OraoTokenFeeConfig): UpdateBuilder;
     /**
+     * Adds a prioritization fee in micro-lamports (applied per compute unit).
+     *
+     * Adds `ComputeBudgetInstruction::SetComputeUnitPrice` to the request builder.
+     *
+     * *   if not specified, then median fee of the last 150 confirmed
+     *     slots is used (this is by default)
+     * *   if zero, then compute unit price is not applied at all.
+     */
+    withComputeUnitPrice(computeUnitPrice: bigint): UpdateBuilder;
+    /**
+     * Defines a multiplier that is applied to a median compute unit price.
+     *
+     * This is only applied if no compute_unit_price specified, i.e. if compute unit price
+     * is measured as a median fee of the last 150 confirmed slots.
+     *
+     * *   if not specified, then no multiplier is applied (this is by default)
+     * *   if specified, then applied as follows: `compute_unit_price = median * multiplier`
+     */
+    withComputeUnitPriceMultiplier(multiplier: number): UpdateBuilder;
+    /** Defines a specific compute unit limit that the transaction is allowed to consume.
+     *
+     * Adds `ComputeBudgetInstruction::SetComputeUnitLimit` to the request builder.
+     *
+     * *   if not specified, then compute unit limit is not applied at all
+     *     (this is by default)
+     * *   if specified, then applied as is
+     */
+    withComputeUnitLimit(computeUnitLimit: number): UpdateBuilder;
+    /**
+     * Returns a {@link MethodsBuilder} instance for the `UpdateNetwork` instruction.
+     *
+     * Note, that compute budget instructions will be prepended to the returned
+     * instance (use {@link UpdateBuilder.withComputeUnitPrice} and
+     * {@link UpdateBuilder.withComputeUnitLimit} to opt-out).
+     */
+    build(): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][1]>>;
+    /**
      * Performs an RPC call.
      *
      * @returns a transaction signature.
      */
     rpc(): Promise<string>;
 }
+/**
+ * A convenient builder for the `Request` instruction.
+ *
+ * Note that by default it will guess and apply a prioritization fee (see
+ * {@link RequestBuilder.withComputeUnitPrice} and {@link RequestBuilder.withComputeUnitLimit}
+ * to opt-out)
+ */
 export declare class RequestBuilder {
     vrf: Orao;
     seed: Uint8Array;
     tokenWallet: web3.PublicKey | null;
+    computeBudgetConfig: ComputeBudgetConfig;
     /**
      * Creates a randomness request builder (defaults to pay fees with SOL).
      *
@@ -163,15 +284,60 @@ export declare class RequestBuilder {
      */
     payWithToken(tokenWallet: web3.PublicKey): RequestBuilder;
     /**
+     * Adds a prioritization fee in micro-lamports (applied per compute unit).
+     *
+     * Adds `ComputeBudgetInstruction::SetComputeUnitPrice` to the request builder.
+     *
+     * *   if not specified, then median fee of the last 150 confirmed
+     *     slots is used (this is by default)
+     * *   if zero, then compute unit price is not applied at all.
+     */
+    withComputeUnitPrice(computeUnitPrice: bigint): RequestBuilder;
+    /**
+     * Defines a multiplier that is applied to a median compute unit price.
+     *
+     * This is only applied if no compute_unit_price specified, i.e. if compute unit price
+     * is measured as a median fee of the last 150 confirmed slots.
+     *
+     * *   if not specified, then no multiplier is applied (this is by default)
+     * *   if specified, then applied as follows: `compute_unit_price = median * multiplier`
+     */
+    withComputeUnitPriceMultiplier(multiplier: number): RequestBuilder;
+    /** Defines a specific compute unit limit that the transaction is allowed to consume.
+     *
+     * Adds `ComputeBudgetInstruction::SetComputeUnitLimit` to the request builder.
+     *
+     * *   if not specified, then compute unit limit is not applied at all
+     *     (this is by default)
+     * *   if specified, then applied as is
+     */
+    withComputeUnitLimit(computeUnitLimit: number): RequestBuilder;
+    /**
+     * Returns a {@link MethodsBuilder} instance for the `Request` instruction.
+     *
+     * Note, that compute budget instructions will be prepended to the returned
+     * instance (use {@link RequestBuilder.withComputeUnitPrice} and
+     * {@link RequestBuilder.withComputeUnitLimit} to opt-out).
+     */
+    build(): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][2]>>;
+    /**
      * Performs an RPC call.
      *
-     * @returns a pair of seed and signature.
+     * @returns a pair of seed and transaction signature.
      */
     rpc(): Promise<[Uint8Array, string]>;
 }
+/**
+ * A convenient builder for the `Fulfill` instruction.
+ *
+ * Note that by default it will guess and apply a prioritization fee (see
+ * {@link FulfillBuilder.withComputeUnitPrice} and {@link FulfillBuilder.withComputeUnitLimit}
+ * to opt-out)
+ */
 export declare class FulfillBuilder {
     vrf: Orao;
     seed: Uint8Array;
+    computeBudgetConfig: ComputeBudgetConfig;
     /**
      * Creates a fulfill instruction builder.
      *
@@ -180,7 +346,50 @@ export declare class FulfillBuilder {
      */
     constructor(vrf: Orao, seed: Uint8Array);
     /**
+     * Adds a prioritization fee in micro-lamports (applied per compute unit).
+     *
+     * Adds `ComputeBudgetInstruction::SetComputeUnitPrice` to the request builder.
+     *
+     * *   if not specified, then median fee of the last 150 confirmed
+     *     slots is used (this is by default)
+     * *   if zero, then compute unit price is not applied at all.
+     */
+    withComputeUnitPrice(computeUnitPrice: bigint): FulfillBuilder;
+    /**
+     * Defines a multiplier that is applied to a median compute unit price.
+     *
+     * This is only applied if no compute_unit_price specified, i.e. if compute unit price
+     * is measured as a median fee of the last 150 confirmed slots.
+     *
+     * *   if not specified, then no multiplier is applied (this is by default)
+     * *   if specified, then applied as follows: `compute_unit_price = median * multiplier`
+     */
+    withComputeUnitPriceMultiplier(multiplier: number): FulfillBuilder;
+    /** Defines a specific compute unit limit that the transaction is allowed to consume.
+     *
+     * Adds `ComputeBudgetInstruction::SetComputeUnitLimit` to the request builder.
+     *
+     * *   if not specified, then compute unit limit is not applied at all
+     *     (this is by default)
+     * *   if specified, then applied as is
+     */
+    withComputeUnitLimit(computeUnitLimit: number): FulfillBuilder;
+    /**
+     * Returns a {@link MethodsBuilder} instance for the `Request` instruction.
+     *
+     * Note, that compute budget instructions will be prepended to the returned
+     * instance (use {@link RequestBuilder.withComputeUnitPrice} and
+     * {@link RequestBuilder.withComputeUnitLimit} to opt-out).
+     *
+     * @param fulfillmentAuthority - public key of a fulfillment authority
+     * @param signature - signature of a seed, performed by the fulfillment authority
+     */
+    build(fulfillmentAuthority: web3.PublicKey, signature: Uint8Array): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][3]>>;
+    /**
      * Performs an RPC call.
+     *
+     * @param fulfillmentAuthority - public key of a fulfillment authority
+     * @param signature - signature of a seed, performed by the fulfillment authority
      *
      * @returns a transaction signature.
      */

@@ -1,5 +1,5 @@
 use std::ops::Deref;
-use std::{rc::Rc, thread::sleep, time::Duration};
+use std::{sync::Arc, thread::sleep, time::Duration};
 
 use anchor_client::solana_sdk::{
     commitment_config::CommitmentConfig, signature::Signature, signer::keypair::read_keypair_file,
@@ -7,12 +7,14 @@ use anchor_client::solana_sdk::{
 };
 use anchor_client::{Client, ClientError, Cluster, Program};
 use indicatif::ProgressBar;
-use orao_solana_vrf::{randomness_account_address, state::Randomness};
+use orao_solana_vrf::{randomness_account_address, state::Randomness, ID};
 use russian_roulette::{
     player_state_account_address, spin_and_pull_the_trigger,
     state::{current_state, CurrentState, PlayerState},
 };
 use solana_cli_config::Config;
+use solana_sdk::commitment_config::CommitmentLevel;
+use solana_client::rpc_config::RpcSendTransactionConfig;
 use structopt::StructOpt;
 
 /// CLI action.
@@ -56,7 +58,8 @@ impl Opts {
     }
 }
 
-fn main() -> anyhow::Result<()> {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
     env_logger::init();
     let opts: Opts = Opts::from_args();
     let mut config = opts.config();
@@ -73,38 +76,42 @@ fn main() -> anyhow::Result<()> {
 
     let client = Client::new_with_options(
         opts.cluster.clone(),
-        Rc::new(keys),
-        CommitmentConfig::finalized(),
+        Arc::new(keys),
+        CommitmentConfig::confirmed(),
     );
 
-    let vrf = client
-        .program(orao_solana_vrf::id())
-        .expect("unable to get a vrf program");
+    let vrf = Arc::new(
+        client
+            .program(orao_solana_vrf::id())
+            .expect("unable to get a vrf program"),
+    );
     let roulette = client
         .program(russian_roulette::id())
         .expect("unable to get a roulette program");
 
     let state = roulette
         .account::<PlayerState>(player_state_account_address(&player))
+        .await
         .unwrap_or_else(|_| PlayerState::new(player));
-    let prevous_round = vrf
-        .account::<Randomness>(randomness_account_address(&state.force))
+    let previous_round = vrf
+        .account::<Randomness>(randomness_account_address(&ID, &state.force))
+        .await
         .ok();
-    let round_outcome = prevous_round
+    let round_outcome = previous_round
         .as_ref()
         .map(current_state)
         .unwrap_or(CurrentState::Alive);
 
     match opts.action() {
-        Action::State => describe_state(false, state, prevous_round.as_ref()),
+        Action::State => describe_state(false, state, previous_round.as_ref()),
         Action::Play => {
             if matches!(round_outcome, CurrentState::Alive) {
-                play_a_round(&roulette, &vrf)?;
-                let (round, player_state) = wait_for_result(&roulette, &vrf)?;
+                play_a_round(&roulette, &vrf).await?;
+                let (round, player_state) = wait_for_result(&roulette, vrf.clone()).await?;
                 describe_state(true, player_state, Some(&round));
             } else {
                 print!("Can't play: ");
-                describe_state(false, state, prevous_round.as_ref());
+                describe_state(false, state, previous_round.as_ref());
             }
         }
     }
@@ -112,8 +119,8 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn describe_state(sound_effects: bool, state: PlayerState, prevous_round: Option<&Randomness>) {
-    match prevous_round {
+fn describe_state(sound_effects: bool, state: PlayerState, previous_round: Option<&Randomness>) {
+    match previous_round {
         Some(round) => match current_state(&round) {
             CurrentState::Alive => println!(
                 "{}Player {} is alive after {} round(s)",
@@ -135,12 +142,18 @@ fn describe_state(sound_effects: bool, state: PlayerState, prevous_round: Option
     }
 }
 
-fn play_a_round<C: Deref<Target = impl Signer> + Clone>(
+async fn play_a_round<C: Deref<Target = impl Signer> + Clone>(
     roulette: &Program<C>,
     vrf: &Program<C>,
 ) -> anyhow::Result<Signature> {
     println!("Loading a bullet and spinning the cylinder..");
-    match spin_and_pull_the_trigger(roulette, vrf)?.send_with_spinner_and_config(Default::default())
+    match spin_and_pull_the_trigger(roulette, vrf)
+        .await?
+        .send_with_spinner_and_config(RpcSendTransactionConfig {
+            preflight_commitment: Some(CommitmentLevel::Confirmed),
+            ..Default::default()
+        })
+        .await
     {
         Ok(signature) => Ok(signature),
         Err(ClientError::AccountNotFound) => {
@@ -150,25 +163,28 @@ fn play_a_round<C: Deref<Target = impl Signer> + Clone>(
     }
 }
 
-fn wait_for_result<C: Deref<Target = impl Signer> + Clone>(
+async fn wait_for_result<C: Deref<Target = impl Signer> + Send + Sync + Clone + 'static>(
     roulette: &Program<C>,
-    vrf: &Program<C>,
+    vrf: Arc<Program<C>>,
 ) -> anyhow::Result<(Randomness, PlayerState)> {
     let progress = ProgressBar::new_spinner();
     progress.enable_steady_tick(std::time::Duration::from_millis(120));
-    progress.set_message("Waiting for the round to finish..");
+    progress.set_message("The cylinder is spinning..");
 
     let player_state_address = player_state_account_address(&roulette.payer());
 
-    for i in 0..300 {
-        let state = roulette.account::<PlayerState>(player_state_address)?;
-        let previous_round = vrf.account::<Randomness>(randomness_account_address(&state.force))?;
+    for _ in 0..10 {
+        let state = roulette
+            .account::<PlayerState>(player_state_address)
+            .await?;
+        let previous_round = vrf
+            .account::<Randomness>(randomness_account_address(&ID, &state.force))
+            .await?;
         match current_state(&previous_round) {
             CurrentState::Alive | CurrentState::Dead => return Ok((previous_round, state)),
             CurrentState::Playing => {
-                if i % 5 == 0 {
-                    println!("The cylinder is still spinning..");
-                }
+                let listener = orao_solana_vrf::wait_fulfilled(state.force, vrf.clone()).await;
+                listener.await?;
             }
         }
         sleep(Duration::from_secs(1));

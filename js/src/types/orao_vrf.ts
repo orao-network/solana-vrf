@@ -1,9 +1,19 @@
 export type OraoVrf = {
-    version: "0.1.2";
+    version: "0.2.5";
     name: "orao_vrf";
     instructions: [
         {
             name: "initNetwork";
+            docs: [
+                "Performs VRF initialization (for required accounts see [`crate::InitNetwork`]).",
+                "",
+                "*  fee – request fee (in lamports)",
+                "*  config_authority – VRF config update authority",
+                "*  fulfillment_authorities – randomness fulfillment authorities",
+                "*  token_fee_config – token fee configuration",
+                "",
+                "Treasury is given via instruction accounts."
+            ];
             accounts: [
                 {
                     name: "payer";
@@ -53,6 +63,16 @@ export type OraoVrf = {
         },
         {
             name: "updateNetwork";
+            docs: [
+                "Performs VRF configuration update (for required accounts see [`crate::UpdateNetwork`]).",
+                "",
+                "*  fee – request fee (in lamports)",
+                "*  config_authority – VRF config update authority",
+                "*  fulfillment_authorities – randomness fulfillment authorities",
+                "*  token_fee_config – token fee configuration",
+                "",
+                "Treasury is given via instruction accounts."
+            ];
             accounts: [
                 {
                     name: "authority";
@@ -97,6 +117,11 @@ export type OraoVrf = {
         },
         {
             name: "request";
+            docs: [
+                "Performs a randomness request (for required accounts see [`crate::Request`]).",
+                "",
+                "*  seed – unique request seed"
+            ];
             accounts: [
                 {
                     name: "payer";
@@ -135,6 +160,7 @@ export type OraoVrf = {
         },
         {
             name: "fulfill";
+            docs: ["Fulfills a randomness request (for required accounts see [`crate::Fulfill`])."];
             accounts: [
                 {
                     name: "payer";
@@ -211,29 +237,6 @@ export type OraoVrf = {
     ];
     types: [
         {
-            name: "OraoTokenFeeConfig";
-            type: {
-                kind: "struct";
-                fields: [
-                    {
-                        name: "mint";
-                        docs: ["ORAO token mint address."];
-                        type: "publicKey";
-                    },
-                    {
-                        name: "treasury";
-                        docs: ["ORAO token treasury account."];
-                        type: "publicKey";
-                    },
-                    {
-                        name: "fee";
-                        docs: ["Fee in ORAO SPL token smallest units."];
-                        type: "u64";
-                    }
-                ];
-            };
-        },
-        {
             name: "NetworkConfiguration";
             type: {
                 kind: "struct";
@@ -268,6 +271,29 @@ export type OraoVrf = {
             };
         },
         {
+            name: "OraoTokenFeeConfig";
+            type: {
+                kind: "struct";
+                fields: [
+                    {
+                        name: "mint";
+                        docs: ["ORAO token mint address."];
+                        type: "publicKey";
+                    },
+                    {
+                        name: "treasury";
+                        docs: ["ORAO token treasury account."];
+                        type: "publicKey";
+                    },
+                    {
+                        name: "fee";
+                        docs: ["Fee in ORAO SPL token smallest units."];
+                        type: "u64";
+                    }
+                ];
+            };
+        },
+        {
             name: "RandomnessResponse";
             type: {
                 kind: "struct";
@@ -284,6 +310,73 @@ export type OraoVrf = {
                     }
                 ];
             };
+        }
+    ];
+    events: [
+        {
+            name: "Fulfill";
+            fields: [
+                {
+                    name: "seed";
+                    type: {
+                        array: ["u8", 32];
+                    };
+                    index: false;
+                },
+                {
+                    name: "randomness";
+                    type: {
+                        array: ["u8", 64];
+                    };
+                    index: false;
+                }
+            ];
+        },
+        {
+            name: "Request";
+            fields: [
+                {
+                    name: "seed";
+                    type: {
+                        array: ["u8", 32];
+                    };
+                    index: false;
+                },
+                {
+                    name: "client";
+                    type: "publicKey";
+                    index: false;
+                },
+                {
+                    name: "paidWithSpl";
+                    type: "bool";
+                    index: false;
+                }
+            ];
+        },
+        {
+            name: "Response";
+            fields: [
+                {
+                    name: "seed";
+                    type: {
+                        array: ["u8", 32];
+                    };
+                    index: false;
+                },
+                {
+                    name: "authority";
+                    type: "publicKey";
+                    index: false;
+                },
+                {
+                    name: "randomness";
+                    type: {
+                        array: ["u8", 64];
+                    };
+                    index: false;
+                }
+            ];
         }
     ];
     errors: [
@@ -341,11 +434,21 @@ export type OraoVrf = {
 };
 
 export const IDL: OraoVrf = {
-    version: "0.1.2",
+    version: "0.2.5",
     name: "orao_vrf",
     instructions: [
         {
             name: "initNetwork",
+            docs: [
+                "Performs VRF initialization (for required accounts see [`crate::InitNetwork`]).",
+                "",
+                "*  fee – request fee (in lamports)",
+                "*  config_authority – VRF config update authority",
+                "*  fulfillment_authorities – randomness fulfillment authorities",
+                "*  token_fee_config – token fee configuration",
+                "",
+                "Treasury is given via instruction accounts.",
+            ],
             accounts: [
                 {
                     name: "payer",
@@ -395,6 +498,16 @@ export const IDL: OraoVrf = {
         },
         {
             name: "updateNetwork",
+            docs: [
+                "Performs VRF configuration update (for required accounts see [`crate::UpdateNetwork`]).",
+                "",
+                "*  fee – request fee (in lamports)",
+                "*  config_authority – VRF config update authority",
+                "*  fulfillment_authorities – randomness fulfillment authorities",
+                "*  token_fee_config – token fee configuration",
+                "",
+                "Treasury is given via instruction accounts.",
+            ],
             accounts: [
                 {
                     name: "authority",
@@ -439,6 +552,11 @@ export const IDL: OraoVrf = {
         },
         {
             name: "request",
+            docs: [
+                "Performs a randomness request (for required accounts see [`crate::Request`]).",
+                "",
+                "*  seed – unique request seed",
+            ],
             accounts: [
                 {
                     name: "payer",
@@ -477,6 +595,7 @@ export const IDL: OraoVrf = {
         },
         {
             name: "fulfill",
+            docs: ["Fulfills a randomness request (for required accounts see [`crate::Fulfill`])."],
             accounts: [
                 {
                     name: "payer",
@@ -553,29 +672,6 @@ export const IDL: OraoVrf = {
     ],
     types: [
         {
-            name: "OraoTokenFeeConfig",
-            type: {
-                kind: "struct",
-                fields: [
-                    {
-                        name: "mint",
-                        docs: ["ORAO token mint address."],
-                        type: "publicKey",
-                    },
-                    {
-                        name: "treasury",
-                        docs: ["ORAO token treasury account."],
-                        type: "publicKey",
-                    },
-                    {
-                        name: "fee",
-                        docs: ["Fee in ORAO SPL token smallest units."],
-                        type: "u64",
-                    },
-                ],
-            },
-        },
-        {
             name: "NetworkConfiguration",
             type: {
                 kind: "struct",
@@ -610,6 +706,29 @@ export const IDL: OraoVrf = {
             },
         },
         {
+            name: "OraoTokenFeeConfig",
+            type: {
+                kind: "struct",
+                fields: [
+                    {
+                        name: "mint",
+                        docs: ["ORAO token mint address."],
+                        type: "publicKey",
+                    },
+                    {
+                        name: "treasury",
+                        docs: ["ORAO token treasury account."],
+                        type: "publicKey",
+                    },
+                    {
+                        name: "fee",
+                        docs: ["Fee in ORAO SPL token smallest units."],
+                        type: "u64",
+                    },
+                ],
+            },
+        },
+        {
             name: "RandomnessResponse",
             type: {
                 kind: "struct",
@@ -626,6 +745,73 @@ export const IDL: OraoVrf = {
                     },
                 ],
             },
+        },
+    ],
+    events: [
+        {
+            name: "Fulfill",
+            fields: [
+                {
+                    name: "seed",
+                    type: {
+                        array: ["u8", 32],
+                    },
+                    index: false,
+                },
+                {
+                    name: "randomness",
+                    type: {
+                        array: ["u8", 64],
+                    },
+                    index: false,
+                },
+            ],
+        },
+        {
+            name: "Request",
+            fields: [
+                {
+                    name: "seed",
+                    type: {
+                        array: ["u8", 32],
+                    },
+                    index: false,
+                },
+                {
+                    name: "client",
+                    type: "publicKey",
+                    index: false,
+                },
+                {
+                    name: "paidWithSpl",
+                    type: "bool",
+                    index: false,
+                },
+            ],
+        },
+        {
+            name: "Response",
+            fields: [
+                {
+                    name: "seed",
+                    type: {
+                        array: ["u8", 32],
+                    },
+                    index: false,
+                },
+                {
+                    name: "authority",
+                    type: "publicKey",
+                    index: false,
+                },
+                {
+                    name: "randomness",
+                    type: {
+                        array: ["u8", 64],
+                    },
+                    index: false,
+                },
+            ],
         },
     ],
     errors: [

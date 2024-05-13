@@ -1,6 +1,6 @@
 import assert from "assert";
-import * as anchor from "@project-serum/anchor";
-import { Program, BN } from "@project-serum/anchor";
+import * as anchor from "@coral-xyz/anchor";
+import { Program, BN } from "@coral-xyz/anchor";
 import {
     Keypair,
     PublicKey,
@@ -103,7 +103,10 @@ describe("russian-roulette", () => {
         let prevForce = force;
 
         while (true) {
-            let [randomness, _] = await Promise.all([vrf.waitFulfilled(force.toBuffer()), emulateFulfill(force.toBuffer())]);
+            let [randomness, _] = await Promise.all([
+                vrf.waitFulfilled(force.toBuffer()),
+                emulateFulfill(force.toBuffer()),
+            ]);
 
             assert.ok(
                 !Buffer.from(randomness.randomness).equals(Buffer.alloc(64))
@@ -111,7 +114,7 @@ describe("russian-roulette", () => {
 
             if (
                 Buffer.from(randomness.fulfilled()).readBigUInt64LE() %
-                BigInt(6) ===
+                    BigInt(6) ===
                 BigInt(0)
             ) {
                 console.log("The player is dead");

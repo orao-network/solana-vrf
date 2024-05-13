@@ -1,61 +1,103 @@
-use std::{rc::Rc, time::Duration};
+mod command;
+
+use std::{str::FromStr, sync::Arc};
 
 use anchor_client::{
     solana_client::rpc_config::RpcSendTransactionConfig,
     solana_sdk::{
-        bs58, commitment_config::CommitmentConfig, native_token::LAMPORTS_PER_SOL,
-        signature::read_keypair_file, signer::keypair::Keypair, signer::Signer,
+        bs58,
+        commitment_config::{CommitmentConfig, CommitmentLevel},
+        native_token::LAMPORTS_PER_SOL,
+        signature::read_keypair_file,
+        signer::{keypair::Keypair, Signer},
     },
     Client, Cluster, Program,
 };
 use anchor_lang::prelude::Pubkey;
-use indicatif::ProgressBar;
-use orao_solana_vrf::{
-    state::{NetworkState, Randomness},
-    RequestBuilder,
-};
+use orao_solana_vrf::{wait_fulfilled, RequestBuilder};
 use solana_cli_config::{Config, CONFIG_FILE};
 
+use crate::command::CliOpts;
+use clap::Parser;
 use std::ops::Deref;
-//use std::rc::Rc;
 
 // Replace this one with the desired network.
 const CLUSTER: Cluster = Cluster::Devnet;
 
-pub fn main() -> std::io::Result<()> {
-    let (payer, program) = get_program();
+#[tokio::main]
+pub async fn main() -> std::io::Result<()> {
+    let opts = CliOpts::parse();
+    let rpc_url = opts.rpc_url();
+    let (payer, program) = get_program(rpc_url);
+    println!("using rpc endpoint: {}", opts.rpc_url()); //using opts.rpc_url again to workaround a bug with error "Value borrowed here after move"
 
-    // We'll use this seed for the randomness request.
+    let balance = program
+        .rpc()
+        .get_balance(&payer)
+        .expect("Unable to get balance");
+
+    //this should never be used on mainnet and will panic if mainnet?
+    if balance == 0 {
+        println!("Requesting airdrop..");
+        request_airdrop(&program, &payer);
+    }
+
+    // we are ready to perform the request, so let's first generate a random seed
     let seed = rand::random();
 
-    println!("Requesting airdrop..");
-    request_airdrop(&program, &payer);
+    // now let's spawn a listener that gets resolved as soon as our request is fulfilled
+    let fulfilled = wait_fulfilled(seed, program.clone()).await;
 
     println!(
         "Requesting randomness for seed {}..",
         bs58::encode(&seed).into_string()
     );
+
     let tx = RequestBuilder::new(seed)
         .build(&program)
+        .await
         .expect("Randomness request")
-        .send_with_spinner_and_config(RpcSendTransactionConfig::default())
+        .send_with_spinner_and_config(RpcSendTransactionConfig {
+            preflight_commitment: Some(CommitmentLevel::Confirmed),
+            ..Default::default()
+        })
+        .await
         .expect("Transaction hash");
+
     println!("Request performed in {}", tx);
 
-    let randomness = wait_fulfilled(&program, &seed);
+    // now let's wait for the randomness
+    let Ok(randomness) = fulfilled.await else {
+        panic!("Fulfill listener has unexpectedly died");
+    };
+
     println!(
-        "Randomness: {}",
-        bs58::encode(&randomness.randomness).into_string()
+        "Fulfilled randomness: {}",
+        bs58::encode(&randomness).into_string()
     );
 
-    // Let's verify offchain. We'll need the effective VRF configuration for this.
-    let config = program
-        .account::<NetworkState>(orao_solana_vrf::network_state_account_address())
+    // Let's verify offchain.
+    // For this we need the effective VRF configuration
+    // as well as the randomness account data.
+    let randomness = orao_solana_vrf::get_randomness(&program, &seed)
+        .await
+        .expect("Randomness account data");
+    let config = orao_solana_vrf::get_network_state(&program)
+        .await
         .expect("Network configuration")
         .config;
+
+    if randomness.fulfilled().is_none() {
+        panic!(
+            "RPC returns inconsistent data: \
+                we saw the Fulfill event but the account is not fulfilled"
+        );
+    }
+
     let result = randomness.verify_offchain(&config.fulfillment_authorities);
 
     println!("Verified: {}", result);
+    println!("---");
 
     Ok(())
 }
@@ -67,14 +109,14 @@ fn request_airdrop<C: Deref<Target = impl Signer> + Clone>(program: &Program<C>,
         .expect("Latest blockhash");
     let signature = program
         .rpc()
-        .request_airdrop_with_blockhash(&pubkey, 2 * LAMPORTS_PER_SOL, &latest_blockhash)
+        .request_airdrop_with_blockhash(pubkey, LAMPORTS_PER_SOL, &latest_blockhash)
         .expect("Airdrop tx");
     program
         .rpc()
         .confirm_transaction_with_spinner(
             &signature,
             &latest_blockhash,
-            CommitmentConfig::finalized(),
+            CommitmentConfig::confirmed(),
         )
         .expect("Airdrop");
 }
@@ -82,39 +124,23 @@ fn request_airdrop<C: Deref<Target = impl Signer> + Clone>(program: &Program<C>,
 /// This helper will create the program client. It'll panic on error to simplify the code.
 ///
 /// Returns payer public key and the [`Program`] instance.
-fn get_program() -> (Pubkey, Program<Rc<Keypair>>) {
+fn get_program(rpc_url: String) -> (Pubkey, Arc<Program<Arc<Keypair>>>) {
     let config_file = CONFIG_FILE
         .as_ref()
         .expect("unable to get config file path");
-    let cli_config = Config::load(&config_file).expect("Unable to load solana configuration");
+    let cli_config = Config::load(config_file).expect("Unable to load solana configuration");
     let payer =
         read_keypair_file(&cli_config.keypair_path).expect("Example requires a keypair file");
     let payer_pubkey = payer.pubkey();
-
-    let client = Client::new_with_options(CLUSTER, Rc::new(payer), CommitmentConfig::finalized());
+    let cluster_rpc_url = Cluster::from_str(rpc_url.as_str()).expect("bad cluster url");
+    let client = Client::new_with_options(
+        cluster_rpc_url,
+        Arc::new(payer),
+        CommitmentConfig::confirmed(),
+    );
     let program = client
         .program(orao_solana_vrf::id())
         .expect("unable to get a program");
 
-    (payer_pubkey, program)
-}
-
-/// This helper will loop until randomness gets fulfilled.
-pub fn wait_fulfilled<C: Deref<Target = impl Signer> + Clone>(
-    program: &Program<C>,
-    seed: &[u8; 32],
-) -> Randomness {
-    let progress = ProgressBar::new_spinner();
-    progress.enable_steady_tick(std::time::Duration::from_millis(120));
-    progress.set_message("Waiting for randomness being fulfilled..");
-    let randomness_address = orao_solana_vrf::randomness_account_address(&seed);
-    loop {
-        match program.account::<Randomness>(randomness_address) {
-            Ok(randomness) if randomness.fulfilled().is_some() => break randomness,
-            _ => {
-                std::thread::sleep(Duration::from_secs(1));
-                continue;
-            }
-        }
-    }
+    (payer_pubkey, Arc::new(program))
 }

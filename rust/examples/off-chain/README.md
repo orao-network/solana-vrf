@@ -2,4 +2,5 @@
 
 This example shows how to request randomness from ORAO VRF.
 
-The example first generates a seed and requests randomness. When the transaction is finalized the example waits (in a trivial manner) for the request to be fulfilled.
+The example first generates a seed and performs a randomness request, and then subscribes for the
+corresponding `Fulfill` event. Fulfilled randomness will be verified off-chain and printed to stdout.

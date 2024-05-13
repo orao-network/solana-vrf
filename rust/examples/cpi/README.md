@@ -18,13 +18,13 @@ Round outcome is derived lazily from the fulfilled VRF randomness.
 
 There are three possible player states:
 
-* *alive* – last round outcome shows that the player is still alive (5/6 chance) or is not yet
-  played. Player is able to play again.
-* *dead* – last round outcome shows that the player is dead (1/6 chance).
-  Player can't play anymore.
-* *playing* – another round was started but the randomness is not yet fulfilled by VRF authorities
-  (indicated as "spinning cylinder"). Player is not able to play at the moment.
-   
+-   _alive_ – last round outcome shows that the player is still alive (5/6 chance) or is not yet
+    played. Player is able to play again.
+-   _dead_ – last round outcome shows that the player is dead (1/6 chance).
+    Player can't play anymore.
+-   _playing_ – another round was started but the randomness is not yet fulfilled by VRF authorities
+    (indicated as "spinning cylinder"). Player is not able to play at the moment.
+
 ### How to play
 
 [Tests](tests/russian-roulette.ts) shows the contract logic in action.
@@ -36,19 +36,21 @@ Also there are a simple CLI for this contract (it is published on `devnet`):
 $ cargo run -q --package roulette-cli -- state
 -- Using RPC https://api.devnet.solana.com, keypair /tmp/id.json
 -- ------
-Player HSCqQaDHGNc2kdPD2NTUKi3S953WZEJCnbrF4RHoxGjz is alive after 2 round(s)
+Player 56HnAmFGyM9QcuNM51WvX88cXX76aMVQivc53aHuAHxK is alive after 10 round(s)
 
 # The `play` subcommand runs a single round:
 $ cargo run -q --package roulette-cli -- play
 -- Using RPC https://api.devnet.solana.com, keypair /tmp/id.json
 -- ------
 Loading a bullet and spinning the cylinder..
-Waiting for the round to finish..
-CLICK! Player HSCqQaDHGNc2kdPD2NTUKi3S953WZEJCnbrF4RHoxGjz is alive after 3 round(s)
+CLICK! Player 56HnAmFGyM9QcuNM51WvX88cXX76aMVQivc53aHuAHxK is alive after 11 round(s)
 ```
 
 ### How to deploy the contract
-Note: these instructions assume you have a working solana-cli, rust, anchor installation and that all env and paths are set.
+
+Requirements:
+
+Note: these instructions assume you have a working solana-cli, rust, anchor installation (v0.29) and that all env and paths are set.
 The contract is already deployed on both the `devnet` and `mainnet`, however you can change it's ID and deploy to another address:
 
 ```sh

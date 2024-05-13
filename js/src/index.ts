@@ -1,5 +1,10 @@
 import { BN, Program, Provider, web3 } from "@coral-xyz/anchor";
-import { Ed25519Program, SYSVAR_INSTRUCTIONS_PUBKEY } from "@solana/web3.js";
+import {
+    Ed25519Program,
+    SYSVAR_INSTRUCTIONS_PUBKEY,
+    ComputeBudgetProgram,
+    TransactionInstruction,
+} from "@solana/web3.js";
 import nacl from "tweetnacl";
 import {
     NetworkConfiguration,
@@ -10,6 +15,7 @@ import {
     FulfilledRandomness,
 } from "./state";
 import { IDL, OraoVrf } from "./types/orao_vrf";
+import { MethodsBuilder } from "@coral-xyz/anchor/dist/cjs/program/namespace/methods";
 
 export {
     Randomness,
@@ -29,24 +35,26 @@ export const CONFIG_ACCOUNT_SEED: Buffer = Buffer.from("orao-vrf-network-configu
 let networkStateAddress: web3.PublicKey | null = null;
 
 /**
- * Returns VRF configuration address (see helper [[Orao.getNetworkState]]).
+ * Returns VRF configuration address (see helper {@link Orao.getNetworkState}).
  *
  * ```typescript
  * const networkStateAddress = networkStateAccountAddress();
  * ```
+ *
+ * @param [vrf_id=PROGRAM_ID] - you can override the program ID.
  */
-export function networkStateAccountAddress(): web3.PublicKey {
+export function networkStateAccountAddress(vrf_id = PROGRAM_ID): web3.PublicKey {
     if (networkStateAddress === null) {
         networkStateAddress = web3.PublicKey.findProgramAddressSync(
             [CONFIG_ACCOUNT_SEED],
-            PROGRAM_ID
+            vrf_id
         )[0];
     }
     return networkStateAddress;
 }
 
 /**
- * Returns randomness account address for the given `seed` (see helper [[Orao.getRandomness]]).
+ * Returns randomness account address for the given `seed` (see helper {@link Orao.getRandomness}).
  *
  * ```typescript
  * const seed = ...;
@@ -54,9 +62,13 @@ export function networkStateAccountAddress(): web3.PublicKey {
  * ```
  *
  * @param seed  Seed buffer.
+ * @param [vrf_id=PROGRAM_ID] - you can override the program ID.
  */
-export function randomnessAccountAddress(seed: Buffer | Uint8Array): web3.PublicKey {
-    return web3.PublicKey.findProgramAddressSync([RANDOMNESS_ACCOUNT_SEED, seed], PROGRAM_ID)[0];
+export function randomnessAccountAddress(
+    seed: Buffer | Uint8Array,
+    vrf_id = PROGRAM_ID
+): web3.PublicKey {
+    return web3.PublicKey.findProgramAddressSync([RANDOMNESS_ACCOUNT_SEED, seed], vrf_id)[0];
 }
 
 /**
@@ -83,14 +95,26 @@ interface IRandomness {
 
 /** Orao VRF program */
 export class Orao extends Program<OraoVrf> {
-    payer: web3.PublicKey;
+    readonly _payer: web3.PublicKey;
+    get payer(): web3.PublicKey {
+        return this._payer;
+    }
 
-    constructor(provider: Provider) {
-        super(IDL, PROGRAM_ID, provider);
+    /**
+     * Constructs a new program given the provider.
+     *
+     * Make sure to choose the desired `CommitmentLevel` when building your provider.
+     *
+     * @param provider - an object that implements the {@link Provider} interface.
+     *     Make sure it uses the desired `CommitmentLevel`.
+     * @param [id=PROGRAM_ID] - you can override the program ID.
+     */
+    constructor(provider: Provider, id = PROGRAM_ID) {
+        super(IDL, id, provider);
         if (!provider.publicKey) {
             throw new Error("Wallet not provided");
         }
-        this.payer = provider.publicKey;
+        this._payer = provider.publicKey;
     }
 
     /**
@@ -101,10 +125,13 @@ export class Orao extends Program<OraoVrf> {
      * console.log("VRF treasury is " + state.config.treasury.toBase58());
      * ```
      *
-     * @param commitment (optional) commitment level.
+     * @param commitment - you can override the provider's commitment level.
      */
     async getNetworkState(commitment?: web3.Commitment): Promise<NetworkState> {
-        let state = await this.account.networkState.fetch(networkStateAccountAddress(), commitment);
+        let state = await this.account.networkState.fetch(
+            networkStateAccountAddress(this.programId),
+            commitment
+        );
         let config = state.config;
         let tokenFeeConfig = config.tokenFeeConfig as OraoTokenFeeConfig | null;
         return new NetworkState(
@@ -126,7 +153,7 @@ export class Orao extends Program<OraoVrf> {
     }
 
     /**
-     * Returns randomness account data for the given seed (throws if account absent).
+     * Returns randomness account data for the given seed (throws if account is absent).
      *
      * ```typescript
      * const randomnessAccount = await vrf.getRandomness(seed);
@@ -138,15 +165,15 @@ export class Orao extends Program<OraoVrf> {
      * }
      * ```
      *
-     * @param seed      Seed buffer.
-     * @param commitment (optional) commitment level.
+     * @param seed - seed buffer.
+     * @param commitment - you can override the provider's commitment level.
      */
     async getRandomness(
         seed: Buffer | Uint8Array,
         commitment?: web3.Commitment
     ): Promise<Randomness> {
         let randomness = await this.account.randomness.fetch(
-            randomnessAccountAddress(seed),
+            randomnessAccountAddress(seed, this.programId),
             commitment
         );
         let responses = randomness.responses as IRandomnessResponse[];
@@ -158,7 +185,7 @@ export class Orao extends Program<OraoVrf> {
     }
 
     /**
-     * Prepares a randomness request (see [[RequestBuilder]]).
+     * Prepares a randomness request (see {@link RequestBuilder}).
      *
      * ```typescript
      * const [seed, tx] = await vrf.request().rpc();
@@ -176,7 +203,7 @@ export class Orao extends Program<OraoVrf> {
      * ```
      *
      * @param seed seed value (32 bytes). Generated randomly, if not given.
-     * @returns a [[RequestBuilder]] instance.
+     * @returns a {@link RequestBuilder} instance.
      */
     async request(seed?: Buffer | Uint8Array): Promise<RequestBuilder> {
         let actualSeed: Buffer | Uint8Array;
@@ -193,8 +220,8 @@ export class Orao extends Program<OraoVrf> {
         seed: Buffer | Uint8Array,
         commitment?: web3.Commitment
     ): Promise<FulfilledRandomness> {
-        let account = randomnessAccountAddress(seed);
-        let actualCommitment = "finalized";
+        let account = randomnessAccountAddress(seed, this.programId);
+        let actualCommitment = this.provider.connection.commitment;
         if (commitment) {
             actualCommitment = commitment;
         }
@@ -246,9 +273,52 @@ export class Orao extends Program<OraoVrf> {
     }
 }
 
+class ComputeBudgetConfig {
+    public computeUnitPrice: bigint | null = null;
+    public computeUnitPriceMultiplier: number | null = null;
+    public computeUnitLimit: number | null = null;
+
+    constructor() {}
+
+    isEmpty(): boolean {
+        return this.computeUnitPrice === BigInt(0) && this.computeUnitLimit === null;
+    }
+
+    async getInstructions(connection: web3.Connection): Promise<TransactionInstruction[]> {
+        const instructions: TransactionInstruction[] = [];
+
+        if (this.computeUnitPrice !== BigInt(0)) {
+            let fee = await get_recommended_micro_lamport_fee(
+                connection,
+                this.computeUnitPrice,
+                this.computeUnitPriceMultiplier
+            );
+            if (fee !== null) {
+                instructions.push(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: fee }));
+            }
+        }
+
+        if (this.computeUnitLimit !== null) {
+            instructions.push(
+                ComputeBudgetProgram.setComputeUnitLimit({ units: this.computeUnitLimit })
+            );
+        }
+
+        return instructions;
+    }
+}
+
+/**
+ * A convenient builder for the `InitNetwork` instruction.
+ *
+ * Note that by default it will guess and apply a prioritization fee (see
+ * {@link InitBuilder.withComputeUnitPrice} and {@link InitBuilder.withComputeUnitLimit}
+ * to opt-out)
+ */
 export class InitBuilder {
     vrf: Orao;
     config: NetworkConfiguration;
+    computeBudgetConfig: ComputeBudgetConfig = new ComputeBudgetConfig();
 
     /**
      * Creates a new init_network instruction builder.
@@ -283,14 +353,57 @@ export class InitBuilder {
     }
 
     /**
-     * Performs an RPC call.
+     * Adds a prioritization fee in micro-lamports (applied per compute unit).
      *
-     * @returns a transaction signature.
+     * Adds `ComputeBudgetInstruction::SetComputeUnitPrice` to the request builder.
+     *
+     * *   if not specified, then median fee of the last 150 confirmed
+     *     slots is used (this is by default)
+     * *   if zero, then compute unit price is not applied at all.
      */
-    async rpc(): Promise<string> {
-        const networkState = networkStateAccountAddress();
+    withComputeUnitPrice(computeUnitPrice: bigint): InitBuilder {
+        this.computeBudgetConfig.computeUnitPrice = computeUnitPrice;
+        return this;
+    }
 
-        const tx = await this.vrf.methods
+    /**
+     * Defines a multiplier that is applied to a median compute unit price.
+     *
+     * This is only applied if no compute_unit_price specified, i.e. if compute unit price
+     * is measured as a median fee of the last 150 confirmed slots.
+     *
+     * *   if not specified, then no multiplier is applied (this is by default)
+     * *   if specified, then applied as follows: `compute_unit_price = median * multiplier`
+     */
+    withComputeUnitPriceMultiplier(multiplier: number): InitBuilder {
+        this.computeBudgetConfig.computeUnitPriceMultiplier = multiplier;
+        return this;
+    }
+
+    /** Defines a specific compute unit limit that the transaction is allowed to consume.
+     *
+     * Adds `ComputeBudgetInstruction::SetComputeUnitLimit` to the request builder.
+     *
+     * *   if not specified, then compute unit limit is not applied at all
+     *     (this is by default)
+     * *   if specified, then applied as is
+     */
+    withComputeUnitLimit(computeUnitLimit: number): InitBuilder {
+        this.computeBudgetConfig.computeUnitLimit = computeUnitLimit;
+        return this;
+    }
+
+    /**
+     * Returns a {@link MethodsBuilder} instance for the `InitNetwork` instruction.
+     *
+     * Note, that compute budget instructions will be prepended to the returned
+     * instance (use {@link InitBuilder.withComputeUnitPrice} and
+     * {@link InitBuilder.withComputeUnitLimit} to opt-out).
+     */
+    async build(): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][0]>> {
+        const networkState = networkStateAccountAddress(this.vrf.programId);
+
+        let tx = this.vrf.methods
             .initNetwork(
                 this.config.requestFee,
                 this.config.authority,
@@ -300,13 +413,35 @@ export class InitBuilder {
             .accounts({
                 networkState,
                 treasury: this.config.treasury,
-            })
-            .rpc();
+            });
+
+        if (!this.computeBudgetConfig.isEmpty()) {
+            tx = tx.preInstructions(
+                await this.computeBudgetConfig.getInstructions(this.vrf.provider.connection)
+            );
+        }
 
         return tx;
     }
+
+    /**
+     * Performs an RPC call.
+     *
+     * @returns a transaction signature.
+     */
+    async rpc(): Promise<string> {
+        const tx = await this.build();
+        return await tx.rpc();
+    }
 }
 
+/**
+ * A convenient builder for the `UpdateNetwork` instruction.
+ *
+ * Note that by default it will guess and apply a prioritization fee (see
+ * {@link UpdateBuilder.withComputeUnitPrice} and {@link UpdateBuilder.withComputeUnitLimit}
+ * to opt-out)
+ */
 export class UpdateBuilder {
     vrf: Orao;
     authority?: web3.PublicKey;
@@ -314,6 +449,7 @@ export class UpdateBuilder {
     requestFee?: BN;
     fulfillmentAuthorities?: web3.PublicKey[];
     tokenFeeConfig?: OraoTokenFeeConfig | null;
+    computeBudgetConfig: ComputeBudgetConfig = new ComputeBudgetConfig();
 
     /**
      * Creates a new update_network instruction builder that updates nothing.
@@ -330,7 +466,7 @@ export class UpdateBuilder {
         return this;
     }
 
-    /** Change threasury account address. */
+    /** Change treasury account address. */
     with_treasury(treasury: web3.PublicKey): UpdateBuilder {
         this.treasury = treasury;
         return this;
@@ -355,12 +491,55 @@ export class UpdateBuilder {
     }
 
     /**
-     * Performs an RPC call.
+     * Adds a prioritization fee in micro-lamports (applied per compute unit).
      *
-     * @returns a transaction signature.
+     * Adds `ComputeBudgetInstruction::SetComputeUnitPrice` to the request builder.
+     *
+     * *   if not specified, then median fee of the last 150 confirmed
+     *     slots is used (this is by default)
+     * *   if zero, then compute unit price is not applied at all.
      */
-    async rpc(): Promise<string> {
-        const networkState = networkStateAccountAddress();
+    withComputeUnitPrice(computeUnitPrice: bigint): UpdateBuilder {
+        this.computeBudgetConfig.computeUnitPrice = computeUnitPrice;
+        return this;
+    }
+
+    /**
+     * Defines a multiplier that is applied to a median compute unit price.
+     *
+     * This is only applied if no compute_unit_price specified, i.e. if compute unit price
+     * is measured as a median fee of the last 150 confirmed slots.
+     *
+     * *   if not specified, then no multiplier is applied (this is by default)
+     * *   if specified, then applied as follows: `compute_unit_price = median * multiplier`
+     */
+    withComputeUnitPriceMultiplier(multiplier: number): UpdateBuilder {
+        this.computeBudgetConfig.computeUnitPriceMultiplier = multiplier;
+        return this;
+    }
+
+    /** Defines a specific compute unit limit that the transaction is allowed to consume.
+     *
+     * Adds `ComputeBudgetInstruction::SetComputeUnitLimit` to the request builder.
+     *
+     * *   if not specified, then compute unit limit is not applied at all
+     *     (this is by default)
+     * *   if specified, then applied as is
+     */
+    withComputeUnitLimit(computeUnitLimit: number): UpdateBuilder {
+        this.computeBudgetConfig.computeUnitLimit = computeUnitLimit;
+        return this;
+    }
+
+    /**
+     * Returns a {@link MethodsBuilder} instance for the `UpdateNetwork` instruction.
+     *
+     * Note, that compute budget instructions will be prepended to the returned
+     * instance (use {@link UpdateBuilder.withComputeUnitPrice} and
+     * {@link UpdateBuilder.withComputeUnitLimit} to opt-out).
+     */
+    async build(): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][1]>> {
+        const networkState = networkStateAccountAddress(this.vrf.programId);
         const config = (await this.vrf.getNetworkState()).config;
 
         let requestFee = this.requestFee ? this.requestFee : config.requestFee;
@@ -372,22 +551,45 @@ export class UpdateBuilder {
         let tokenFeeConfig =
             this.tokenFeeConfig !== undefined ? this.tokenFeeConfig : config.tokenFeeConfig;
 
-        const tx = await this.vrf.methods
+        let tx = this.vrf.methods
             .updateNetwork(requestFee, authority, fulfillmentAuthorities, tokenFeeConfig)
             .accounts({
                 networkState,
                 treasury,
-            })
-            .rpc();
+            });
+
+        if (!this.computeBudgetConfig.isEmpty()) {
+            tx = tx.preInstructions(
+                await this.computeBudgetConfig.getInstructions(this.vrf.provider.connection)
+            );
+        }
 
         return tx;
     }
+
+    /**
+     * Performs an RPC call.
+     *
+     * @returns a transaction signature.
+     */
+    async rpc(): Promise<string> {
+        let tx = await this.build();
+        return await tx.rpc();
+    }
 }
 
+/**
+ * A convenient builder for the `Request` instruction.
+ *
+ * Note that by default it will guess and apply a prioritization fee (see
+ * {@link RequestBuilder.withComputeUnitPrice} and {@link RequestBuilder.withComputeUnitLimit}
+ * to opt-out)
+ */
 export class RequestBuilder {
     vrf: Orao;
-    seed: Uint8Array;
+    public seed: Uint8Array;
     tokenWallet: web3.PublicKey | null;
+    computeBudgetConfig = new ComputeBudgetConfig();
 
     /**
      * Creates a randomness request builder (defaults to pay fees with SOL).
@@ -415,30 +617,96 @@ export class RequestBuilder {
     }
 
     /**
-     * Performs an RPC call.
+     * Adds a prioritization fee in micro-lamports (applied per compute unit).
      *
-     * @returns a pair of seed and signature.
+     * Adds `ComputeBudgetInstruction::SetComputeUnitPrice` to the request builder.
+     *
+     * *   if not specified, then median fee of the last 150 confirmed
+     *     slots is used (this is by default)
+     * *   if zero, then compute unit price is not applied at all.
      */
-    async rpc(): Promise<[Uint8Array, string]> {
-        const networkState = networkStateAccountAddress();
+    withComputeUnitPrice(computeUnitPrice: bigint): RequestBuilder {
+        this.computeBudgetConfig.computeUnitPrice = computeUnitPrice;
+        return this;
+    }
+
+    /**
+     * Defines a multiplier that is applied to a median compute unit price.
+     *
+     * This is only applied if no compute_unit_price specified, i.e. if compute unit price
+     * is measured as a median fee of the last 150 confirmed slots.
+     *
+     * *   if not specified, then no multiplier is applied (this is by default)
+     * *   if specified, then applied as follows: `compute_unit_price = median * multiplier`
+     */
+    withComputeUnitPriceMultiplier(multiplier: number): RequestBuilder {
+        this.computeBudgetConfig.computeUnitPriceMultiplier = multiplier;
+        return this;
+    }
+
+    /** Defines a specific compute unit limit that the transaction is allowed to consume.
+     *
+     * Adds `ComputeBudgetInstruction::SetComputeUnitLimit` to the request builder.
+     *
+     * *   if not specified, then compute unit limit is not applied at all
+     *     (this is by default)
+     * *   if specified, then applied as is
+     */
+    withComputeUnitLimit(computeUnitLimit: number): RequestBuilder {
+        this.computeBudgetConfig.computeUnitLimit = computeUnitLimit;
+        return this;
+    }
+
+    /**
+     * Returns a {@link MethodsBuilder} instance for the `Request` instruction.
+     *
+     * Note, that compute budget instructions will be prepended to the returned
+     * instance (use {@link RequestBuilder.withComputeUnitPrice} and
+     * {@link RequestBuilder.withComputeUnitLimit} to opt-out).
+     */
+    async build(): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][2]>> {
+        const networkState = networkStateAccountAddress(this.vrf.programId);
         const networkStateAcc = await this.vrf.getNetworkState();
 
-        const tx = await this.vrf.methods
-            .request([...this.seed])
-            .accounts({
-                networkState,
-                treasury: networkStateAcc.config.treasury,
-                request: randomnessAccountAddress(this.seed),
-            })
-            .rpc();
+        let tx = this.vrf.methods.request([...this.seed]).accounts({
+            networkState,
+            treasury: networkStateAcc.config.treasury,
+            request: randomnessAccountAddress(this.seed, this.vrf.programId),
+        });
 
-        return [this.seed, tx];
+        if (!this.computeBudgetConfig.isEmpty()) {
+            tx = tx.preInstructions(
+                await this.computeBudgetConfig.getInstructions(this.vrf.provider.connection)
+            );
+        }
+
+        return tx;
+    }
+
+    /**
+     * Performs an RPC call.
+     *
+     * @returns a pair of seed and transaction signature.
+     */
+    async rpc(): Promise<[Uint8Array, string]> {
+        const tx = await this.build();
+        const signature = await tx.rpc();
+
+        return [this.seed, signature];
     }
 }
 
+/**
+ * A convenient builder for the `Fulfill` instruction.
+ *
+ * Note that by default it will guess and apply a prioritization fee (see
+ * {@link FulfillBuilder.withComputeUnitPrice} and {@link FulfillBuilder.withComputeUnitLimit}
+ * to opt-out)
+ */
 export class FulfillBuilder {
     vrf: Orao;
     seed: Uint8Array;
+    computeBudgetConfig: ComputeBudgetConfig = new ComputeBudgetConfig();
 
     /**
      * Creates a fulfill instruction builder.
@@ -452,27 +720,133 @@ export class FulfillBuilder {
     }
 
     /**
+     * Adds a prioritization fee in micro-lamports (applied per compute unit).
+     *
+     * Adds `ComputeBudgetInstruction::SetComputeUnitPrice` to the request builder.
+     *
+     * *   if not specified, then median fee of the last 150 confirmed
+     *     slots is used (this is by default)
+     * *   if zero, then compute unit price is not applied at all.
+     */
+    withComputeUnitPrice(computeUnitPrice: bigint): FulfillBuilder {
+        this.computeBudgetConfig.computeUnitPrice = computeUnitPrice;
+        return this;
+    }
+
+    /**
+     * Defines a multiplier that is applied to a median compute unit price.
+     *
+     * This is only applied if no compute_unit_price specified, i.e. if compute unit price
+     * is measured as a median fee of the last 150 confirmed slots.
+     *
+     * *   if not specified, then no multiplier is applied (this is by default)
+     * *   if specified, then applied as follows: `compute_unit_price = median * multiplier`
+     */
+    withComputeUnitPriceMultiplier(multiplier: number): FulfillBuilder {
+        this.computeBudgetConfig.computeUnitPriceMultiplier = multiplier;
+        return this;
+    }
+
+    /** Defines a specific compute unit limit that the transaction is allowed to consume.
+     *
+     * Adds `ComputeBudgetInstruction::SetComputeUnitLimit` to the request builder.
+     *
+     * *   if not specified, then compute unit limit is not applied at all
+     *     (this is by default)
+     * *   if specified, then applied as is
+     */
+    withComputeUnitLimit(computeUnitLimit: number): FulfillBuilder {
+        this.computeBudgetConfig.computeUnitLimit = computeUnitLimit;
+        return this;
+    }
+
+    /**
+     * Returns a {@link MethodsBuilder} instance for the `Request` instruction.
+     *
+     * Note, that compute budget instructions will be prepended to the returned
+     * instance (use {@link RequestBuilder.withComputeUnitPrice} and
+     * {@link RequestBuilder.withComputeUnitLimit} to opt-out).
+     *
+     * @param fulfillmentAuthority - public key of a fulfillment authority
+     * @param signature - signature of a seed, performed by the fulfillment authority
+     */
+    async build(
+        fulfillmentAuthority: web3.PublicKey,
+        signature: Uint8Array
+    ): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][3]>> {
+        let tx = this.vrf.methods.fulfill().accounts({
+            instructionAcc: SYSVAR_INSTRUCTIONS_PUBKEY,
+            networkState: networkStateAccountAddress(this.vrf.programId),
+            request: randomnessAccountAddress(this.seed, this.vrf.programId),
+        });
+
+        if (!this.computeBudgetConfig.isEmpty()) {
+            tx = tx.preInstructions(
+                await this.computeBudgetConfig.getInstructions(this.vrf.provider.connection)
+            );
+        }
+
+        tx = tx.preInstructions([
+            Ed25519Program.createInstructionWithPublicKey({
+                publicKey: fulfillmentAuthority.toBytes(),
+                message: this.seed,
+                signature,
+            }),
+        ]);
+
+        return tx;
+    }
+
+    /**
      * Performs an RPC call.
+     *
+     * @param fulfillmentAuthority - public key of a fulfillment authority
+     * @param signature - signature of a seed, performed by the fulfillment authority
      *
      * @returns a transaction signature.
      */
     async rpc(fulfillmentAuthority: web3.PublicKey, signature: Uint8Array): Promise<string> {
-        let tx = await this.vrf.methods
-            .fulfill()
-            .accounts({
-                instructionAcc: SYSVAR_INSTRUCTIONS_PUBKEY,
-                networkState: networkStateAccountAddress(),
-                request: randomnessAccountAddress(this.seed),
-            })
-            .preInstructions([
-                Ed25519Program.createInstructionWithPublicKey({
-                    publicKey: fulfillmentAuthority.toBytes(),
-                    message: this.seed,
-                    signature,
-                }),
-            ])
-            .rpc();
+        let tx = await this.build(fulfillmentAuthority, signature);
+        const tx_signature = await tx.rpc();
 
-        return tx;
+        return tx_signature;
     }
+}
+
+async function get_recommended_micro_lamport_fee(
+    connection: web3.Connection,
+    computeUnitPrice: bigint | null,
+    computeUnitPriceMultiplier: number | null
+): Promise<bigint | null> {
+    if (computeUnitPrice !== null) {
+        return computeUnitPrice;
+    }
+
+    let fees = await connection.getRecentPrioritizationFees();
+
+    // Get the median fee from the most recent recent 150 slots' prioritization fee
+    fees.sort((a, b) => a.prioritizationFee - b.prioritizationFee);
+    let median_index = Math.floor(fees.length / 2);
+
+    if (fees.length == 0) {
+        return null;
+    }
+
+    let medianPriorityFee = 0;
+    if (fees.length % 2 == 0) {
+        medianPriorityFee =
+            (fees[median_index - 1].prioritizationFee + fees[median_index].prioritizationFee) / 2;
+    } else {
+        medianPriorityFee = fees[median_index].prioritizationFee;
+    }
+
+    if (medianPriorityFee == 0) {
+        return null;
+    }
+
+    if (computeUnitPriceMultiplier !== null) {
+        medianPriorityFee = medianPriorityFee * computeUnitPriceMultiplier;
+    }
+
+    return BigInt(medianPriorityFee);
 }
