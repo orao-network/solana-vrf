@@ -15,6 +15,29 @@ This repository provides off-chain Rust and JS web3 SDKs for requesting on-chain
 
 Program account (devnet/mainnet): `VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y`
 
+## Notes on v0.4.0 update
+
+Since v0.4.0 the cost of a request is significantly reduced, but this imposes some caveats:
+
+-   You should now use `RandomnessAccountData` to decode the randomness account:
+
+    ```rust
+    let request_address = randomness_account_address(&orao_vrf.id(), &self.seed);
+
+    // This old version will fail on new accounts:
+    // let randomness_account_data = orao_vrf
+    //     .account::<Randomness>(request_address)
+    //     .await?;
+
+    // Now you should use this code to load the account
+    let randomness_account_data = orao_vrf
+        .account::<RandomnessAccountData>(request_address)
+        .await?;
+
+    // Respectively the following snippet will decode raw account data:
+    // let request = RandomnessAccountData::try_deserialize(&mut raw_account_data)?;
+    ```
+
 ## Developer Integration Guide - CPI Example
 
 CPI is an abbreviation for Cross Program Invocation on Solana – a way for one contract to call another
@@ -42,12 +65,12 @@ into the list of your dependencies:
 ```toml
 [dependencies]
 # ...
-orao-solana-vrf = { version = "0.3.0", default-features = false, features = ["cpi"] }
+orao-solana-vrf = { version = "0.4.0", default-features = false, features = ["cpi"] }
 ```
 
 ### 2. Collect the necessary accounts
 
-Each Solana instruction requires a proper list of accounts. We'll need to call the Request
+Each Solana instruction requires a proper list of accounts. We'll need to call the RequestV2
 instruction so here is the list of required accounts:
 
 -   payer – VRF client
@@ -131,7 +154,7 @@ of the Anchor Book):
 
 ```rust
 let cpi_program = ctx.accounts.vrf.to_account_info();
-let cpi_accounts = orao_solana_vrf::cpi::accounts::Request {
+let cpi_accounts = orao_solana_vrf::cpi::accounts::RequestV2 {
     payer: ctx.accounts.player.to_account_info(),
     network_state: ctx.accounts.config.to_account_info(),
     treasury: ctx.accounts.treasury.to_account_info(),
@@ -139,7 +162,7 @@ let cpi_accounts = orao_solana_vrf::cpi::accounts::Request {
     system_program: ctx.accounts.system_program.to_account_info(),
 };
 let cpi_ctx = anchor_lang::context::CpiContext::new(cpi_program, cpi_accounts);
-orao_solana_vrf::cpi::request(cpi_ctx, force)?;
+orao_solana_vrf::cpi::request_v2(cpi_ctx, force)?;
 ```
 
 ### 4. Use the fulfilled randomness
@@ -160,8 +183,8 @@ pub enum CurrentState {
 }
 
 /// Derives last round outcome.
-pub fn current_state(randomness: &Randomness) -> CurrentState {
-    if let Some(randomness) = randomness.fulfilled() {
+pub fn current_state(randomness: &RandomnessAccountData) -> CurrentState {
+    if let Some(randomness) = randomness.fulfilled_randomness() {
         if is_dead(randomness) {
             CurrentState::Dead
         } else {
@@ -187,7 +210,7 @@ fn is_dead(randomness: &[u8; 64]) -> bool {
 [5]: https://docs.rs/orao-solana-vrf/latest/orao_solana_vrf/struct.RequestBuilder.html
 [6]: https://github.com/orao-network/solana-vrf/tree/master/rust/examples/cpi
 
-1. Rust SDK ([source code](https://github.com/orao-network/solana-vrf/tree/master/rust))is based on the [`anchor-client`](https://docs.rs/anchor-client) library, so you'll need
+1. Rust SDK ([source code](https://github.com/orao-network/solana-vrf/tree/master/rust)) is based on the [`anchor-client`](https://docs.rs/anchor-client) library, so you'll need
    to acquire the `Program` instance to use it:
 
 ```rust

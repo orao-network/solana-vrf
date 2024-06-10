@@ -102,6 +102,16 @@ export class Randomness {
         this.responses = responses;
     }
 
+    /** Returns the request seed */
+    getSeed(): Uint8Array {
+        return this.seed;
+    }
+
+    /** Returns the array of responses collected so far */
+    getResponses(): RandomnessResponse[] {
+        return this.responses;
+    }
+
     /** Returns fulfilled randomness or `null` if not yet fulfilled */
     fulfilled(): Uint8Array | null {
         if (Buffer.alloc(64).equals(Buffer.from(this.randomness))) {
@@ -154,7 +164,7 @@ export class FulfilledRandomness extends Randomness {
     /**
      * Creates an instance of FulfilledRandomness from the given randomness
      *
-     * It's a caller's responsibility to assert that the randomness is actually filfilled.
+     * It's a caller's responsibility to assert that the randomness is actually fulfilled.
      */
     static unchecked(inner: Randomness): FulfilledRandomness {
         return new FulfilledRandomness(inner);
@@ -163,5 +173,229 @@ export class FulfilledRandomness extends Randomness {
     /** Returns fulfilled randomness */
     fulfilled(): Uint8Array {
         return this.randomness;
+    }
+}
+
+export class FulfilledRandomnessAccountData {
+    seed: Uint8Array;
+    randomness: Uint8Array;
+
+    /** Only available for V2 randomness accounts */
+    client: web3.PublicKey | null;
+
+    /** Only available for V1 randomness accounts */
+    responses: RandomnessResponse[] | null;
+
+    /** Will throw on unfulfilled randomness */
+    constructor(data: RandomnessAccountData) {
+        this.seed = data.getSeed();
+        this.client = data.getClient();
+        let randomness = data.getFulfilledRandomness();
+        if (randomness === null) {
+            throw new Error("Building FulfilledRandomnessAccountData from pending request");
+        }
+        this.randomness = randomness;
+        this.responses = data.getResponses();
+    }
+}
+
+export class RandomnessV2 {
+    request: Request;
+
+    constructor(request: Request) {
+        this.request = request;
+    }
+
+    /** Returns the pending request, or `null` if already fulfilled. */
+    getPending(): PendingRequest | null {
+        return this.request.getPending();
+    }
+
+    /** Returns the fulfilled request, or `null` if still pending. */
+    getFulfilled(): FulfilledRequest | null {
+        return this.request.getFulfilled();
+    }
+
+    /** Returns the request seed. */
+    getSeed(): Uint8Array {
+        return this.request.getSeed();
+    }
+
+    /** Returns the request client. */
+    getClient(): web3.PublicKey {
+        return this.request.getClient();
+    }
+
+    /** Returns the array of responses collected so far. */
+    getResponses(): RandomnessResponse[] | null {
+        return this.request.getResponses();
+    }
+
+    /** Returns the fulfilled randomness or `null` if still pending. */
+    getFulfilledRandomness(): Uint8Array | null {
+        return this.request.getFulfilledRandomness();
+    }
+}
+
+export class PendingRequest {
+    seed: Uint8Array;
+    client: web3.PublicKey;
+    responses: RandomnessResponse[];
+
+    constructor(seed: number[], client: web3.PublicKey, responses: RandomnessResponse[]) {
+        this.seed = Uint8Array.from(seed);
+        this.client = client;
+        this.responses = responses;
+    }
+
+    /** Returns this pending request. */
+    getPending(): PendingRequest {
+        return this;
+    }
+
+    /** Returns `null` because it is a pending request. */
+    getFulfilled(): null {
+        return null;
+    }
+
+    /** Returns the request seed. */
+    getSeed(): Uint8Array {
+        return this.seed;
+    }
+
+    /** Returns the request client. */
+    getClient(): web3.PublicKey {
+        return this.client;
+    }
+
+    /** Returns the array of responses collected so far. */
+    getResponses(): RandomnessResponse[] {
+        return this.responses;
+    }
+
+    /** Returns `null` because it is a pending request. */
+    getFulfilledRandomness(): null {
+        return null;
+    }
+}
+
+export class FulfilledRequest {
+    seed: Uint8Array;
+    client: web3.PublicKey;
+    randomness: Uint8Array;
+
+    constructor(seed: number[], client: web3.PublicKey, randomness: number[]) {
+        this.seed = Uint8Array.from(seed);
+        this.client = client;
+        this.randomness = Uint8Array.from(randomness);
+    }
+
+    /** Returns `null` because it is a fulfilled request. */
+    getPending(): null {
+        return null;
+    }
+
+    /** Returns this fulfilled request. */
+    getFulfilled(): FulfilledRequest {
+        return this;
+    }
+
+    /** Returns the request seed. */
+    getSeed(): Uint8Array {
+        return this.seed;
+    }
+
+    /** Returns the request client. */
+    getClient(): web3.PublicKey {
+        return this.client;
+    }
+
+    /**
+     * Returns `null` because responses are not preserved on the fulfilled request.
+     *
+     * Consider looking into the account history to observe the individual components
+     * of the generated randomness.
+     */
+    getResponses(): null {
+        return null;
+    }
+
+    /** Returns the fulfilled randomness. */
+    getFulfilledRandomness(): Uint8Array {
+        return this.randomness;
+    }
+}
+
+export type Request = PendingRequest | FulfilledRequest;
+
+export type RandomnessAccountVersion = "V1" | "V2";
+
+export type RandomnessAccountData = RandomnessAccountDataV1 | RandomnessAccountDataV2;
+
+export class RandomnessAccountDataV1 {
+    readonly tag: RandomnessAccountVersion = "V1";
+    data: Randomness;
+
+    constructor(data: Randomness) {
+        this.data = data;
+    }
+
+    /** Returns the request seed. */
+    getSeed(): Uint8Array {
+        return this.data.getSeed();
+    }
+
+    /** Returns `null` because legacy randomness account does not store the client address. */
+    getClient(): null {
+        return null;
+    }
+
+    /** Returns the array of responses collected so far. */
+    getResponses(): RandomnessResponse[] {
+        return this.data.getResponses();
+    }
+
+    /** Returns the fulfilled randomness or `null` if still pending. */
+    getFulfilledRandomness(): Uint8Array | null {
+        return this.data.fulfilled();
+    }
+
+    /** Returns the randomness account data version. */
+    getVersion(): RandomnessAccountVersion {
+        return this.tag;
+    }
+}
+
+export class RandomnessAccountDataV2 {
+    readonly tag: RandomnessAccountVersion = "V2";
+    data: RandomnessV2;
+
+    constructor(data: RandomnessV2) {
+        this.data = data;
+    }
+
+    /** Returns the request seed. */
+    getSeed(): Uint8Array {
+        return this.data.getSeed();
+    }
+
+    /** Returns the request client. */
+    getClient(): web3.PublicKey {
+        return this.data.getClient();
+    }
+
+    /** Returns the array of responses, or `null` if already fulfilled */
+    getResponses(): RandomnessResponse[] | null {
+        return this.data.getResponses();
+    }
+
+    /** Returns the fulfilled randomness or `null` if still pending. */
+    getFulfilledRandomness(): Uint8Array | null {
+        return this.data.getFulfilledRandomness();
+    }
+
+    /** Returns the randomness account data version. */
+    getVersion(): RandomnessAccountVersion {
+        return this.tag;
     }
 }

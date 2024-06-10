@@ -113,7 +113,7 @@ describe("russian-roulette", () => {
             );
 
             if (
-                Buffer.from(randomness.fulfilled()).readBigUInt64LE() %
+                Buffer.from(randomness.randomness).readBigUInt64LE() %
                     BigInt(6) ===
                 BigInt(0)
             ) {

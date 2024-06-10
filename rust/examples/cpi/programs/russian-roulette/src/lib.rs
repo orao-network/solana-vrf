@@ -25,7 +25,7 @@ pub fn player_state_account_address(player: &Pubkey) -> Pubkey {
 
 #[program]
 pub mod russian_roulette {
-    use orao_solana_vrf::cpi::accounts::Request;
+    use orao_solana_vrf::cpi::accounts::RequestV2;
 
     use super::*;
 
@@ -50,7 +50,7 @@ pub mod russian_roulette {
 
         // Request randomness.
         let cpi_program = ctx.accounts.vrf.to_account_info();
-        let cpi_accounts = Request {
+        let cpi_accounts = RequestV2 {
             payer: ctx.accounts.player.to_account_info(),
             network_state: ctx.accounts.config.to_account_info(),
             treasury: ctx.accounts.treasury.to_account_info(),
@@ -58,7 +58,7 @@ pub mod russian_roulette {
             system_program: ctx.accounts.system_program.to_account_info(),
         };
         let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
-        orao_solana_vrf::cpi::request(cpi_ctx, force)?;
+        orao_solana_vrf::cpi::request_v2(cpi_ctx, force)?;
 
         player_state.rounds += 1;
         player_state.force = force;

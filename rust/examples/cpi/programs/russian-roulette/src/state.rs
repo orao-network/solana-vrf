@@ -1,7 +1,7 @@
 use std::mem::size_of;
 
 use anchor_lang::prelude::*;
-use orao_solana_vrf::state::Randomness;
+use orao_solana_vrf::state::RandomnessAccountData;
 
 #[account]
 pub struct PlayerState {
@@ -50,8 +50,8 @@ pub enum CurrentState {
 }
 
 /// Derives last round outcome.
-pub fn current_state(randomness: &Randomness) -> CurrentState {
-    if let Some(randomness) = randomness.fulfilled() {
+pub fn current_state(randomness: &RandomnessAccountData) -> CurrentState {
+    if let Some(randomness) = randomness.fulfilled_randomness() {
         if is_dead(randomness) {
             CurrentState::Dead
         } else {

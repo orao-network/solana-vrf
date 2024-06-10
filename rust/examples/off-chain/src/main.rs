@@ -76,27 +76,6 @@ pub async fn main() -> std::io::Result<()> {
         bs58::encode(&randomness).into_string()
     );
 
-    // Let's verify offchain.
-    // For this we need the effective VRF configuration
-    // as well as the randomness account data.
-    let randomness = orao_solana_vrf::get_randomness(&program, &seed)
-        .await
-        .expect("Randomness account data");
-    let config = orao_solana_vrf::get_network_state(&program)
-        .await
-        .expect("Network configuration")
-        .config;
-
-    if randomness.fulfilled().is_none() {
-        panic!(
-            "RPC returns inconsistent data: \
-                we saw the Fulfill event but the account is not fulfilled"
-        );
-    }
-
-    let result = randomness.verify_offchain(&config.fulfillment_authorities);
-
-    println!("Verified: {}", result);
     println!("---");
 
     Ok(())

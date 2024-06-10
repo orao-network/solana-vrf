@@ -4,6 +4,7 @@ import {
     SYSVAR_INSTRUCTIONS_PUBKEY,
     ComputeBudgetProgram,
     TransactionInstruction,
+    SystemProgram,
 } from "@solana/web3.js";
 import nacl from "tweetnacl";
 import {
@@ -12,7 +13,13 @@ import {
     OraoTokenFeeConfig,
     Randomness,
     RandomnessResponse,
-    FulfilledRandomness,
+    RandomnessAccountData,
+    RandomnessAccountDataV1,
+    RandomnessV2,
+    RandomnessAccountDataV2,
+    PendingRequest,
+    FulfilledRequest,
+    FulfilledRandomnessAccountData,
 } from "./state";
 import { IDL, OraoVrf } from "./types/orao_vrf";
 import { MethodsBuilder } from "@coral-xyz/anchor/dist/cjs/program/namespace/methods";
@@ -93,6 +100,30 @@ interface IRandomness {
     responses: IRandomnessResponse[];
 }
 
+interface IRandomnessV2 {
+    request: IFulfilledRequest | IPendingRequest;
+}
+
+interface IFulfilledRequest {
+    fulfilled: {
+        "0": {
+            client: web3.PublicKey;
+            seed: number[];
+            randomness: number[];
+        };
+    };
+}
+
+interface IPendingRequest {
+    pending: {
+        "0": {
+            client: web3.PublicKey;
+            seed: number[];
+            responses: IRandomnessResponse[];
+        };
+    };
+}
+
 /** Orao VRF program */
 export class Orao extends Program<OraoVrf> {
     readonly _payer: web3.PublicKey;
@@ -171,17 +202,42 @@ export class Orao extends Program<OraoVrf> {
     async getRandomness(
         seed: Buffer | Uint8Array,
         commitment?: web3.Commitment
-    ): Promise<Randomness> {
-        let randomness = await this.account.randomness.fetch(
-            randomnessAccountAddress(seed, this.programId),
-            commitment
-        );
-        let responses = randomness.responses as IRandomnessResponse[];
-        return new Randomness(
-            randomness.seed,
-            randomness.randomness,
-            responses.map((x) => new RandomnessResponse(x.pubkey, x.randomness))
-        );
+    ): Promise<RandomnessAccountData> {
+        let address = randomnessAccountAddress(seed, this.programId);
+        try {
+            let randomness = await this.account.randomnessV2.fetch(address, commitment);
+            if ("pending" in randomness.request && randomness.request.pending !== undefined) {
+                let pending = randomness.request.pending[0];
+                return new RandomnessAccountDataV2(
+                    new RandomnessV2(
+                        new PendingRequest(
+                            pending.seed,
+                            pending.client,
+                            pending.responses.map(
+                                (x) => new RandomnessResponse(x.pubkey, x.randomness)
+                            )
+                        )
+                    )
+                );
+            } else {
+                let fulfilled = randomness.request.fulfilled[0];
+                return new RandomnessAccountDataV2(
+                    new RandomnessV2(
+                        new FulfilledRequest(fulfilled.seed, fulfilled.client, fulfilled.randomness)
+                    )
+                );
+            }
+        } catch (_e) {
+            let randomness = await this.account.randomness.fetch(address, commitment);
+            let responses = randomness.responses as IRandomnessResponse[];
+            return new RandomnessAccountDataV1(
+                new Randomness(
+                    randomness.seed,
+                    randomness.randomness,
+                    responses.map((x) => new RandomnessResponse(x.pubkey, x.randomness))
+                )
+            );
+        }
     }
 
     /**
@@ -219,7 +275,7 @@ export class Orao extends Program<OraoVrf> {
     async waitFulfilled(
         seed: Buffer | Uint8Array,
         commitment?: web3.Commitment
-    ): Promise<FulfilledRandomness> {
+    ): Promise<FulfilledRandomnessAccountData> {
         let account = randomnessAccountAddress(seed, this.programId);
         let actualCommitment = this.provider.connection.commitment;
         if (commitment) {
@@ -229,8 +285,8 @@ export class Orao extends Program<OraoVrf> {
         return new Promise(async (_resolve, reject) => {
             let resolved = false;
 
-            let maybeResolve = (subscriptionId: number, randomness: Randomness) => {
-                if (!randomness.fulfilled()) {
+            let maybeResolve = (subscriptionId: number, randomness: RandomnessAccountData) => {
+                if (!randomness.getFulfilledRandomness()) {
                     return;
                 }
                 if (resolved) {
@@ -238,27 +294,60 @@ export class Orao extends Program<OraoVrf> {
                 }
                 resolved = true;
                 this.provider.connection.removeAccountChangeListener(subscriptionId);
-                _resolve(FulfilledRandomness.unchecked(randomness));
+                _resolve(new FulfilledRandomnessAccountData(randomness));
             };
 
             try {
                 let subscriptionId = this.provider.connection.onAccountChange(
                     account,
                     (accountInfo, _ctx) => {
-                        let randomness = this.account.randomness.coder.accounts.decode(
-                            "randomness",
-                            accountInfo.data
-                        ) as IRandomness;
-                        maybeResolve(
-                            subscriptionId,
-                            new Randomness(
-                                randomness.seed,
-                                randomness.randomness,
-                                randomness.responses.map(
-                                    (x) => new RandomnessResponse(x.pubkey, x.randomness)
+                        try {
+                            let randomness = this.account.randomness.coder.accounts.decode(
+                                "randomnessV2",
+                                accountInfo.data
+                            ) as IRandomnessV2;
+                            maybeResolve(
+                                subscriptionId,
+                                new RandomnessAccountDataV2(
+                                    new RandomnessV2(
+                                        "fulfilled" in randomness.request
+                                            ? new FulfilledRequest(
+                                                  randomness.request.fulfilled[0].seed,
+                                                  randomness.request.fulfilled[0].client,
+                                                  randomness.request.fulfilled[0].randomness
+                                              )
+                                            : new PendingRequest(
+                                                  randomness.request.pending[0].seed,
+                                                  randomness.request.pending[0].client,
+                                                  randomness.request.pending[0].responses.map(
+                                                      (r) =>
+                                                          new RandomnessResponse(
+                                                              r.pubkey,
+                                                              r.randomness
+                                                          )
+                                                  )
+                                              )
+                                    )
                                 )
-                            )
-                        );
+                            );
+                        } catch (_e) {
+                            let randomness = this.account.randomness.coder.accounts.decode(
+                                "randomness",
+                                accountInfo.data
+                            ) as IRandomness;
+                            maybeResolve(
+                                subscriptionId,
+                                new RandomnessAccountDataV1(
+                                    new Randomness(
+                                        randomness.seed,
+                                        randomness.randomness,
+                                        randomness.responses.map(
+                                            (x) => new RandomnessResponse(x.pubkey, x.randomness)
+                                        )
+                                    )
+                                )
+                            );
+                        }
                     },
                     commitment
                 );
@@ -668,7 +757,7 @@ export class RequestBuilder {
         const networkState = networkStateAccountAddress(this.vrf.programId);
         const networkStateAcc = await this.vrf.getNetworkState();
 
-        let tx = this.vrf.methods.request([...this.seed]).accounts({
+        let tx = this.vrf.methods.requestV2([...this.seed]).accounts({
             networkState,
             treasury: networkStateAcc.config.treasury,
             request: randomnessAccountAddress(this.seed, this.vrf.programId),
@@ -773,12 +862,25 @@ export class FulfillBuilder {
     async build(
         fulfillmentAuthority: web3.PublicKey,
         signature: Uint8Array
-    ): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][3]>> {
-        let tx = this.vrf.methods.fulfill().accounts({
-            instructionAcc: SYSVAR_INSTRUCTIONS_PUBKEY,
-            networkState: networkStateAccountAddress(this.vrf.programId),
-            request: randomnessAccountAddress(this.seed, this.vrf.programId),
-        });
+    ): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][3] | OraoVrf["instructions"][4]>> {
+        let randomness = await this.vrf.getRandomness(this.seed);
+
+        let tx;
+        if (randomness.getVersion() === "V1") {
+            tx = this.vrf.methods.fulfill().accounts({
+                instructionAcc: SYSVAR_INSTRUCTIONS_PUBKEY,
+                networkState: networkStateAccountAddress(this.vrf.programId),
+                request: randomnessAccountAddress(this.seed, this.vrf.programId),
+            });
+        } else {
+            tx = this.vrf.methods.fulfillV2().accounts({
+                instructionAcc: SYSVAR_INSTRUCTIONS_PUBKEY,
+                networkState: networkStateAccountAddress(this.vrf.programId),
+                request: randomnessAccountAddress(this.seed, this.vrf.programId),
+                client: randomness.getClient() || undefined,
+                systemProgram: SystemProgram.programId,
+            });
+        }
 
         if (!this.computeBudgetConfig.isEmpty()) {
             tx = tx.preInstructions(

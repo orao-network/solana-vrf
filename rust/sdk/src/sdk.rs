@@ -13,12 +13,8 @@ use anchor_client::{
         nonblocking::rpc_client::RpcClient,
     },
     solana_sdk::{
-        compute_budget::ComputeBudgetInstruction,
-        ed25519_instruction,
-        instruction::Instruction,
-        signature::{Keypair, Signature},
-        signer::Signer,
-        sysvar,
+        compute_budget::ComputeBudgetInstruction, ed25519_instruction, instruction::Instruction,
+        signature::Keypair, signer::Signer, sysvar,
     },
 };
 use anchor_lang::{
@@ -29,11 +25,24 @@ use anchor_spl::token;
 use tokio::{sync::oneshot, task::JoinError};
 
 use crate::{
-    accounts, events, instruction, network_state_account_address, quorum,
-    randomness_account_address,
-    state::{NetworkConfiguration, NetworkState, OraoTokenFeeConfig, Randomness},
-    xor_array,
+    accounts, events, instruction, network_state_account_address, randomness_account_address,
+    state::{
+        NetworkConfiguration, NetworkState, OraoTokenFeeConfig, RandomnessAccountData,
+        RandomnessAccountVersion,
+    },
 };
+
+impl RandomnessAccountVersion {
+    pub async fn resolve<'a, C: Deref<Target = impl Signer> + Clone>(
+        orao_vrf: &'a anchor_client::Program<C>,
+        seed: &[u8; 32],
+    ) -> Result<Self, anchor_client::ClientError> {
+        match get_randomness(orao_vrf, seed).await? {
+            RandomnessAccountData::V1(_) => Ok(RandomnessAccountVersion::V1),
+            RandomnessAccountData::V2(_) => Ok(RandomnessAccountVersion::V2),
+        }
+    }
+}
 
 /// An errors associated with the [`wait_fulfilled`] function.
 #[derive(Debug, thiserror::Error)]
@@ -53,7 +62,7 @@ pub enum WaitFulfilledError {
 /// * it will use client's commitment level,
 /// * it will use WS subscription to wait for the [`events::Fulfill`] event,
 /// * it will fetch the randomness account to check whether it is already fulfilled
-/// * this async function returns another future that one need to await
+/// * this async function returns another future that one needs to await
 #[cfg_attr(docsrs, doc(cfg(feature = "sdk")))]
 pub async fn wait_fulfilled<C: Deref<Target = impl Signer> + Sync + Send + 'static + Clone>(
     seed: [u8; 32],
@@ -90,8 +99,8 @@ pub async fn wait_fulfilled<C: Deref<Target = impl Signer> + Sync + Send + 'stat
     async move {
         // In case it is already fulfilled
         let randomness_account = get_randomness(&*orao_vrf, &seed).await?;
-        if let Some(fulfilled) = randomness_account.fulfilled() {
-            return Ok(*fulfilled);
+        if let Some(randomness) = randomness_account.fulfilled_randomness() {
+            return Ok(*randomness);
         }
 
         let randomness = handle.await??;
@@ -105,7 +114,7 @@ pub async fn wait_fulfilled<C: Deref<Target = impl Signer> + Sync + Send + 'stat
 ///
 /// ```no_run
 /// # fn main() { async {
-/// # use orao_vrf as orao_solana_vrf;
+/// # use orao_solana_vrf;
 /// # use solana_sdk::signer::keypair::Keypair;
 /// use anchor_client::*;
 ///
@@ -133,7 +142,7 @@ pub async fn get_network_state<C: Deref<Target = impl Signer> + Clone>(
 ///
 /// ```no_run
 /// # fn main() { async {
-/// # use orao_vrf as orao_solana_vrf;
+/// # use orao_solana_vrf;
 /// # use solana_sdk::signer::keypair::Keypair;
 /// use anchor_client::*;
 ///
@@ -143,12 +152,11 @@ pub async fn get_network_state<C: Deref<Target = impl Signer> + Clone>(
 /// let client = Client::new(Cluster::Devnet, payer);
 /// let program = client.program(orao_solana_vrf::id())?;
 ///
-/// let randomness_account = orao_solana_vrf::get_randomness(&program, &seed).await?;
+/// let randomness_account_data = orao_solana_vrf::get_randomness(&program, &seed).await?;
 ///
-/// if let Some(randomness) = randomness_account.fulfilled() {
-///     println!("Randomness fulfilled: {:?}", randomness);
-/// } else {
-///     println!("Randomness is not yet fulfilled");
+/// match randomness_account_data.fulfilled_randomness() {
+///     Some(randomness) => println!("Randomness fulfilled: {:?}", randomness),
+///     None => println!("Randomness is not yet fulfilled"),
 /// }
 /// # Result::<(), Box<dyn std::error::Error>>::Ok(()) }; }
 /// ```
@@ -156,7 +164,7 @@ pub async fn get_network_state<C: Deref<Target = impl Signer> + Clone>(
 pub async fn get_randomness<C: Deref<Target = impl Signer> + Clone>(
     orao_vrf: &anchor_client::Program<C>,
     seed: &[u8; 32],
-) -> Result<Randomness, anchor_client::ClientError> {
+) -> Result<RandomnessAccountData, anchor_client::ClientError> {
     let request_address = randomness_account_address(&orao_vrf.id(), seed);
     orao_vrf.account(request_address).await
 }
@@ -556,7 +564,7 @@ impl UpdateBuilder {
     }
 }
 
-/// [`crate::Request`] instruction builder.
+/// [`crate::RequestV2`] instruction builder.
 ///
 /// Note:
 ///
@@ -570,7 +578,7 @@ impl UpdateBuilder {
 ///
 /// ```no_run
 /// # fn main() { async {
-/// # use orao_vrf as orao_solana_vrf;
+/// # use orao_solana_vrf;
 /// # use solana_sdk::signer::keypair::Keypair;
 /// use anchor_client::*;
 ///
@@ -655,7 +663,7 @@ impl RequestBuilder {
         self
     }
 
-    /// Builds the raw [`crate::Request`] instruction based on this builder.
+    /// Builds the raw [`crate::RequestV2`] instruction based on this builder.
     ///
     /// This is a low-level function, consider using [`RequestBuilder::build`].
     ///
@@ -689,7 +697,7 @@ impl RequestBuilder {
             (current_config.treasury, vec![])
         };
 
-        let mut accounts = accounts::Request {
+        let mut accounts = accounts::RequestV2 {
             payer,
             network_state: network_state_address,
             treasury,
@@ -702,7 +710,7 @@ impl RequestBuilder {
 
         Some(Instruction::new_with_bytes(
             id,
-            &instruction::Request { seed: self.seed }.data(),
+            &instruction::RequestV2 { seed: self.seed }.data(),
             accounts,
         ))
     }
@@ -749,19 +757,19 @@ impl RequestBuilder {
         }
 
         Ok(builder
-            .accounts(crate::accounts::Request {
+            .accounts(crate::accounts::RequestV2 {
                 payer: orao_vrf.payer(),
                 network_state: network_state_address,
                 treasury,
                 request: request_address,
                 system_program: system_program::ID,
             })
-            .args(crate::instruction::Request { seed: self.seed })
+            .args(crate::instruction::RequestV2 { seed: self.seed })
             .accounts(remaining_accounts))
     }
 }
 
-/// [`crate::Fulfill`] instruction builder.
+/// [`crate::Fulfill`]/[`crate::FulfillV2`] instruction builder.
 ///
 /// Note:
 ///
@@ -770,6 +778,12 @@ impl RequestBuilder {
 /// *   this builder is added for convenience — use [`FulfillBuilder::into_raw_instruction`] to get
 ///     the raw instruction, or build it yourself (see the [`FulfillBuilder::into_raw_instruction`]
 ///     source)
+///
+/// ## Notes on account version:
+///
+/// This builder will analyze the randomness account version to properly choose the correct
+/// fulfill instruction, i.e. [`instruction::Fulfill`] will be called for [`Randomness`],
+/// and [`instruction::FulfillV2`] will be called for [`RandomnessV2`]
 #[derive(Debug, Default)]
 #[cfg_attr(docsrs, doc(cfg(feature = "sdk")))]
 pub struct FulfillBuilder {
@@ -822,7 +836,7 @@ impl FulfillBuilder {
         self
     }
 
-    /// Builds the raw [`crate::Fulfill`] instruction based on this builder.
+    /// Builds the raw [`crate::Fulfill`] or [`crate::FulfillV2`] instruction based on this builder.
     ///
     /// This is a low-level function, consider using [`FulfillBuilder::build`].
     ///
@@ -845,11 +859,16 @@ impl FulfillBuilder {
     /// 4. Fulfill_2
     /// 5. ...
     ///
+    /// Also note that you must give the proper [`RandomnessAccountVersion`]
+    /// (see [`RandomnessAccountVersion::resolve`]).
+    ///
     /// Compute Budget Program configuration is ignored.
     pub fn into_raw_instruction(
         self,
         id: Pubkey,
         payer: Pubkey,
+        client: Pubkey,
+        version: RandomnessAccountVersion,
         fulfill_authority: &ed25519_dalek::Keypair,
     ) -> [Instruction; 2] {
         let network_state_address = network_state_account_address(&id);
@@ -858,9 +877,9 @@ impl FulfillBuilder {
         let fulfill_authority =
             ed25519_dalek::Keypair::from_bytes(fulfill_authority.to_bytes().as_ref()).unwrap();
 
-        [
-            ed25519_instruction::new_ed25519_instruction(&fulfill_authority, &self.seed),
-            Instruction::new_with_bytes(
+        let ed25519 = ed25519_instruction::new_ed25519_instruction(&fulfill_authority, &self.seed);
+        let fulfill = match version {
+            RandomnessAccountVersion::V1 => Instruction::new_with_bytes(
                 id,
                 &instruction::Fulfill.data(),
                 accounts::Fulfill {
@@ -871,7 +890,22 @@ impl FulfillBuilder {
                 }
                 .to_account_metas(None),
             ),
-        ]
+            RandomnessAccountVersion::V2 => Instruction::new_with_bytes(
+                id,
+                &instruction::FulfillV2.data(),
+                accounts::FulfillV2 {
+                    payer,
+                    instruction_acc: sysvar::instructions::ID,
+                    network_state: network_state_address,
+                    request: request_address,
+                    client,
+                    system_program: system_program::ID,
+                }
+                .to_account_metas(None),
+            ),
+        };
+
+        [ed25519, fulfill]
     }
 
     /// Builds the request.
@@ -885,6 +919,9 @@ impl FulfillBuilder {
     ) -> Result<anchor_client::RequestBuilder<'a, C>, anchor_client::ClientError> {
         let network_state_address = network_state_account_address(&orao_vrf.id());
         let request_address = randomness_account_address(&orao_vrf.id(), &self.seed);
+        let randomness_account_data = orao_vrf
+            .account::<RandomnessAccountData>(request_address)
+            .await?;
 
         let fulfill_authority =
             ed25519_dalek::Keypair::from_bytes(fulfill_authority.to_bytes().as_ref()).unwrap();
@@ -899,19 +936,35 @@ impl FulfillBuilder {
             builder = builder.instruction(ix);
         }
 
-        Ok(builder
+        builder = builder
             // this instruction must be right before the fulfill instruction
             .instruction(ed25519_instruction::new_ed25519_instruction(
                 &fulfill_authority,
                 &self.seed,
-            ))
-            .accounts(crate::accounts::Fulfill {
-                payer: orao_vrf.payer(),
-                network_state: network_state_address,
-                instruction_acc: sysvar::instructions::ID,
-                request: request_address,
-            })
-            .args(crate::instruction::Fulfill))
+            ));
+
+        let builder = match randomness_account_data.client() {
+            None => builder
+                .accounts(crate::accounts::Fulfill {
+                    payer: orao_vrf.payer(),
+                    network_state: network_state_address,
+                    instruction_acc: sysvar::instructions::ID,
+                    request: request_address,
+                })
+                .args(crate::instruction::Fulfill),
+            Some(client) => builder
+                .accounts(crate::accounts::FulfillV2 {
+                    payer: orao_vrf.payer(),
+                    network_state: network_state_address,
+                    instruction_acc: sysvar::instructions::ID,
+                    request: request_address,
+                    client: *client,
+                    system_program: system_program::ID,
+                })
+                .args(crate::instruction::FulfillV2),
+        };
+
+        Ok(builder)
     }
 }
 
@@ -948,33 +1001,6 @@ impl ComputeBudgetConfig {
         }
 
         Ok(instructions)
-    }
-}
-
-impl Randomness {
-    /// Performs offchain verification against the effective list of fulfillment authorities.
-    #[cfg_attr(docsrs, doc(cfg(feature = "sdk")))]
-    pub fn verify_offchain(&self, fulfillment_authorities: &[Pubkey]) -> bool {
-        if !quorum(self.responses.len(), fulfillment_authorities.len()) {
-            return false;
-        }
-
-        let mut expected_randomness = [0_u8; 64];
-        for response in self.responses.iter() {
-            if !fulfillment_authorities.contains(&response.pubkey) {
-                return false;
-            }
-
-            let sig = Signature::from(response.randomness);
-
-            if !sig.verify(response.pubkey.as_ref(), &self.seed) {
-                return false;
-            }
-
-            xor_array(&mut expected_randomness, &response.randomness);
-        }
-
-        expected_randomness == self.randomness
     }
 }
 

@@ -1,5 +1,5 @@
 use std::ops::Deref;
-use std::{sync::Arc, thread::sleep, time::Duration};
+use std::sync::Arc;
 
 use anchor_client::solana_sdk::{
     commitment_config::CommitmentConfig, signature::Signature, signer::keypair::read_keypair_file,
@@ -7,7 +7,7 @@ use anchor_client::solana_sdk::{
 };
 use anchor_client::{Client, ClientError, Cluster, Program};
 use indicatif::ProgressBar;
-use orao_solana_vrf::{randomness_account_address, state::Randomness, ID};
+use orao_solana_vrf::{get_randomness, wait_fulfilled, randomness_account_address, state::RandomnessAccountData, ID};
 use russian_roulette::{
     player_state_account_address, spin_and_pull_the_trigger,
     state::{current_state, CurrentState, PlayerState},
@@ -94,7 +94,7 @@ async fn main() -> anyhow::Result<()> {
         .await
         .unwrap_or_else(|_| PlayerState::new(player));
     let previous_round = vrf
-        .account::<Randomness>(randomness_account_address(&ID, &state.force))
+        .account::<RandomnessAccountData>(randomness_account_address(&ID, &state.force))
         .await
         .ok();
     let round_outcome = previous_round
@@ -119,7 +119,7 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn describe_state(sound_effects: bool, state: PlayerState, previous_round: Option<&Randomness>) {
+fn describe_state(sound_effects: bool, state: PlayerState, previous_round: Option<&RandomnessAccountData>) {
     match previous_round {
         Some(round) => match current_state(&round) {
             CurrentState::Alive => println!(
@@ -166,28 +166,21 @@ async fn play_a_round<C: Deref<Target = impl Signer> + Clone>(
 async fn wait_for_result<C: Deref<Target = impl Signer> + Send + Sync + Clone + 'static>(
     roulette: &Program<C>,
     vrf: Arc<Program<C>>,
-) -> anyhow::Result<(Randomness, PlayerState)> {
+) -> anyhow::Result<(RandomnessAccountData, PlayerState)> {
     let progress = ProgressBar::new_spinner();
     progress.enable_steady_tick(std::time::Duration::from_millis(120));
     progress.set_message("The cylinder is spinning..");
-
     let player_state_address = player_state_account_address(&roulette.payer());
+    let state = roulette
+        .account::<PlayerState>(player_state_address)
+        .await?;
 
-    for _ in 0..10 {
-        let state = roulette
-            .account::<PlayerState>(player_state_address)
-            .await?;
-        let previous_round = vrf
-            .account::<Randomness>(randomness_account_address(&ID, &state.force))
-            .await?;
-        match current_state(&previous_round) {
-            CurrentState::Alive | CurrentState::Dead => return Ok((previous_round, state)),
-            CurrentState::Playing => {
-                let listener = orao_solana_vrf::wait_fulfilled(state.force, vrf.clone()).await;
-                listener.await?;
-            }
-        }
-        sleep(Duration::from_secs(1));
-    }
-    anyhow::bail!("The VRF is OFF")
+    let fulfilled = wait_fulfilled(state.force, vrf.clone()).await;
+
+    let _ = fulfilled.await?;
+    let randomness = get_randomness(&*vrf, &state.force).await?;
+    let state = roulette
+        .account::<PlayerState>(player_state_address)
+        .await?;
+    Ok((randomness, state))
 }

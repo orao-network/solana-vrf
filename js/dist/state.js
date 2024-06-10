@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FulfilledRandomness = exports.Randomness = exports.RandomnessResponse = exports.OraoTokenFeeConfig = exports.NetworkConfiguration = exports.NetworkState = void 0;
+exports.RandomnessAccountDataV2 = exports.RandomnessAccountDataV1 = exports.FulfilledRequest = exports.PendingRequest = exports.RandomnessV2 = exports.FulfilledRandomnessAccountData = exports.FulfilledRandomness = exports.Randomness = exports.RandomnessResponse = exports.OraoTokenFeeConfig = exports.NetworkConfiguration = exports.NetworkState = void 0;
 const tweetnacl_1 = __importDefault(require("tweetnacl"));
 const _1 = require(".");
 /**
@@ -56,6 +56,14 @@ class Randomness {
         this.randomness = Uint8Array.from(randomness);
         this.responses = responses;
     }
+    /** Returns the request seed */
+    getSeed() {
+        return this.seed;
+    }
+    /** Returns the array of responses collected so far */
+    getResponses() {
+        return this.responses;
+    }
     /** Returns fulfilled randomness or `null` if not yet fulfilled */
     fulfilled() {
         if (Buffer.alloc(64).equals(Buffer.from(this.randomness))) {
@@ -96,7 +104,7 @@ class FulfilledRandomness extends Randomness {
     /**
      * Creates an instance of FulfilledRandomness from the given randomness
      *
-     * It's a caller's responsibility to assert that the randomness is actually filfilled.
+     * It's a caller's responsibility to assert that the randomness is actually fulfilled.
      */
     static unchecked(inner) {
         return new FulfilledRandomness(inner);
@@ -107,3 +115,170 @@ class FulfilledRandomness extends Randomness {
     }
 }
 exports.FulfilledRandomness = FulfilledRandomness;
+class FulfilledRandomnessAccountData {
+    /** Will throw on unfulfilled randomness */
+    constructor(data) {
+        this.seed = data.getSeed();
+        this.client = data.getClient();
+        let randomness = data.getFulfilledRandomness();
+        if (randomness === null) {
+            throw new Error("Building FulfilledRandomnessAccountData from pending request");
+        }
+        this.randomness = randomness;
+        this.responses = data.getResponses();
+    }
+}
+exports.FulfilledRandomnessAccountData = FulfilledRandomnessAccountData;
+class RandomnessV2 {
+    constructor(request) {
+        this.request = request;
+    }
+    /** Returns the pending request, or `null` if already fulfilled. */
+    getPending() {
+        return this.request.getPending();
+    }
+    /** Returns the fulfilled request, or `null` if still pending. */
+    getFulfilled() {
+        return this.request.getFulfilled();
+    }
+    /** Returns the request seed. */
+    getSeed() {
+        return this.request.getSeed();
+    }
+    /** Returns the request client. */
+    getClient() {
+        return this.request.getClient();
+    }
+    /** Returns the array of responses collected so far. */
+    getResponses() {
+        return this.request.getResponses();
+    }
+    /** Returns the fulfilled randomness or `null` if still pending. */
+    getFulfilledRandomness() {
+        return this.request.getFulfilledRandomness();
+    }
+}
+exports.RandomnessV2 = RandomnessV2;
+class PendingRequest {
+    constructor(seed, client, responses) {
+        this.seed = Uint8Array.from(seed);
+        this.client = client;
+        this.responses = responses;
+    }
+    /** Returns this pending request. */
+    getPending() {
+        return this;
+    }
+    /** Returns `null` because it is a pending request. */
+    getFulfilled() {
+        return null;
+    }
+    /** Returns the request seed. */
+    getSeed() {
+        return this.seed;
+    }
+    /** Returns the request client. */
+    getClient() {
+        return this.client;
+    }
+    /** Returns the array of responses collected so far. */
+    getResponses() {
+        return this.responses;
+    }
+    /** Returns `null` because it is a pending request. */
+    getFulfilledRandomness() {
+        return null;
+    }
+}
+exports.PendingRequest = PendingRequest;
+class FulfilledRequest {
+    constructor(seed, client, randomness) {
+        this.seed = Uint8Array.from(seed);
+        this.client = client;
+        this.randomness = Uint8Array.from(randomness);
+    }
+    /** Returns `null` because it is a fulfilled request. */
+    getPending() {
+        return null;
+    }
+    /** Returns this fulfilled request. */
+    getFulfilled() {
+        return this;
+    }
+    /** Returns the request seed. */
+    getSeed() {
+        return this.seed;
+    }
+    /** Returns the request client. */
+    getClient() {
+        return this.client;
+    }
+    /**
+     * Returns `null` because responses are not preserved on the fulfilled request.
+     *
+     * Consider looking into the account history to observe the individual components
+     * of the generated randomness.
+     */
+    getResponses() {
+        return null;
+    }
+    /** Returns the fulfilled randomness. */
+    getFulfilledRandomness() {
+        return this.randomness;
+    }
+}
+exports.FulfilledRequest = FulfilledRequest;
+class RandomnessAccountDataV1 {
+    constructor(data) {
+        this.tag = "V1";
+        this.data = data;
+    }
+    /** Returns the request seed. */
+    getSeed() {
+        return this.data.getSeed();
+    }
+    /** Returns `null` because legacy randomness account does not store the client address. */
+    getClient() {
+        return null;
+    }
+    /** Returns the array of responses collected so far. */
+    getResponses() {
+        return this.data.getResponses();
+    }
+    /** Returns the fulfilled randomness or `null` if still pending. */
+    getFulfilledRandomness() {
+        return this.data.fulfilled();
+    }
+    /** Returns the randomness account data version. */
+    getVersion() {
+        return this.tag;
+    }
+}
+exports.RandomnessAccountDataV1 = RandomnessAccountDataV1;
+class RandomnessAccountDataV2 {
+    constructor(data) {
+        this.tag = "V2";
+        this.data = data;
+    }
+    /** Returns the request seed. */
+    getSeed() {
+        return this.data.getSeed();
+    }
+    /** Returns the request client. */
+    getClient() {
+        return this.data.getClient();
+    }
+    /** Returns the array of responses, or `null` if already fulfilled */
+    getResponses() {
+        return this.data.getResponses();
+    }
+    /** Returns the fulfilled randomness or `null` if still pending. */
+    getFulfilledRandomness() {
+        return this.data.getFulfilledRandomness();
+    }
+    /** Returns the randomness account data version. */
+    getVersion() {
+        return this.tag;
+    }
+}
+exports.RandomnessAccountDataV2 = RandomnessAccountDataV2;

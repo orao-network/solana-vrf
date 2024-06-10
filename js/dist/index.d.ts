@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { BN, Program, Provider, web3 } from "@coral-xyz/anchor";
 import { TransactionInstruction } from "@solana/web3.js";
-import { NetworkConfiguration, NetworkState, OraoTokenFeeConfig, Randomness, FulfilledRandomness } from "./state";
+import { NetworkConfiguration, NetworkState, OraoTokenFeeConfig, RandomnessAccountData, FulfilledRandomnessAccountData } from "./state";
 import { OraoVrf } from "./types/orao_vrf";
 import { MethodsBuilder } from "@coral-xyz/anchor/dist/cjs/program/namespace/methods";
 export { Randomness, FulfilledRandomness, RandomnessResponse, NetworkConfiguration, NetworkState, OraoTokenFeeConfig, } from "./state";
@@ -80,7 +80,7 @@ export declare class Orao extends Program<OraoVrf> {
      * @param seed - seed buffer.
      * @param commitment - you can override the provider's commitment level.
      */
-    getRandomness(seed: Buffer | Uint8Array, commitment?: web3.Commitment): Promise<Randomness>;
+    getRandomness(seed: Buffer | Uint8Array, commitment?: web3.Commitment): Promise<RandomnessAccountData>;
     /**
      * Prepares a randomness request (see {@link RequestBuilder}).
      *
@@ -103,7 +103,7 @@ export declare class Orao extends Program<OraoVrf> {
      * @returns a {@link RequestBuilder} instance.
      */
     request(seed?: Buffer | Uint8Array): Promise<RequestBuilder>;
-    waitFulfilled(seed: Buffer | Uint8Array, commitment?: web3.Commitment): Promise<FulfilledRandomness>;
+    waitFulfilled(seed: Buffer | Uint8Array, commitment?: web3.Commitment): Promise<FulfilledRandomnessAccountData>;
 }
 declare class ComputeBudgetConfig {
     computeUnitPrice: bigint | null;
@@ -384,7 +384,7 @@ export declare class FulfillBuilder {
      * @param fulfillmentAuthority - public key of a fulfillment authority
      * @param signature - signature of a seed, performed by the fulfillment authority
      */
-    build(fulfillmentAuthority: web3.PublicKey, signature: Uint8Array): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][3]>>;
+    build(fulfillmentAuthority: web3.PublicKey, signature: Uint8Array): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][3] | OraoVrf["instructions"][4]>>;
     /**
      * Performs an RPC call.
      *

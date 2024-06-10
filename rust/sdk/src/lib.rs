@@ -36,9 +36,10 @@
 //! orao_solana_vrf::cpi::request(cpi_ctx, seed)?;
 //! ```
 #![cfg_attr(docsrs, feature(doc_cfg))]
+#![allow(deprecated)]
 
 use anchor_lang::prelude::*;
-use state::{NetworkState, OraoTokenFeeConfig, Randomness};
+use state::{NetworkState, OraoTokenFeeConfig, Randomness, RandomnessV2};
 
 pub use crate::error::Error;
 
@@ -87,8 +88,13 @@ pub fn xor_array<const N: usize>(l: &mut [u8; N], r: &[u8; N]) {
 }
 
 /// Helper that checks for Byzantine quorum.
-pub fn quorum(count: usize, total: usize) -> bool {
-    count >= (total * 2 / 3 + 1)
+pub const fn quorum(count: usize, total: usize) -> bool {
+    count >= majority(total)
+}
+
+/// Helper that returns the majority for the given total value.
+pub const fn majority(total: usize) -> usize {
+    total * 2 / 3 + 1
 }
 
 #[allow(unused_variables)]
@@ -132,7 +138,8 @@ pub mod orao_vrf {
         Ok(())
     }
 
-    /// Performs a randomness request (for required accounts see [`crate::Request`]).
+    /// (**deprecated: see [`crate::Request`]**) Performs a randomness request
+    /// (for required accounts see [`crate::Request`]).
     ///
     /// *  seed – unique request seed
     pub fn request<'info>(
@@ -142,8 +149,24 @@ pub mod orao_vrf {
         Ok(())
     }
 
-    /// Fulfills a randomness request (for required accounts see [`crate::Fulfill`]).
+    /// (**deprecated: see [`crate::FulfillV2`]**) Fulfills a randomness request
+    /// (for required accounts see [`crate::Fulfill`]).
     pub fn fulfill(ctx: Context<Fulfill>) -> Result<()> {
+        Ok(())
+    }
+
+    /// Performs a randomness request (for required accounts see [`crate::RequestV2`]).
+    ///
+    /// *  seed – unique request seed
+    pub fn request_v2<'info>(
+        ctx: Context<'_, '_, '_, 'info, RequestV2<'info>>,
+        seed: [u8; 32],
+    ) -> Result<()> {
+        Ok(())
+    }
+
+    /// Fulfills a randomness request (for required accounts see [`crate::FulfillV2`]).
+    pub fn fulfill_v2(ctx: Context<FulfillV2>) -> Result<()> {
         Ok(())
     }
 }
@@ -211,7 +234,7 @@ pub struct UpdateNetwork<'info> {
     pub treasury: AccountInfo<'info>,
 }
 
-/// Request randomness.
+/// (**deprecated: see [`crate::RequestV2`]**) Request randomness.
 ///
 /// ### Required accounts
 ///
@@ -233,10 +256,12 @@ pub struct UpdateNetwork<'info> {
 /// *  token_program_account – necessary to execute the transfer
 ///
 /// ### Space calculation for account creation (request)
+///
 /// * 8 (anchor tag) + 32 (seed) + 64 (combined randomness) + 4 (response array length) + (32 (fulfiller pubkey) + 64 (fulfiller randomness))  * 7 (maximum number of responses)
 ///
 #[derive(Accounts)]
 #[instruction(seed: [u8; 32])]
+#[deprecated(since = "0.4.0", note = "See RequestV2")]
 pub struct Request<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
@@ -256,7 +281,7 @@ pub struct Request<'info> {
     #[account(
         init,
         payer = payer,
-        space = 8 + 32 + 64 + 4 + (32 + 64) * 7,
+        space = 8 + Randomness::SIZE,
         seeds = [RANDOMNESS_ACCOUNT_SEED, &seed],
         bump,
     )]
@@ -264,7 +289,7 @@ pub struct Request<'info> {
     pub system_program: Program<'info, System>,
 }
 
-/// Fulfill randomness.
+/// (**deprecated: see [`crate::FulfillV2`]**) Fulfill randomness.
 ///
 /// ### Required accounts
 ///
@@ -275,6 +300,7 @@ pub struct Request<'info> {
 /// *  (writable) request – randomness request PDA
 ///    (see [`randomness_account_address`])
 #[derive(Accounts)]
+#[deprecated(since = "0.4.0", note = "See FulfillV2")]
 pub struct Fulfill<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
@@ -292,4 +318,92 @@ pub struct Fulfill<'info> {
         bump,
     )]
     pub request: Account<'info, Randomness>,
+}
+
+/// Request randomness (v2).
+///
+/// ### Required accounts
+///
+/// *  (signer) payer – request and transaction fee payer
+/// *  (writable) network_state – VRF on-chain config PDA
+///    (see [`network_state_account_address`])
+/// *  (writable) (from VRF on-chain config) treasury – either SOL treasury or token treasury
+///    (see remaining accounts)
+/// *  (writable) request – randomness request PDA
+///    (see [`randomness_account_address`])
+/// *  system_program - system program account
+///
+/// ### Remaining accounts
+///
+/// If token fee configuration exists and given treasury equals token treasury,
+/// then remaining accounts are required:
+///
+/// *  (writable) token_payer – payer token wallet
+/// *  token_program_account – necessary to execute the transfer
+///
+/// ### Space calculation for account creation (request)
+///
+/// * 8 (anchor tag) + 32 (client) + 32 (seed) + 4 (response array length) + (32 (fulfiller pubkey) + 64 (fulfiller randomness))  * 7 (maximum number of responses)
+///
+#[derive(Accounts)]
+#[instruction(seed: [u8; 32])]
+pub struct RequestV2<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    #[account(
+        mut,
+        seeds = [CONFIG_ACCOUNT_SEED],
+        bump,
+    )]
+    pub network_state: Account<'info, NetworkState>,
+    /// CHECK:
+    #[account(
+        mut,
+        constraint = network_state.config.treasury == treasury.key() ||
+        network_state.config.token_fee_config.as_ref().map(|x| x.treasury) == Some(treasury.key())
+        @ Error::UnknownTreasuryGiven)]
+    pub treasury: AccountInfo<'info>,
+    #[account(
+        init,
+        payer = payer,
+        space = 8 + RandomnessV2::PENDING_SIZE,
+        seeds = [RANDOMNESS_ACCOUNT_SEED, &seed],
+        bump,
+    )]
+    pub request: Account<'info, RandomnessV2>,
+    pub system_program: Program<'info, System>,
+}
+
+/// Fulfill randomness (v2).
+///
+/// ### Required accounts
+///
+/// *  (signer) payer – transaction fee payer
+/// *  instruction_acc – sysvar instruction account
+/// *  (writable) network_state – VRF on-chain config PDA
+///    (see [`network_state_account_address`])
+/// *  (writable) request – randomness request PDA
+///    (see [`randomness_account_address`])
+/// *  (writable) client - client account (see [`Randomness::client`])
+#[derive(Accounts)]
+pub struct FulfillV2<'info> {
+    #[account(mut)]
+    pub payer: Signer<'info>,
+    /// CHECK:
+    pub instruction_acc: AccountInfo<'info>,
+    #[account(
+        mut,
+        seeds = [CONFIG_ACCOUNT_SEED],
+        bump,
+    )]
+    pub network_state: Account<'info, NetworkState>,
+    #[account(
+        mut,
+        seeds = [RANDOMNESS_ACCOUNT_SEED, request.seed()],
+        bump,
+    )]
+    pub request: Account<'info, RandomnessV2>,
+    #[account(mut, constraint = *request.client() == client.key())]
+    pub client: AccountInfo<'info>,
+    pub system_program: Program<'info, System>,
 }
