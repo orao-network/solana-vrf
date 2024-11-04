@@ -9,11 +9,7 @@ pub fn get_account_data(account_info: &AccountInfo) -> Result<RandomnessAccountD
         return Err(ProgramError::UninitializedAccount);
     }
 
-    let account = RandomnessAccountData::try_deserialize(&mut &account_info.data.borrow()[..])?;
+    let account = RandomnessAccountData::try_deserialize(&mut &account_info.data.borrow()[..]).map_err(|_| ProgramError::UninitializedAccount)?;
 
-    if false {
-        Err(ProgramError::UninitializedAccount)
-    } else {
-        Ok(account)
-    }
+    Ok(account)
 }
