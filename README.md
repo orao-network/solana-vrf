@@ -5,15 +5,24 @@
 <p>
   Generate on-chain randomness on Solana. ORAO's Verifiable Random Function for Solana offers unbiased, fast and affordable randomness for your Solana programs. Create unique NFT characteristics, generate random levels for games and weapons, randomize airdrops and provide secure, verifiable lottery. Built using Anchor framework.
 </p>
+
+<p align="center">
+ <h2>
+    For VRF Callback functionality guide please explore the <a href="/callback/README.md">callback folder</a>.
+ </h2>
+</p>
+<br />
+
+
+
+This repository provides off-chain Rust and JS web3 SDKs for requesting on-chain randomness using ORAO VRF program.
+
+Program account (devnet/mainnet): `VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y`
 <p align="center">
   <a href="https://www.npmjs.com/package/@orao-network/solana-vrf"><img src="https://img.shields.io/npm/v/%40orao-network%2Fsolana-vrf?logo=npm&color=377CC0" /></a>
   <a href="https://crates.io/crates/orao-solana-vrf"><img src="https://img.shields.io/crates/v/orao-solana-vrf?logo=rust&color=darkgreen" /></a><br />
   
 </p>
-
-This repository provides off-chain Rust and JS web3 SDKs for requesting on-chain randomness using ORAO VRF program.
-
-Program account (devnet/mainnet): `VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y`
 
 ## Notes on v0.4.0 update
 

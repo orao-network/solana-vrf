@@ -1,6 +1,6 @@
 [workspace]
-members = ["rust/sdk", "rust/examples/off-chain"]
-exclude = ["rust/examples/cpi"]
+members = ["rust/sdk", "rust/examples/off-chain", "callback/rust/sdk"]
+exclude = ["rust/examples/cpi", "callback/rust/examples/cpi"]
 resolver = "2"
 
 [workspace.dependencies]

@@ -1,0 +1,31 @@
+[package]
+name = "orao-solana-vrf-cb"
+version = "0.1.0"
+edition = "2021"
+authors = ["ORAO Devs <hello@orao.network>"]
+homepage = "https://orao.network"
+repository = "https://github.com/orao-network/solana-vrf/callback"
+license = "Apache-2.0"
+keywords = ["solana", "vrf", "ed25519", "anchor", "callback"]
+description = "ORAO Verifiable Random Function for Solana."
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "orao_solana_vrf_cb"
+
+[features]
+default = ["sdk"]
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build"]
+sdk = ["no-entrypoint", "anchor-client", "ed25519-dalek", "tokio", "thiserror"]
+
+[dependencies]
+anchor-lang = "0.30.1"
+anchor-client = { version = "0.30.1", optional = true, features = ["async"] }
+byteorder = "1.5.0"
+ed25519-dalek = { version = "1.0.1", optional = true }
+thiserror = { version = "1", optional = true }
+tokio = { version = "1", optional = true }

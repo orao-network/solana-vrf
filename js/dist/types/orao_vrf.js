@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.IDL = void 0;
 exports.IDL = {
-    version: "0.4.0",
+    version: "0.2.5",
     name: "orao_vrf",
     instructions: [
         {
@@ -121,8 +121,7 @@ exports.IDL = {
         {
             name: "request",
             docs: [
-                "(**deprecated: see [`crate::Request`]**) Performs a randomness request",
-                "(for required accounts see [`crate::Request`]).",
+                "Performs a randomness request (for required accounts see [`crate::Request`]).",
                 "",
                 "*  seed – unique request seed",
             ],
@@ -164,10 +163,7 @@ exports.IDL = {
         },
         {
             name: "fulfill",
-            docs: [
-                "(**deprecated: see [`crate::FulfillV2`]**) Fulfills a randomness request",
-                "(for required accounts see [`crate::Fulfill`]).",
-            ],
+            docs: ["Fulfills a randomness request (for required accounts see [`crate::Fulfill`])."],
             accounts: [
                 {
                     name: "payer",
@@ -187,88 +183,6 @@ exports.IDL = {
                 {
                     name: "request",
                     isMut: true,
-                    isSigner: false,
-                },
-            ],
-            args: [],
-        },
-        {
-            name: "requestV2",
-            docs: [
-                "Performs a randomness request (for required accounts see [`crate::RequestV2`]).",
-                "",
-                "*  seed – unique request seed",
-            ],
-            accounts: [
-                {
-                    name: "payer",
-                    isMut: true,
-                    isSigner: true,
-                },
-                {
-                    name: "networkState",
-                    isMut: true,
-                    isSigner: false,
-                },
-                {
-                    name: "treasury",
-                    isMut: true,
-                    isSigner: false,
-                },
-                {
-                    name: "request",
-                    isMut: true,
-                    isSigner: false,
-                },
-                {
-                    name: "systemProgram",
-                    isMut: false,
-                    isSigner: false,
-                },
-            ],
-            args: [
-                {
-                    name: "seed",
-                    type: {
-                        array: ["u8", 32],
-                    },
-                },
-            ],
-        },
-        {
-            name: "fulfillV2",
-            docs: [
-                "Fulfills a randomness request (for required accounts see [`crate::FulfillV2`]).",
-            ],
-            accounts: [
-                {
-                    name: "payer",
-                    isMut: true,
-                    isSigner: true,
-                },
-                {
-                    name: "instructionAcc",
-                    isMut: false,
-                    isSigner: false,
-                },
-                {
-                    name: "networkState",
-                    isMut: true,
-                    isSigner: false,
-                },
-                {
-                    name: "request",
-                    isMut: true,
-                    isSigner: false,
-                },
-                {
-                    name: "client",
-                    isMut: true,
-                    isSigner: false,
-                },
-                {
-                    name: "systemProgram",
-                    isMut: false,
                     isSigner: false,
                 },
             ],
@@ -297,9 +211,6 @@ exports.IDL = {
         },
         {
             name: "randomness",
-            docs: [
-                "This account is now obsolete and exists as a legacy to observe the old requests.",
-            ],
             type: {
                 kind: "struct",
                 fields: [
@@ -321,20 +232,6 @@ exports.IDL = {
                             vec: {
                                 defined: "RandomnessResponse",
                             },
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            name: "randomnessV2",
-            type: {
-                kind: "struct",
-                fields: [
-                    {
-                        name: "request",
-                        type: {
-                            defined: "Request",
                         },
                     },
                 ],
@@ -413,88 +310,6 @@ exports.IDL = {
                         type: {
                             array: ["u8", 64],
                         },
-                    },
-                ],
-            },
-        },
-        {
-            name: "FulfilledRequest",
-            docs: ["Fulfilled request representation."],
-            type: {
-                kind: "struct",
-                fields: [
-                    {
-                        name: "client",
-                        type: "publicKey",
-                    },
-                    {
-                        name: "seed",
-                        type: {
-                            array: ["u8", 32],
-                        },
-                    },
-                    {
-                        name: "randomness",
-                        docs: [
-                            "Generated randomness.",
-                            "",
-                            "Please look into the account history logs to observe the individual components.",
-                        ],
-                        type: {
-                            array: ["u8", 64],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            name: "PendingRequest",
-            docs: ["Pending request representation."],
-            type: {
-                kind: "struct",
-                fields: [
-                    {
-                        name: "client",
-                        type: "publicKey",
-                    },
-                    {
-                        name: "seed",
-                        type: {
-                            array: ["u8", 32],
-                        },
-                    },
-                    {
-                        name: "responses",
-                        docs: ["Responses collected so far."],
-                        type: {
-                            vec: {
-                                defined: "RandomnessResponse",
-                            },
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            name: "Request",
-            type: {
-                kind: "enum",
-                variants: [
-                    {
-                        name: "Pending",
-                        fields: [
-                            {
-                                defined: "PendingRequest",
-                            },
-                        ],
-                    },
-                    {
-                        name: "Fulfilled",
-                        fields: [
-                            {
-                                defined: "FulfilledRequest",
-                            },
-                        ],
                     },
                 ],
             },
