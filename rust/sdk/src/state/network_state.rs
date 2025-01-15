@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-#[derive(Clone, AnchorSerialize, AnchorDeserialize)]
+#[derive(Clone, AnchorSerialize, AnchorDeserialize, PartialEq, Eq)]
 #[cfg_attr(feature = "sdk", derive(Debug))]
 pub struct NetworkConfiguration {
     pub authority: Pubkey,
@@ -10,7 +10,7 @@ pub struct NetworkConfiguration {
     pub token_fee_config: Option<OraoTokenFeeConfig>,
 }
 
-#[derive(Clone, AnchorSerialize, AnchorDeserialize)]
+#[derive(Clone, AnchorSerialize, AnchorDeserialize, PartialEq, Eq)]
 #[cfg_attr(feature = "sdk", derive(Debug))]
 pub struct OraoTokenFeeConfig {
     /// ORAO token mint address.
@@ -22,6 +22,7 @@ pub struct OraoTokenFeeConfig {
 }
 
 #[account]
+#[derive(Eq, PartialEq)]
 #[cfg_attr(feature = "sdk", derive(Debug))]
 pub struct NetworkState {
     pub config: NetworkConfiguration,

@@ -1,8 +1,7 @@
-#![cfg(feature = "sdk")]
+#![cfg(all(feature = "sdk", not(feature = "idl-build")))]
 
 use std::{
     future::Future,
-    io,
     ops::Deref,
     sync::{Arc, Mutex},
 };
@@ -18,19 +17,23 @@ use anchor_client::{
     },
 };
 use anchor_lang::{
-    prelude::{borsh::BorshDeserialize, AccountMeta, Pubkey},
-    system_program, Discriminator, InstructionData, ToAccountMetas,
+    prelude::{AccountMeta, Pubkey},
+    system_program, InstructionData, ToAccountMetas,
 };
 use anchor_spl::token;
 use tokio::{sync::oneshot, task::JoinError};
 
 use crate::{
-    accounts, events, instruction, network_state_account_address, randomness_account_address,
+    accounts, instruction, network_state_account_address, randomness_account_address,
     state::{
         NetworkConfiguration, NetworkState, OraoTokenFeeConfig, RandomnessAccountData,
         RandomnessAccountVersion,
     },
 };
+
+pub use events::Event;
+
+mod events;
 
 impl RandomnessAccountVersion {
     pub async fn resolve<'a, C: Deref<Target = impl Signer> + Clone>(
@@ -77,7 +80,7 @@ pub async fn wait_fulfilled<C: Deref<Target = impl Signer> + Sync + Send + 'stat
         let tx = Mutex::new(Some(tx));
 
         let unsubscribe = orao_vrf_clone
-            .on::<events::Fulfill>(move |_ctx, event| {
+            .on::<crate::events::Fulfill>(move |_ctx, event| {
                 if event.seed == seed {
                     if let Some(tx2) = tx.lock().unwrap().take() {
                         let _ = tx2.send(event.randomness);
@@ -1001,39 +1004,5 @@ impl ComputeBudgetConfig {
         }
 
         Ok(instructions)
-    }
-}
-
-/// Convenience wrapper.
-#[derive(Debug, Clone, Eq, PartialEq)]
-#[cfg_attr(docsrs, doc(cfg(feature = "sdk")))]
-pub enum Event {
-    Request(events::Request),
-    Response(events::Response),
-    Fulfill(events::Fulfill),
-}
-
-impl Event {
-    /// Meant to deserialize an event from a representation written
-    /// in the `Program Data: <base64...>` log record.
-    ///
-    /// Expects bytes decoded from base64.
-    pub fn from_log(mut bytes: &[u8]) -> io::Result<Self> {
-        let discriminator = <[u8; 8] as BorshDeserialize>::deserialize(&mut bytes)?;
-        match discriminator {
-            events::Request::DISCRIMINATOR => {
-                events::Request::deserialize(&mut bytes).map(Self::Request)
-            }
-            events::Response::DISCRIMINATOR => {
-                events::Response::deserialize(&mut bytes).map(Self::Response)
-            }
-            events::Fulfill::DISCRIMINATOR => {
-                events::Fulfill::deserialize(&mut bytes).map(Self::Fulfill)
-            }
-            _ => Err(io::Error::new(
-                io::ErrorKind::InvalidData,
-                "unknown discriminator for an event",
-            )),
-        }
     }
 }

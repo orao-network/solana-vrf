@@ -1,24 +1,18 @@
-/**
- * Program IDL in camelCase format in order to be used in JS/TS.
- *
- * Note that this is only a type helper and is not the actual IDL. The original
- * IDL can be found at `target/idl/orao_vrf.json`.
- */
-export type OraoVrf = {
-    "address": "VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y";
+{
+    "address": "VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y",
     "metadata": {
-        "name": "oraoVrf";
-        "version": "0.5.0";
-        "spec": "0.1.0";
-        "description": "ORAO VRF contract";
-    };
+        "name": "orao_vrf",
+        "version": "0.5.0",
+        "spec": "0.1.0",
+        "description": "ORAO VRF contract"
+    },
     "instructions": [
         {
-            "name": "fulfill";
+            "name": "fulfill",
             "docs": [
                 "(**deprecated: see [`crate::FulfillV2`]**) Fulfills a randomness request",
                 "(for required accounts see [`crate::Fulfill`])."
-            ];
+            ],
             "discriminator": [
                 143,
                 2,
@@ -28,23 +22,23 @@ export type OraoVrf = {
                 164,
                 247,
                 72
-            ];
+            ],
             "accounts": [
                 {
-                    "name": "payer";
-                    "writable": true;
-                    "signer": true;
+                    "name": "payer",
+                    "writable": true,
+                    "signer": true
                 },
                 {
-                    "name": "instructionAcc";
+                    "name": "instruction_acc"
                 },
                 {
-                    "name": "networkState";
-                    "writable": true;
+                    "name": "network_state",
+                    "writable": true,
                     "pda": {
                         "seeds": [
                             {
-                                "kind": "const";
+                                "kind": "const",
                                 "value": [
                                     111,
                                     114,
@@ -76,23 +70,23 @@ export type OraoVrf = {
                                     105,
                                     111,
                                     110
-                                ];
+                                ]
                             }
-                        ];
-                    };
+                        ]
+                    }
                 },
                 {
-                    "name": "request";
-                    "writable": true;
+                    "name": "request",
+                    "writable": true
                 }
-            ];
-            "args": [];
+            ],
+            "args": []
         },
         {
-            "name": "fulfillV2";
+            "name": "fulfill_v2",
             "docs": [
                 "Fulfills a randomness request (for required accounts see [`crate::FulfillV2`])."
-            ];
+            ],
             "discriminator": [
                 164,
                 227,
@@ -102,23 +96,23 @@ export type OraoVrf = {
                 111,
                 147,
                 196
-            ];
+            ],
             "accounts": [
                 {
-                    "name": "payer";
-                    "writable": true;
-                    "signer": true;
+                    "name": "payer",
+                    "writable": true,
+                    "signer": true
                 },
                 {
-                    "name": "instructionAcc";
+                    "name": "instruction_acc"
                 },
                 {
-                    "name": "networkState";
-                    "writable": true;
+                    "name": "network_state",
+                    "writable": true,
                     "pda": {
                         "seeds": [
                             {
-                                "kind": "const";
+                                "kind": "const",
                                 "value": [
                                     111,
                                     114,
@@ -150,18 +144,18 @@ export type OraoVrf = {
                                     105,
                                     111,
                                     110
-                                ];
+                                ]
                             }
-                        ];
-                    };
+                        ]
+                    }
                 },
                 {
-                    "name": "request";
-                    "writable": true;
+                    "name": "request",
+                    "writable": true,
                     "pda": {
                         "seeds": [
                             {
-                                "kind": "const";
+                                "kind": "const",
                                 "value": [
                                     111,
                                     114,
@@ -190,28 +184,28 @@ export type OraoVrf = {
                                     101,
                                     115,
                                     116
-                                ];
+                                ]
                             },
                             {
-                                "kind": "account";
-                                "path": "request";
+                                "kind": "account",
+                                "path": "request"
                             }
-                        ];
-                    };
+                        ]
+                    }
                 },
                 {
-                    "name": "client";
-                    "writable": true;
+                    "name": "client",
+                    "writable": true
                 },
                 {
-                    "name": "systemProgram";
-                    "address": "11111111111111111111111111111111";
+                    "name": "system_program",
+                    "address": "11111111111111111111111111111111"
                 }
-            ];
-            "args": [];
+            ],
+            "args": []
         },
         {
-            "name": "initNetwork";
+            "name": "init_network",
             "docs": [
                 "Performs VRF initialization (for required accounts see [`crate::InitNetwork`]).",
                 "",
@@ -221,7 +215,7 @@ export type OraoVrf = {
                 "*  token_fee_config – token fee configuration",
                 "",
                 "Treasury is given via instruction accounts."
-            ];
+            ],
             "discriminator": [
                 104,
                 231,
@@ -231,20 +225,20 @@ export type OraoVrf = {
                 0,
                 5,
                 148
-            ];
+            ],
             "accounts": [
                 {
-                    "name": "payer";
-                    "writable": true;
-                    "signer": true;
+                    "name": "payer",
+                    "writable": true,
+                    "signer": true
                 },
                 {
-                    "name": "networkState";
-                    "writable": true;
+                    "name": "network_state",
+                    "writable": true,
                     "pda": {
                         "seeds": [
                             {
-                                "kind": "const";
+                                "kind": "const",
                                 "value": [
                                     111,
                                     114,
@@ -276,54 +270,54 @@ export type OraoVrf = {
                                     105,
                                     111,
                                     110
-                                ];
+                                ]
                             }
-                        ];
-                    };
+                        ]
+                    }
                 },
                 {
-                    "name": "treasury";
+                    "name": "treasury"
                 },
                 {
-                    "name": "systemProgram";
-                    "address": "11111111111111111111111111111111";
+                    "name": "system_program",
+                    "address": "11111111111111111111111111111111"
                 }
-            ];
+            ],
             "args": [
                 {
-                    "name": "fee";
-                    "type": "u64";
+                    "name": "fee",
+                    "type": "u64"
                 },
                 {
-                    "name": "configAuthority";
-                    "type": "pubkey";
+                    "name": "config_authority",
+                    "type": "pubkey"
                 },
                 {
-                    "name": "fulfillmentAuthorities";
+                    "name": "fulfillment_authorities",
                     "type": {
-                        "vec": "pubkey";
-                    };
+                        "vec": "pubkey"
+                    }
                 },
                 {
-                    "name": "tokenFeeConfig";
+                    "name": "token_fee_config",
                     "type": {
                         "option": {
                             "defined": {
-                                "name": "oraoTokenFeeConfig";
-                            };
-                        };
-                    };
+                                "name": "OraoTokenFeeConfig"
+                            }
+                        }
+                    }
                 }
-            ];
+            ]
         },
         {
-            "name": "request";
+            "name": "request",
             "docs": [
                 "(**deprecated: see [`crate::Request`]**) Performs a randomness request",
                 "(for required accounts see [`crate::Request`]).",
                 "",
                 "*  seed – unique request seed"
-            ];
+            ],
             "discriminator": [
                 46,
                 101,
@@ -333,20 +327,20 @@ export type OraoVrf = {
                 137,
                 12,
                 173
-            ];
+            ],
             "accounts": [
                 {
-                    "name": "payer";
-                    "writable": true;
-                    "signer": true;
+                    "name": "payer",
+                    "writable": true,
+                    "signer": true
                 },
                 {
-                    "name": "networkState";
-                    "writable": true;
+                    "name": "network_state",
+                    "writable": true,
                     "pda": {
                         "seeds": [
                             {
-                                "kind": "const";
+                                "kind": "const",
                                 "value": [
                                     111,
                                     114,
@@ -378,22 +372,22 @@ export type OraoVrf = {
                                     105,
                                     111,
                                     110
-                                ];
+                                ]
                             }
-                        ];
-                    };
+                        ]
+                    }
                 },
                 {
-                    "name": "treasury";
-                    "writable": true;
+                    "name": "treasury",
+                    "writable": true
                 },
                 {
-                    "name": "request";
-                    "writable": true;
+                    "name": "request",
+                    "writable": true,
                     "pda": {
                         "seeds": [
                             {
-                                "kind": "const";
+                                "kind": "const",
                                 "value": [
                                     111,
                                     114,
@@ -422,39 +416,39 @@ export type OraoVrf = {
                                     101,
                                     115,
                                     116
-                                ];
+                                ]
                             },
                             {
-                                "kind": "arg";
-                                "path": "seed";
+                                "kind": "arg",
+                                "path": "seed"
                             }
-                        ];
-                    };
+                        ]
+                    }
                 },
                 {
-                    "name": "systemProgram";
-                    "address": "11111111111111111111111111111111";
+                    "name": "system_program",
+                    "address": "11111111111111111111111111111111"
                 }
-            ];
+            ],
             "args": [
                 {
-                    "name": "seed";
+                    "name": "seed",
                     "type": {
                         "array": [
                             "u8",
                             32
-                        ];
-                    };
+                        ]
+                    }
                 }
-            ];
+            ]
         },
         {
-            "name": "requestV2";
+            "name": "request_v2",
             "docs": [
                 "Performs a randomness request (for required accounts see [`crate::RequestV2`]).",
                 "",
                 "*  seed – unique request seed"
-            ];
+            ],
             "discriminator": [
                 38,
                 151,
@@ -464,20 +458,20 @@ export type OraoVrf = {
                 102,
                 28,
                 217
-            ];
+            ],
             "accounts": [
                 {
-                    "name": "payer";
-                    "writable": true;
-                    "signer": true;
+                    "name": "payer",
+                    "writable": true,
+                    "signer": true
                 },
                 {
-                    "name": "networkState";
-                    "writable": true;
+                    "name": "network_state",
+                    "writable": true,
                     "pda": {
                         "seeds": [
                             {
-                                "kind": "const";
+                                "kind": "const",
                                 "value": [
                                     111,
                                     114,
@@ -509,22 +503,22 @@ export type OraoVrf = {
                                     105,
                                     111,
                                     110
-                                ];
+                                ]
                             }
-                        ];
-                    };
+                        ]
+                    }
                 },
                 {
-                    "name": "treasury";
-                    "writable": true;
+                    "name": "treasury",
+                    "writable": true
                 },
                 {
-                    "name": "request";
-                    "writable": true;
+                    "name": "request",
+                    "writable": true,
                     "pda": {
                         "seeds": [
                             {
-                                "kind": "const";
+                                "kind": "const",
                                 "value": [
                                     111,
                                     114,
@@ -553,34 +547,34 @@ export type OraoVrf = {
                                     101,
                                     115,
                                     116
-                                ];
+                                ]
                             },
                             {
-                                "kind": "arg";
-                                "path": "seed";
+                                "kind": "arg",
+                                "path": "seed"
                             }
-                        ];
-                    };
+                        ]
+                    }
                 },
                 {
-                    "name": "systemProgram";
-                    "address": "11111111111111111111111111111111";
+                    "name": "system_program",
+                    "address": "11111111111111111111111111111111"
                 }
-            ];
+            ],
             "args": [
                 {
-                    "name": "seed";
+                    "name": "seed",
                     "type": {
                         "array": [
                             "u8",
                             32
-                        ];
-                    };
+                        ]
+                    }
                 }
-            ];
+            ]
         },
         {
-            "name": "updateNetwork";
+            "name": "update_network",
             "docs": [
                 "Performs VRF configuration update (for required accounts see [`crate::UpdateNetwork`]).",
                 "",
@@ -590,7 +584,7 @@ export type OraoVrf = {
                 "*  token_fee_config – token fee configuration",
                 "",
                 "Treasury is given via instruction accounts."
-            ];
+            ],
             "discriminator": [
                 39,
                 115,
@@ -600,20 +594,20 @@ export type OraoVrf = {
                 232,
                 216,
                 161
-            ];
+            ],
             "accounts": [
                 {
-                    "name": "authority";
-                    "writable": true;
-                    "signer": true;
+                    "name": "authority",
+                    "writable": true,
+                    "signer": true
                 },
                 {
-                    "name": "networkState";
-                    "writable": true;
+                    "name": "network_state",
+                    "writable": true,
                     "pda": {
                         "seeds": [
                             {
-                                "kind": "const";
+                                "kind": "const",
                                 "value": [
                                     111,
                                     114,
@@ -645,46 +639,46 @@ export type OraoVrf = {
                                     105,
                                     111,
                                     110
-                                ];
+                                ]
                             }
-                        ];
-                    };
+                        ]
+                    }
                 },
                 {
-                    "name": "treasury";
+                    "name": "treasury"
                 }
-            ];
+            ],
             "args": [
                 {
-                    "name": "fee";
-                    "type": "u64";
+                    "name": "fee",
+                    "type": "u64"
                 },
                 {
-                    "name": "configAuthority";
-                    "type": "pubkey";
+                    "name": "config_authority",
+                    "type": "pubkey"
                 },
                 {
-                    "name": "fulfillmentAuthorities";
+                    "name": "fulfillment_authorities",
                     "type": {
-                        "vec": "pubkey";
-                    };
+                        "vec": "pubkey"
+                    }
                 },
                 {
-                    "name": "tokenFeeConfig";
+                    "name": "token_fee_config",
                     "type": {
                         "option": {
                             "defined": {
-                                "name": "oraoTokenFeeConfig";
-                            };
-                        };
-                    };
+                                "name": "OraoTokenFeeConfig"
+                            }
+                        }
+                    }
                 }
-            ];
+            ]
         }
-    ];
+    ],
     "accounts": [
         {
-            "name": "networkState";
+            "name": "NetworkState",
             "discriminator": [
                 212,
                 237,
@@ -694,10 +688,10 @@ export type OraoVrf = {
                 245,
                 51,
                 169
-            ];
+            ]
         },
         {
-            "name": "randomness";
+            "name": "Randomness",
             "discriminator": [
                 188,
                 96,
@@ -707,10 +701,10 @@ export type OraoVrf = {
                 94,
                 49,
                 112
-            ];
+            ]
         },
         {
-            "name": "randomnessV2";
+            "name": "RandomnessV2",
             "discriminator": [
                 139,
                 239,
@@ -720,12 +714,12 @@ export type OraoVrf = {
                 86,
                 191,
                 226
-            ];
+            ]
         }
-    ];
+    ],
     "events": [
         {
-            "name": "fulfill";
+            "name": "Fulfill",
             "discriminator": [
                 131,
                 245,
@@ -735,10 +729,10 @@ export type OraoVrf = {
                 46,
                 144,
                 45
-            ];
+            ]
         },
         {
-            "name": "request";
+            "name": "Request",
             "discriminator": [
                 55,
                 144,
@@ -748,10 +742,10 @@ export type OraoVrf = {
                 98,
                 131,
                 61
-            ];
+            ]
         },
         {
-            "name": "response";
+            "name": "Response",
             "discriminator": [
                 44,
                 10,
@@ -761,442 +755,442 @@ export type OraoVrf = {
                 82,
                 206,
                 223
-            ];
+            ]
         }
-    ];
+    ],
     "errors": [
         {
-            "code": 6000;
-            "name": "zeroSeed";
-            "msg": "Randomness seed cannot be zero";
+            "code": 6000,
+            "name": "ZeroSeed",
+            "msg": "Randomness seed cannot be zero"
         },
         {
-            "code": 6001;
-            "name": "seedAlreadyInUse";
-            "msg": "Another account is using the provided seed, so randomness can be predicted";
+            "code": 6001,
+            "name": "SeedAlreadyInUse",
+            "msg": "Another account is using the provided seed, so randomness can be predicted"
         },
         {
-            "code": 6002;
-            "name": "insufficientFunds";
-            "msg": "The called account doesn't have enough funds to cover the randomness request";
+            "code": 6002,
+            "name": "InsufficientFunds",
+            "msg": "The called account doesn't have enough funds to cover the randomness request"
         },
         {
-            "code": 6003;
-            "name": "randomnessVerificationFailed";
-            "msg": "Failed to verify randomness against the public key";
+            "code": 6003,
+            "name": "RandomnessVerificationFailed",
+            "msg": "Failed to verify randomness against the public key"
         },
         {
-            "code": 6004;
-            "name": "serializationError";
-            "msg": "Serialization error";
+            "code": 6004,
+            "name": "SerializationError",
+            "msg": "Serialization error"
         },
         {
-            "code": 6005;
-            "name": "unauthorizedFulfillmentAuthority";
-            "msg": "Unauthorized fulfillment authority";
+            "code": 6005,
+            "name": "UnauthorizedFulfillmentAuthority",
+            "msg": "Unauthorized fulfillment authority"
         },
         {
-            "code": 6006;
-            "name": "invalidFulfillMessage";
-            "msg": "Signature does not match the seed";
+            "code": 6006,
+            "name": "InvalidFulfillMessage",
+            "msg": "Signature does not match the seed"
         },
         {
-            "code": 6007;
-            "name": "missingEd25519SigVerifyInstruction";
-            "msg": "Missing Ed25519SigVerify instruction";
+            "code": 6007,
+            "name": "MissingEd25519SigVerifyInstruction",
+            "msg": "Missing Ed25519SigVerify instruction"
         },
         {
-            "code": 6008;
-            "name": "randomnessCombinationFailed";
-            "msg": "Failed to validate combined randomness";
+            "code": 6008,
+            "name": "RandomnessCombinationFailed",
+            "msg": "Failed to validate combined randomness"
         },
         {
-            "code": 6009;
-            "name": "unknownTreasuryGiven";
-            "msg": "unknownTreasuryGiven";
+            "code": 6009,
+            "name": "UnknownTreasuryGiven",
+            "msg": "UnknownTreasuryGiven"
         }
-    ];
+    ],
     "types": [
         {
-            "name": "fulfill";
+            "name": "Fulfill",
             "docs": [
                 "Event that signals a fulfilled randomness request."
-            ];
+            ],
             "type": {
-                "kind": "struct";
+                "kind": "struct",
                 "fields": [
                     {
-                        "name": "seed";
+                        "name": "seed",
                         "docs": [
                             "Randomness request seed."
-                        ];
+                        ],
                         "type": {
                             "array": [
                                 "u8",
                                 32
-                            ];
-                        };
+                            ]
+                        }
                     },
                     {
-                        "name": "randomness";
+                        "name": "randomness",
                         "docs": [
                             "Generated randomness."
-                        ];
+                        ],
                         "type": {
                             "array": [
                                 "u8",
                                 64
-                            ];
-                        };
+                            ]
+                        }
                     }
-                ];
-            };
+                ]
+            }
         },
         {
-            "name": "fulfilledRequest";
+            "name": "FulfilledRequest",
             "docs": [
                 "Fulfilled request representation."
-            ];
+            ],
             "type": {
-                "kind": "struct";
+                "kind": "struct",
                 "fields": [
                     {
-                        "name": "client";
-                        "type": "pubkey";
+                        "name": "client",
+                        "type": "pubkey"
                     },
                     {
-                        "name": "seed";
+                        "name": "seed",
                         "type": {
                             "array": [
                                 "u8",
                                 32
-                            ];
-                        };
+                            ]
+                        }
                     },
                     {
-                        "name": "randomness";
+                        "name": "randomness",
                         "docs": [
                             "Generated randomness.",
                             "",
                             "Please look into the account history logs to observe the individual components."
-                        ];
+                        ],
                         "type": {
                             "array": [
                                 "u8",
                                 64
-                            ];
-                        };
+                            ]
+                        }
                     }
-                ];
-            };
+                ]
+            }
         },
         {
-            "name": "networkConfiguration";
+            "name": "NetworkConfiguration",
             "type": {
-                "kind": "struct";
+                "kind": "struct",
                 "fields": [
                     {
-                        "name": "authority";
-                        "type": "pubkey";
+                        "name": "authority",
+                        "type": "pubkey"
                     },
                     {
-                        "name": "treasury";
-                        "type": "pubkey";
+                        "name": "treasury",
+                        "type": "pubkey"
                     },
                     {
-                        "name": "requestFee";
-                        "type": "u64";
+                        "name": "request_fee",
+                        "type": "u64"
                     },
                     {
-                        "name": "fulfillmentAuthorities";
+                        "name": "fulfillment_authorities",
                         "type": {
-                            "vec": "pubkey";
-                        };
+                            "vec": "pubkey"
+                        }
                     },
                     {
-                        "name": "tokenFeeConfig";
+                        "name": "token_fee_config",
                         "type": {
                             "option": {
                                 "defined": {
-                                    "name": "oraoTokenFeeConfig";
-                                };
-                            };
-                        };
+                                    "name": "OraoTokenFeeConfig"
+                                }
+                            }
+                        }
                     }
-                ];
-            };
+                ]
+            }
         },
         {
-            "name": "networkState";
+            "name": "NetworkState",
             "type": {
-                "kind": "struct";
+                "kind": "struct",
                 "fields": [
                     {
-                        "name": "config";
+                        "name": "config",
                         "type": {
                             "defined": {
-                                "name": "networkConfiguration";
-                            };
-                        };
+                                "name": "NetworkConfiguration"
+                            }
+                        }
                     },
                     {
-                        "name": "numReceived";
+                        "name": "num_received",
                         "docs": [
                             "Total number of received requests."
-                        ];
-                        "type": "u64";
+                        ],
+                        "type": "u64"
                     }
-                ];
-            };
+                ]
+            }
         },
         {
-            "name": "oraoTokenFeeConfig";
+            "name": "OraoTokenFeeConfig",
             "type": {
-                "kind": "struct";
+                "kind": "struct",
                 "fields": [
                     {
-                        "name": "mint";
+                        "name": "mint",
                         "docs": [
                             "ORAO token mint address."
-                        ];
-                        "type": "pubkey";
+                        ],
+                        "type": "pubkey"
                     },
                     {
-                        "name": "treasury";
+                        "name": "treasury",
                         "docs": [
                             "ORAO token treasury account."
-                        ];
-                        "type": "pubkey";
+                        ],
+                        "type": "pubkey"
                     },
                     {
-                        "name": "fee";
+                        "name": "fee",
                         "docs": [
                             "Fee in ORAO SPL token smallest units."
-                        ];
-                        "type": "u64";
+                        ],
+                        "type": "u64"
                     }
-                ];
-            };
+                ]
+            }
         },
         {
-            "name": "pendingRequest";
+            "name": "PendingRequest",
             "docs": [
                 "Pending request representation."
-            ];
+            ],
             "type": {
-                "kind": "struct";
+                "kind": "struct",
                 "fields": [
                     {
-                        "name": "client";
-                        "type": "pubkey";
+                        "name": "client",
+                        "type": "pubkey"
                     },
                     {
-                        "name": "seed";
+                        "name": "seed",
                         "type": {
                             "array": [
                                 "u8",
                                 32
-                            ];
-                        };
+                            ]
+                        }
                     },
                     {
-                        "name": "responses";
+                        "name": "responses",
                         "docs": [
                             "Responses collected so far."
-                        ];
+                        ],
                         "type": {
                             "vec": {
                                 "defined": {
-                                    "name": "randomnessResponse";
-                                };
-                            };
-                        };
+                                    "name": "RandomnessResponse"
+                                }
+                            }
+                        }
                     }
-                ];
-            };
+                ]
+            }
         },
         {
-            "name": "randomness";
+            "name": "Randomness",
             "docs": [
                 "This account is now obsolete and exists as a legacy to observe the old requests."
-            ];
+            ],
             "type": {
-                "kind": "struct";
+                "kind": "struct",
                 "fields": [
                     {
-                        "name": "seed";
+                        "name": "seed",
                         "type": {
                             "array": [
                                 "u8",
                                 32
-                            ];
-                        };
+                            ]
+                        }
                     },
                     {
-                        "name": "randomness";
+                        "name": "randomness",
                         "type": {
                             "array": [
                                 "u8",
                                 64
-                            ];
-                        };
+                            ]
+                        }
                     },
                     {
-                        "name": "responses";
+                        "name": "responses",
                         "type": {
                             "vec": {
                                 "defined": {
-                                    "name": "randomnessResponse";
-                                };
-                            };
-                        };
+                                    "name": "RandomnessResponse"
+                                }
+                            }
+                        }
                     }
-                ];
-            };
+                ]
+            }
         },
         {
-            "name": "randomnessResponse";
+            "name": "RandomnessResponse",
             "type": {
-                "kind": "struct";
+                "kind": "struct",
                 "fields": [
                     {
-                        "name": "pubkey";
-                        "type": "pubkey";
+                        "name": "pubkey",
+                        "type": "pubkey"
                     },
                     {
-                        "name": "randomness";
+                        "name": "randomness",
                         "type": {
                             "array": [
                                 "u8",
                                 64
-                            ];
-                        };
+                            ]
+                        }
                     }
-                ];
-            };
+                ]
+            }
         },
         {
-            "name": "randomnessV2";
+            "name": "RandomnessV2",
             "type": {
-                "kind": "struct";
+                "kind": "struct",
                 "fields": [
                     {
-                        "name": "request";
+                        "name": "request",
                         "type": {
                             "defined": {
-                                "name": "requestAccount";
-                            };
-                        };
+                                "name": "RequestAccount"
+                            }
+                        }
                     }
-                ];
-            };
+                ]
+            }
         },
         {
-            "name": "request";
+            "name": "Request",
             "docs": [
                 "Event that signals a new randomness request."
-            ];
+            ],
             "type": {
-                "kind": "struct";
+                "kind": "struct",
                 "fields": [
                     {
-                        "name": "seed";
+                        "name": "seed",
                         "docs": [
                             "Randomness request seed."
-                        ];
+                        ],
                         "type": {
                             "array": [
                                 "u8",
                                 32
-                            ];
-                        };
+                            ]
+                        }
                     },
                     {
-                        "name": "client";
+                        "name": "client",
                         "docs": [
                             "Client address."
-                        ];
-                        "type": "pubkey";
+                        ],
+                        "type": "pubkey"
                     },
                     {
-                        "name": "paidWithSpl";
+                        "name": "paid_with_spl",
                         "docs": [
                             "True if request is paid with SPL token."
-                        ];
-                        "type": "bool";
+                        ],
+                        "type": "bool"
                     }
-                ];
-            };
+                ]
+            }
         },
         {
-            "name": "requestAccount";
+            "name": "RequestAccount",
             "type": {
-                "kind": "enum";
+                "kind": "enum",
                 "variants": [
                     {
-                        "name": "pending";
+                        "name": "Pending",
                         "fields": [
                             {
                                 "defined": {
-                                    "name": "pendingRequest";
-                                };
+                                    "name": "PendingRequest"
+                                }
                             }
-                        ];
+                        ]
                     },
                     {
-                        "name": "fulfilled";
+                        "name": "Fulfilled",
                         "fields": [
                             {
                                 "defined": {
-                                    "name": "fulfilledRequest";
-                                };
+                                    "name": "FulfilledRequest"
+                                }
                             }
-                        ];
+                        ]
                     }
-                ];
-            };
+                ]
+            }
         },
         {
-            "name": "response";
+            "name": "Response",
             "docs": [
                 "Event that signals that a request was fulfilled by a single authority."
-            ];
+            ],
             "type": {
-                "kind": "struct";
+                "kind": "struct",
                 "fields": [
                     {
-                        "name": "seed";
+                        "name": "seed",
                         "docs": [
                             "Randomness request seed."
-                        ];
+                        ],
                         "type": {
                             "array": [
                                 "u8",
                                 32
-                            ];
-                        };
+                            ]
+                        }
                     },
                     {
-                        "name": "authority";
+                        "name": "authority",
                         "docs": [
                             "An authority that fulfilled the request."
-                        ];
-                        "type": "pubkey";
+                        ],
+                        "type": "pubkey"
                     },
                     {
-                        "name": "randomness";
+                        "name": "randomness",
                         "docs": [
                             "An authority's randomness (for the final generated randomness see [`Fulfilled::randomness`])."
-                        ];
+                        ],
                         "type": {
                             "array": [
                                 "u8",
                                 64
-                            ];
-                        };
+                            ]
+                        }
                     }
-                ];
-            };
+                ]
+            }
         }
-    ];
-};
+    ]
+}

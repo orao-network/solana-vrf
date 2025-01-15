@@ -2,7 +2,7 @@ use anchor_lang::{prelude::*, solana_program::clock::Slot};
 
 use super::{
     super::{majority, MAX_FULFILLMENT_AUTHORITIES},
-    client::ValidatedCallback,
+    client::{Callback, Client, ValidatedCallback},
 };
 
 #[derive(AnchorDeserialize, AnchorSerialize, Clone, Debug)]
@@ -40,6 +40,16 @@ pub struct RequestAccount {
 impl RequestAccount {
     pub const STATIC_SIZE: usize = 1 + 8 + 32 + 32;
     pub const FULFILLED_SIZE: usize = Self::STATIC_SIZE + RequestState::FULFILLED_SIZE;
+
+    /// This function estimates the expected size of the new RequestAccount given the callback used.
+    pub fn expected_size(client: &Client, callback: Option<&Callback>) -> usize {
+        let callback_size = callback
+            .map(|x| x.valid_size())
+            .or_else(|| client.callback.as_ref().map(|c| c.size()))
+            .unwrap_or_default();
+
+        Self::STATIC_SIZE + 1 + Pending::STATIC_SIZE + 1 + callback_size
+    }
 
     pub fn new(bump: u8, slot: Slot, client: Pubkey, seed: [u8; 32], state: RequestState) -> Self {
         Self {

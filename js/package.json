@@ -1,6 +1,6 @@
 {
     "name": "@orao-network/solana-vrf",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "description": "ORAO Verifiable Random Function for Solana.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -14,7 +14,8 @@
         "build": "tsc",
         "test": "ts-mocha -p ./tsconfig.json -t 10000000 tests/**/*.ts",
         "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
-        "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"
+        "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
+        "prepublishOnly": "npm run build"
     },
     "author": "",
     "license": "ISC",
@@ -30,6 +31,6 @@
     "dependencies": {
         "@noble/ed25519": "^1.6.1",
         "tweetnacl": "^1.0.3",
-        "@coral-xyz/anchor": "^0.29.0"
+        "@coral-xyz/anchor": "^0.30.1"
     }
 }

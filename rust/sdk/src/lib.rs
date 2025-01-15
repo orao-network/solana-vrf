@@ -320,7 +320,7 @@ pub struct Fulfill<'info> {
     pub request: Account<'info, Randomness>,
 }
 
-/// Request randomness (v2).
+/// Request randomness.
 ///
 /// ### Required accounts
 ///
@@ -403,6 +403,7 @@ pub struct FulfillV2<'info> {
         bump,
     )]
     pub request: Account<'info, RandomnessV2>,
+    /// CHECK: An address of this account is validated via anchor constraint
     #[account(mut, constraint = *request.client() == client.key())]
     pub client: AccountInfo<'info>,
     pub system_program: Program<'info, System>,

@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -17,7 +40,7 @@ const anchor_1 = require("@coral-xyz/anchor");
 const web3_js_1 = require("@solana/web3.js");
 const tweetnacl_1 = __importDefault(require("tweetnacl"));
 const state_1 = require("./state");
-const orao_vrf_1 = require("./types/orao_vrf");
+const IDL = __importStar(require("./types/orao_vrf.json"));
 var state_2 = require("./state");
 Object.defineProperty(exports, "Randomness", { enumerable: true, get: function () { return state_2.Randomness; } });
 Object.defineProperty(exports, "FulfilledRandomness", { enumerable: true, get: function () { return state_2.FulfilledRandomness; } });
@@ -25,7 +48,7 @@ Object.defineProperty(exports, "RandomnessResponse", { enumerable: true, get: fu
 Object.defineProperty(exports, "NetworkConfiguration", { enumerable: true, get: function () { return state_2.NetworkConfiguration; } });
 Object.defineProperty(exports, "NetworkState", { enumerable: true, get: function () { return state_2.NetworkState; } });
 Object.defineProperty(exports, "OraoTokenFeeConfig", { enumerable: true, get: function () { return state_2.OraoTokenFeeConfig; } });
-exports.PROGRAM_ADDRESS = "VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y";
+exports.PROGRAM_ADDRESS = IDL.address;
 exports.PROGRAM_ID = new anchor_1.web3.PublicKey(exports.PROGRAM_ADDRESS);
 exports.RANDOMNESS_ACCOUNT_SEED = Buffer.from("orao-vrf-randomness-request");
 exports.CONFIG_ACCOUNT_SEED = Buffer.from("orao-vrf-network-configuration");
@@ -87,7 +110,7 @@ class Orao extends anchor_1.Program {
      * @param [id=PROGRAM_ID] - you can override the program ID.
      */
     constructor(provider, id = exports.PROGRAM_ID) {
-        super(orao_vrf_1.IDL, id, provider);
+        super(Object.assign(Object.assign({}, IDL), { address: id.toString() }), provider);
         if (!provider.publicKey) {
             throw new Error("Wallet not provided");
         }
@@ -131,9 +154,23 @@ class Orao extends anchor_1.Program {
      */
     getRandomness(seed, commitment) {
         return __awaiter(this, void 0, void 0, function* () {
-            let randomness = yield this.account.randomness.fetch(randomnessAccountAddress(seed, this.programId), commitment);
-            let responses = randomness.responses;
-            return new state_1.Randomness(randomness.seed, randomness.randomness, responses.map((x) => new state_1.RandomnessResponse(x.pubkey, x.randomness)));
+            let address = randomnessAccountAddress(seed, this.programId);
+            try {
+                let randomness = yield this.account.randomnessV2.fetch(address, commitment);
+                if ("pending" in randomness.request && randomness.request.pending !== undefined) {
+                    let pending = randomness.request.pending[0];
+                    return new state_1.RandomnessAccountDataV2(new state_1.RandomnessV2(new state_1.PendingRequest(pending.seed, pending.client, pending.responses.map((x) => new state_1.RandomnessResponse(x.pubkey, x.randomness)))));
+                }
+                else {
+                    let fulfilled = randomness.request.fulfilled[0];
+                    return new state_1.RandomnessAccountDataV2(new state_1.RandomnessV2(new state_1.FulfilledRequest(fulfilled.seed, fulfilled.client, fulfilled.randomness)));
+                }
+            }
+            catch (_e) {
+                let randomness = yield this.account.randomness.fetch(address, commitment);
+                let responses = randomness.responses;
+                return new state_1.RandomnessAccountDataV1(new state_1.Randomness(randomness.seed, randomness.randomness, responses.map((x) => new state_1.RandomnessResponse(x.pubkey, x.randomness))));
+            }
         });
     }
     /**
@@ -179,7 +216,7 @@ class Orao extends anchor_1.Program {
             return new Promise((_resolve, reject) => __awaiter(this, void 0, void 0, function* () {
                 let resolved = false;
                 let maybeResolve = (subscriptionId, randomness) => {
-                    if (!randomness.fulfilled()) {
+                    if (!randomness.getFulfilledRandomness()) {
                         return;
                     }
                     if (resolved) {
@@ -187,12 +224,20 @@ class Orao extends anchor_1.Program {
                     }
                     resolved = true;
                     this.provider.connection.removeAccountChangeListener(subscriptionId);
-                    _resolve(state_1.FulfilledRandomness.unchecked(randomness));
+                    _resolve(new state_1.FulfilledRandomnessAccountData(randomness));
                 };
                 try {
                     let subscriptionId = this.provider.connection.onAccountChange(account, (accountInfo, _ctx) => {
-                        let randomness = this.account.randomness.coder.accounts.decode("randomness", accountInfo.data);
-                        maybeResolve(subscriptionId, new state_1.Randomness(randomness.seed, randomness.randomness, randomness.responses.map((x) => new state_1.RandomnessResponse(x.pubkey, x.randomness))));
+                        try {
+                            let randomness = this.account.randomness.coder.accounts.decode("randomnessV2", accountInfo.data);
+                            maybeResolve(subscriptionId, new state_1.RandomnessAccountDataV2(new state_1.RandomnessV2("fulfilled" in randomness.request
+                                ? new state_1.FulfilledRequest(randomness.request.fulfilled[0].seed, randomness.request.fulfilled[0].client, randomness.request.fulfilled[0].randomness)
+                                : new state_1.PendingRequest(randomness.request.pending[0].seed, randomness.request.pending[0].client, randomness.request.pending[0].responses.map((r) => new state_1.RandomnessResponse(r.pubkey, r.randomness))))));
+                        }
+                        catch (_e) {
+                            let randomness = this.account.randomness.coder.accounts.decode("randomness", accountInfo.data);
+                            maybeResolve(subscriptionId, new state_1.RandomnessAccountDataV1(new state_1.Randomness(randomness.seed, randomness.randomness, randomness.responses.map((x) => new state_1.RandomnessResponse(x.pubkey, x.randomness)))));
+                        }
                     }, commitment);
                     // In case it's already fulfilled
                     let randomness = yield this.getRandomness(seed, commitment);
@@ -308,7 +353,7 @@ class InitBuilder {
             const networkState = networkStateAccountAddress(this.vrf.programId);
             let tx = this.vrf.methods
                 .initNetwork(this.config.requestFee, this.config.authority, this.config.fulfillmentAuthorities, this.config.tokenFeeConfig)
-                .accounts({
+                .accountsPartial({
                 networkState,
                 treasury: this.config.treasury,
             });
@@ -431,7 +476,7 @@ class UpdateBuilder {
             let tokenFeeConfig = this.tokenFeeConfig !== undefined ? this.tokenFeeConfig : config.tokenFeeConfig;
             let tx = this.vrf.methods
                 .updateNetwork(requestFee, authority, fulfillmentAuthorities, tokenFeeConfig)
-                .accounts({
+                .accountsPartial({
                 networkState,
                 treasury,
             });
@@ -535,7 +580,7 @@ class RequestBuilder {
         return __awaiter(this, void 0, void 0, function* () {
             const networkState = networkStateAccountAddress(this.vrf.programId);
             const networkStateAcc = yield this.vrf.getNetworkState();
-            let tx = this.vrf.methods.request([...this.seed]).accounts({
+            let tx = this.vrf.methods.requestV2([...this.seed]).accountsPartial({
                 networkState,
                 treasury: networkStateAcc.config.treasury,
                 request: randomnessAccountAddress(this.seed, this.vrf.programId),
@@ -629,11 +674,24 @@ class FulfillBuilder {
      */
     build(fulfillmentAuthority, signature) {
         return __awaiter(this, void 0, void 0, function* () {
-            let tx = this.vrf.methods.fulfill().accounts({
-                instructionAcc: web3_js_1.SYSVAR_INSTRUCTIONS_PUBKEY,
-                networkState: networkStateAccountAddress(this.vrf.programId),
-                request: randomnessAccountAddress(this.seed, this.vrf.programId),
-            });
+            let randomness = yield this.vrf.getRandomness(this.seed);
+            let tx;
+            if (randomness.getVersion() === "V1") {
+                tx = this.vrf.methods.fulfill().accountsPartial({
+                    instructionAcc: web3_js_1.SYSVAR_INSTRUCTIONS_PUBKEY,
+                    networkState: networkStateAccountAddress(this.vrf.programId),
+                    request: randomnessAccountAddress(this.seed, this.vrf.programId),
+                });
+            }
+            else {
+                tx = this.vrf.methods.fulfillV2().accountsPartial({
+                    instructionAcc: web3_js_1.SYSVAR_INSTRUCTIONS_PUBKEY,
+                    networkState: networkStateAccountAddress(this.vrf.programId),
+                    request: randomnessAccountAddress(this.seed, this.vrf.programId),
+                    client: randomness.getClient() || undefined,
+                    systemProgram: web3_js_1.SystemProgram.programId,
+                });
+            }
             if (!this.computeBudgetConfig.isEmpty()) {
                 tx = tx.preInstructions(yield this.computeBudgetConfig.getInstructions(this.vrf.provider.connection));
             }

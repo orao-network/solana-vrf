@@ -2,7 +2,7 @@ use anchor_lang::{prelude::Pubkey, AccountDeserialize, Discriminator};
 
 pub use self::network_state::{NetworkConfiguration, NetworkState, OraoTokenFeeConfig};
 pub use self::randomness::{Randomness, RandomnessResponse};
-pub use self::randomness_v2::{FulfilledRequest, PendingRequest, RandomnessV2, Request};
+pub use self::randomness_v2::{FulfilledRequest, PendingRequest, RandomnessV2, RequestAccount};
 
 pub mod network_state;
 pub mod randomness;
@@ -19,7 +19,7 @@ pub enum RandomnessAccountVersion {
 }
 
 /// Data of a supported randomness account.
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq)]
 #[cfg_attr(feature = "sdk", derive(Debug))]
 pub enum RandomnessAccountData {
     V1(Randomness),

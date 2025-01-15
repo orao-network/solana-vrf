@@ -1,9 +1,10 @@
 /// <reference types="node" />
 import { BN, Program, Provider, web3 } from "@coral-xyz/anchor";
 import { TransactionInstruction } from "@solana/web3.js";
-import { NetworkConfiguration, NetworkState, OraoTokenFeeConfig, Randomness, FulfilledRandomness } from "./state";
+import { NetworkConfiguration, NetworkState, OraoTokenFeeConfig, RandomnessAccountData, FulfilledRandomnessAccountData } from "./state";
 import { OraoVrf } from "./types/orao_vrf";
 import { MethodsBuilder } from "@coral-xyz/anchor/dist/cjs/program/namespace/methods";
+import { AllInstructionsMap } from "@coral-xyz/anchor/dist/cjs/program/namespace/types";
 export { Randomness, FulfilledRandomness, RandomnessResponse, NetworkConfiguration, NetworkState, OraoTokenFeeConfig, } from "./state";
 export declare const PROGRAM_ADDRESS: string;
 export declare const PROGRAM_ID: web3.PublicKey;
@@ -80,7 +81,7 @@ export declare class Orao extends Program<OraoVrf> {
      * @param seed - seed buffer.
      * @param commitment - you can override the provider's commitment level.
      */
-    getRandomness(seed: Buffer | Uint8Array, commitment?: web3.Commitment): Promise<Randomness>;
+    getRandomness(seed: Buffer | Uint8Array, commitment?: web3.Commitment): Promise<RandomnessAccountData>;
     /**
      * Prepares a randomness request (see {@link RequestBuilder}).
      *
@@ -103,7 +104,7 @@ export declare class Orao extends Program<OraoVrf> {
      * @returns a {@link RequestBuilder} instance.
      */
     request(seed?: Buffer | Uint8Array): Promise<RequestBuilder>;
-    waitFulfilled(seed: Buffer | Uint8Array, commitment?: web3.Commitment): Promise<FulfilledRandomness>;
+    waitFulfilled(seed: Buffer | Uint8Array, commitment?: web3.Commitment): Promise<FulfilledRandomnessAccountData>;
 }
 declare class ComputeBudgetConfig {
     computeUnitPrice: bigint | null;
@@ -172,7 +173,7 @@ export declare class InitBuilder {
      * instance (use {@link InitBuilder.withComputeUnitPrice} and
      * {@link InitBuilder.withComputeUnitLimit} to opt-out).
      */
-    build(): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][0]>>;
+    build(): Promise<MethodsBuilder<OraoVrf, AllInstructionsMap<OraoVrf>["initNetwork"]>>;
     /**
      * Performs an RPC call.
      *
@@ -247,7 +248,7 @@ export declare class UpdateBuilder {
      * instance (use {@link UpdateBuilder.withComputeUnitPrice} and
      * {@link UpdateBuilder.withComputeUnitLimit} to opt-out).
      */
-    build(): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][1]>>;
+    build(): Promise<MethodsBuilder<OraoVrf, AllInstructionsMap<OraoVrf>["updateNetwork"]>>;
     /**
      * Performs an RPC call.
      *
@@ -319,7 +320,7 @@ export declare class RequestBuilder {
      * instance (use {@link RequestBuilder.withComputeUnitPrice} and
      * {@link RequestBuilder.withComputeUnitLimit} to opt-out).
      */
-    build(): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][2]>>;
+    build(): Promise<MethodsBuilder<OraoVrf, AllInstructionsMap<OraoVrf>["requestV2"]>>;
     /**
      * Performs an RPC call.
      *
@@ -384,7 +385,7 @@ export declare class FulfillBuilder {
      * @param fulfillmentAuthority - public key of a fulfillment authority
      * @param signature - signature of a seed, performed by the fulfillment authority
      */
-    build(fulfillmentAuthority: web3.PublicKey, signature: Uint8Array): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][3]>>;
+    build(fulfillmentAuthority: web3.PublicKey, signature: Uint8Array): Promise<MethodsBuilder<OraoVrf, AllInstructionsMap<OraoVrf>["fulfill"]> | MethodsBuilder<OraoVrf, AllInstructionsMap<OraoVrf>["fulfillV2"]>>;
     /**
      * Performs an RPC call.
      *

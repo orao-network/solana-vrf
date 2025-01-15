@@ -4,6 +4,7 @@ use crate::{majority, MAX_FULFILLMENT_AUTHORITIES_COUNT};
 
 /// This account is now obsolete and exists as a legacy to observe the old requests.
 #[account]
+#[derive(PartialEq, Eq)]
 #[cfg_attr(feature = "sdk", derive(Debug))]
 pub struct Randomness {
     pub seed: [u8; 32],
@@ -34,7 +35,7 @@ impl Randomness {
     }
 }
 
-#[derive(AnchorDeserialize, AnchorSerialize, Clone)]
+#[derive(AnchorDeserialize, AnchorSerialize, Clone, PartialEq, Eq)]
 #[cfg_attr(feature = "sdk", derive(Debug))]
 pub struct RandomnessResponse {
     pub pubkey: Pubkey,

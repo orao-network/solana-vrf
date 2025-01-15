@@ -6,7 +6,7 @@ use super::RandomnessResponse;
 
 /// Pending request representation.
 #[cfg_attr(feature = "sdk", derive(Debug))]
-#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq)]
 pub struct PendingRequest {
     pub client: Pubkey,
     pub seed: [u8; 32],
@@ -21,7 +21,7 @@ impl PendingRequest {
 
 /// Fulfilled request representation.
 #[cfg_attr(feature = "sdk", derive(Debug))]
-#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq)]
 pub struct FulfilledRequest {
     pub client: Pubkey,
     pub seed: [u8; 32],
@@ -36,13 +36,13 @@ impl FulfilledRequest {
 }
 
 #[cfg_attr(feature = "sdk", derive(Debug))]
-#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
-pub enum Request {
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq, Eq)]
+pub enum RequestAccount {
     Pending(PendingRequest),
     Fulfilled(FulfilledRequest),
 }
 
-impl Request {
+impl RequestAccount {
     pub const FULFILLED_SIZE: usize = 1 + FulfilledRequest::SIZE;
     pub const PENDING_SIZE: usize = 1 + PendingRequest::SIZE;
 
@@ -51,8 +51,8 @@ impl Request {
     /// Returns `None` if randomness is not yet fulfilled.
     pub const fn fulfilled(&self) -> Option<&FulfilledRequest> {
         match self {
-            Request::Pending(_) => None,
-            Request::Fulfilled(ref x) => Some(x),
+            RequestAccount::Pending(_) => None,
+            RequestAccount::Fulfilled(ref x) => Some(x),
         }
     }
 
@@ -61,8 +61,8 @@ impl Request {
     /// Returns `None` if randomness is not yet fulfilled.
     pub fn fulfilled_mut(&mut self) -> Option<&mut FulfilledRequest> {
         match self {
-            Request::Pending(_) => None,
-            Request::Fulfilled(ref mut x) => Some(x),
+            RequestAccount::Pending(_) => None,
+            RequestAccount::Fulfilled(ref mut x) => Some(x),
         }
     }
 
@@ -71,8 +71,8 @@ impl Request {
     /// Returns `None` if randomness is already fulfilled.
     pub fn pending(&self) -> Option<&PendingRequest> {
         match self {
-            Request::Pending(ref x) => Some(x),
-            Request::Fulfilled(_) => None,
+            RequestAccount::Pending(ref x) => Some(x),
+            RequestAccount::Fulfilled(_) => None,
         }
     }
 
@@ -81,24 +81,24 @@ impl Request {
     /// Returns `None` if randomness is already fulfilled.
     pub fn pending_mut(&mut self) -> Option<&mut PendingRequest> {
         match self {
-            Request::Pending(ref mut x) => Some(x),
-            Request::Fulfilled(_) => None,
+            RequestAccount::Pending(ref mut x) => Some(x),
+            RequestAccount::Fulfilled(_) => None,
         }
     }
 
     /// Returns the request seed.
     pub const fn seed(&self) -> &[u8; 32] {
         match self {
-            Request::Pending(ref x) => &x.seed,
-            Request::Fulfilled(ref x) => &x.seed,
+            RequestAccount::Pending(ref x) => &x.seed,
+            RequestAccount::Fulfilled(ref x) => &x.seed,
         }
     }
 
     /// Returns the request client.
     pub const fn client(&self) -> &Pubkey {
         match self {
-            Request::Pending(ref x) => &x.client,
-            Request::Fulfilled(ref x) => &x.client,
+            RequestAccount::Pending(ref x) => &x.client,
+            RequestAccount::Fulfilled(ref x) => &x.client,
         }
     }
 
@@ -111,8 +111,8 @@ impl Request {
     #[track_caller]
     pub fn unwrap_pending(self) -> PendingRequest {
         match self {
-            Request::Pending(x) => x,
-            Request::Fulfilled(_) => {
+            RequestAccount::Pending(x) => x,
+            RequestAccount::Fulfilled(_) => {
                 panic!("called `Request::unwrap_pending()` on a `Fulfilled` request")
             }
         }
@@ -127,8 +127,8 @@ impl Request {
     #[track_caller]
     pub fn unwrap_fulfilled(self) -> FulfilledRequest {
         match self {
-            Request::Fulfilled(x) => x,
-            Request::Pending(_) => {
+            RequestAccount::Fulfilled(x) => x,
+            RequestAccount::Pending(_) => {
                 panic!("called `Request::unwrap_fulfilled()` on a `Pending` request")
             }
         }
@@ -136,14 +136,15 @@ impl Request {
 }
 
 #[account]
+#[derive(Eq, PartialEq)]
 #[cfg_attr(feature = "sdk", derive(Debug))]
 pub struct RandomnessV2 {
-    pub request: Request,
+    pub request: RequestAccount,
 }
 
 impl RandomnessV2 {
-    pub const FULFILLED_SIZE: usize = Request::FULFILLED_SIZE;
-    pub const PENDING_SIZE: usize = Request::PENDING_SIZE;
+    pub const FULFILLED_SIZE: usize = RequestAccount::FULFILLED_SIZE;
+    pub const PENDING_SIZE: usize = RequestAccount::PENDING_SIZE;
 
     /// See [`Request::fulfilled`].
     #[inline(always)]

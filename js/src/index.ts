@@ -21,8 +21,10 @@ import {
     FulfilledRequest,
     FulfilledRandomnessAccountData,
 } from "./state";
-import { IDL, OraoVrf } from "./types/orao_vrf";
+import { OraoVrf } from "./types/orao_vrf";
+import * as IDL from "./types/orao_vrf.json";
 import { MethodsBuilder } from "@coral-xyz/anchor/dist/cjs/program/namespace/methods";
+import { AllInstructionsMap } from "@coral-xyz/anchor/dist/cjs/program/namespace/types";
 
 export {
     Randomness,
@@ -33,7 +35,7 @@ export {
     OraoTokenFeeConfig,
 } from "./state";
 
-export const PROGRAM_ADDRESS: string = "VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y";
+export const PROGRAM_ADDRESS: string = IDL.address;
 export const PROGRAM_ID: web3.PublicKey = new web3.PublicKey(PROGRAM_ADDRESS);
 
 export const RANDOMNESS_ACCOUNT_SEED: Buffer = Buffer.from("orao-vrf-randomness-request");
@@ -141,7 +143,7 @@ export class Orao extends Program<OraoVrf> {
      * @param [id=PROGRAM_ID] - you can override the program ID.
      */
     constructor(provider: Provider, id = PROGRAM_ID) {
-        super(IDL, id, provider);
+        super({ ...IDL, address: id.toString() } as OraoVrf, provider);
         if (!provider.publicKey) {
             throw new Error("Wallet not provided");
         }
@@ -214,7 +216,8 @@ export class Orao extends Program<OraoVrf> {
                             pending.seed,
                             pending.client,
                             pending.responses.map(
-                                (x) => new RandomnessResponse(x.pubkey, x.randomness)
+                                (x: IRandomnessResponse) =>
+                                    new RandomnessResponse(x.pubkey, x.randomness)
                             )
                         )
                     )
@@ -489,7 +492,7 @@ export class InitBuilder {
      * instance (use {@link InitBuilder.withComputeUnitPrice} and
      * {@link InitBuilder.withComputeUnitLimit} to opt-out).
      */
-    async build(): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][0]>> {
+    async build(): Promise<MethodsBuilder<OraoVrf, AllInstructionsMap<OraoVrf>["initNetwork"]>> {
         const networkState = networkStateAccountAddress(this.vrf.programId);
 
         let tx = this.vrf.methods
@@ -499,7 +502,7 @@ export class InitBuilder {
                 this.config.fulfillmentAuthorities,
                 this.config.tokenFeeConfig
             )
-            .accounts({
+            .accountsPartial({
                 networkState,
                 treasury: this.config.treasury,
             });
@@ -627,7 +630,7 @@ export class UpdateBuilder {
      * instance (use {@link UpdateBuilder.withComputeUnitPrice} and
      * {@link UpdateBuilder.withComputeUnitLimit} to opt-out).
      */
-    async build(): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][1]>> {
+    async build(): Promise<MethodsBuilder<OraoVrf, AllInstructionsMap<OraoVrf>["updateNetwork"]>> {
         const networkState = networkStateAccountAddress(this.vrf.programId);
         const config = (await this.vrf.getNetworkState()).config;
 
@@ -642,7 +645,7 @@ export class UpdateBuilder {
 
         let tx = this.vrf.methods
             .updateNetwork(requestFee, authority, fulfillmentAuthorities, tokenFeeConfig)
-            .accounts({
+            .accountsPartial({
                 networkState,
                 treasury,
             });
@@ -753,11 +756,11 @@ export class RequestBuilder {
      * instance (use {@link RequestBuilder.withComputeUnitPrice} and
      * {@link RequestBuilder.withComputeUnitLimit} to opt-out).
      */
-    async build(): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][2]>> {
+    async build(): Promise<MethodsBuilder<OraoVrf, AllInstructionsMap<OraoVrf>["requestV2"]>> {
         const networkState = networkStateAccountAddress(this.vrf.programId);
         const networkStateAcc = await this.vrf.getNetworkState();
 
-        let tx = this.vrf.methods.requestV2([...this.seed]).accounts({
+        let tx = this.vrf.methods.requestV2([...this.seed]).accountsPartial({
             networkState,
             treasury: networkStateAcc.config.treasury,
             request: randomnessAccountAddress(this.seed, this.vrf.programId),
@@ -862,18 +865,21 @@ export class FulfillBuilder {
     async build(
         fulfillmentAuthority: web3.PublicKey,
         signature: Uint8Array
-    ): Promise<MethodsBuilder<OraoVrf, OraoVrf["instructions"][3] | OraoVrf["instructions"][4]>> {
+    ): Promise<
+        | MethodsBuilder<OraoVrf, AllInstructionsMap<OraoVrf>["fulfill"]>
+        | MethodsBuilder<OraoVrf, AllInstructionsMap<OraoVrf>["fulfillV2"]>
+    > {
         let randomness = await this.vrf.getRandomness(this.seed);
 
         let tx;
         if (randomness.getVersion() === "V1") {
-            tx = this.vrf.methods.fulfill().accounts({
+            tx = this.vrf.methods.fulfill().accountsPartial({
                 instructionAcc: SYSVAR_INSTRUCTIONS_PUBKEY,
                 networkState: networkStateAccountAddress(this.vrf.programId),
                 request: randomnessAccountAddress(this.seed, this.vrf.programId),
             });
         } else {
-            tx = this.vrf.methods.fulfillV2().accounts({
+            tx = this.vrf.methods.fulfillV2().accountsPartial({
                 instructionAcc: SYSVAR_INSTRUCTIONS_PUBKEY,
                 networkState: networkStateAccountAddress(this.vrf.programId),
                 request: randomnessAccountAddress(this.seed, this.vrf.programId),
