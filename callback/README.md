@@ -13,7 +13,7 @@
 
 This repository provides Rust and JS web3 SDKs for ORAO Callback VRF program.
 
-Program account (devnet): `VRFCBePmGTpZ234BhbzNNzmyg39Rgdd6VgdfhHwKypU`
+Program account (devnet/mainnet): `VRFCBePmGTpZ234BhbzNNzmyg39Rgdd6VgdfhHwKypU`
 
 ## Developer Integration Guide
 
