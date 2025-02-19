@@ -23,6 +23,10 @@ pub async fn get_recommended_micro_lamport_fee(
     }
 
     let mut fees = client.get_recent_prioritization_fees(&[]).await?;
+    
+    if fees.is_empty() {
+        return Ok(None);
+    }
 
     // Get the median fee from the most recent recent 150 slots' prioritization fee
     fees.sort_unstable_by_key(|fee| fee.prioritization_fee);
