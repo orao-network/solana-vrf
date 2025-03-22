@@ -1,6 +1,6 @@
 {
     "name": "@orao-network/solana-vrf-cb",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "description": "ORAO Verifiable Random Function with Callback for Solana.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -27,7 +27,7 @@
         "typescript": "^5.7.2"
     },
     "dependencies": {
-        "@coral-xyz/anchor": "^0.30.1",
+        "@coral-xyz/anchor": "^0.31.0",
         "@noble/ed25519": "^2.1.0",
         "tweetnacl": "^1.0.3"
     }

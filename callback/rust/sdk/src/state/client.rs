@@ -82,6 +82,7 @@ impl Client {
 ///
 /// In other words all the writable accounts belongs to the client program.
 #[derive(Debug, Clone, AnchorSerialize, AnchorDeserialize, Eq, PartialEq)]
+#[cfg_attr(feature = "sdk", derive(serde::Serialize, serde::Deserialize))]
 #[non_exhaustive]
 pub struct ValidatedCallback {
     /// Remaining account whose ownership is validated.
@@ -236,6 +237,7 @@ impl RemainingAccount {
 ///
 /// I.e. if it is writable, then it belongs to the client program.
 #[derive(Debug, Clone, Copy, AnchorSerialize, AnchorDeserialize, Eq, PartialEq)]
+#[cfg_attr(feature = "sdk", derive(serde::Serialize, serde::Deserialize))]
 pub struct ValidatedRemainingAccount {
     pubkey: Pubkey,
     is_writable: bool,

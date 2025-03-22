@@ -1,4 +1,4 @@
-use anchor_lang::{prelude::*, solana_program::clock::Slot};
+use anchor_lang::prelude::*;
 
 use super::{
     super::{majority, MAX_FULFILLMENT_AUTHORITIES},
@@ -28,7 +28,7 @@ pub struct RequestAccount {
     /// PDA bump.
     pub bump: u8,
     /// The slot this request was created at.
-    pub slot: Slot,
+    pub slot: u64,
     /// The client created the request.
     pub client: Pubkey,
     /// Request seed.
@@ -51,7 +51,7 @@ impl RequestAccount {
         Self::STATIC_SIZE + 1 + Pending::STATIC_SIZE + 1 + callback_size
     }
 
-    pub fn new(bump: u8, slot: Slot, client: Pubkey, seed: [u8; 32], state: RequestState) -> Self {
+    pub fn new(bump: u8, slot: u64, client: Pubkey, seed: [u8; 32], state: RequestState) -> Self {
         Self {
             bump,
             slot,

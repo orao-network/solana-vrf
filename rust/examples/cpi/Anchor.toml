@@ -1,6 +1,11 @@
+[toolchain]
+anchor_version = "0.31.0"
+solana_version = "2.1.0"
+
 [features]
 seeds = false
 skip-lint = false
+
 [programs.localnet]
 russian_roulette = "DTHCPBTw6tFZDwbiSzKXXK8wQ7n7v5zJAH3Ex3uvoSK5"
 

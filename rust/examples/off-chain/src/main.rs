@@ -34,12 +34,13 @@ pub async fn main() -> std::io::Result<()> {
     let balance = program
         .rpc()
         .get_balance(&payer)
+        .await
         .expect("Unable to get balance");
 
     //this should never be used on mainnet and will panic if mainnet?
     if balance == 0 {
         println!("Requesting airdrop..");
-        request_airdrop(&program, &payer);
+        request_airdrop(&program, &payer).await;
     }
 
     // we are ready to perform the request, so let's first generate a random seed
@@ -81,14 +82,19 @@ pub async fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-fn request_airdrop<C: Deref<Target = impl Signer> + Clone>(program: &Program<C>, pubkey: &Pubkey) {
+async fn request_airdrop<C: Deref<Target = impl Signer> + Clone>(
+    program: &Program<C>,
+    pubkey: &Pubkey,
+) {
     let latest_blockhash = program
         .rpc()
         .get_latest_blockhash()
+        .await
         .expect("Latest blockhash");
     let signature = program
         .rpc()
         .request_airdrop_with_blockhash(pubkey, LAMPORTS_PER_SOL, &latest_blockhash)
+        .await
         .expect("Airdrop tx");
     program
         .rpc()
@@ -97,6 +103,7 @@ fn request_airdrop<C: Deref<Target = impl Signer> + Clone>(program: &Program<C>,
             &latest_blockhash,
             CommitmentConfig::confirmed(),
         )
+        .await
         .expect("Airdrop");
 }
 

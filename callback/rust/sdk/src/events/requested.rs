@@ -5,6 +5,7 @@ use crate::state::client::ValidatedCallback;
 /// Event that signals a new request.
 #[event]
 #[derive(Debug, Clone, Eq, PartialEq)]
+#[cfg_attr(feature = "sdk", derive(serde::Serialize, serde::Deserialize))]
 #[non_exhaustive]
 pub struct Requested {
     pub client: Pubkey,

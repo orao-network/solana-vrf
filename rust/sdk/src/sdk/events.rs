@@ -20,7 +20,7 @@ impl Event {
     /// Expects bytes decoded from base64.
     pub fn from_log(mut bytes: &[u8]) -> io::Result<Self> {
         let discriminator = <[u8; 8] as BorshDeserialize>::deserialize(&mut bytes)?;
-        match discriminator {
+        match &discriminator[..] {
             Request::DISCRIMINATOR => Request::deserialize(&mut bytes).map(Self::Request),
             Response::DISCRIMINATOR => Response::deserialize(&mut bytes).map(Self::Response),
             Fulfill::DISCRIMINATOR => Fulfill::deserialize(&mut bytes).map(Self::Fulfill),

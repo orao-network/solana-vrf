@@ -1,6 +1,6 @@
 [package]
 name = "orao-solana-vrf"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2021"
 authors = ["ORAO Devs <hello@orao.network>"]
 homepage = "https://orao.network"

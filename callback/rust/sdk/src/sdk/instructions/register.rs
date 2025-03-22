@@ -1,9 +1,10 @@
 use std::ops::Deref;
+use std::sync::Arc;
 
 use anchor_client::solana_sdk::instruction::Instruction;
 use anchor_client::solana_sdk::signer::Signer;
 use anchor_client::solana_sdk::system_program;
-use anchor_client::ClientError;
+use anchor_client::{ClientError, ThreadSafeSigner};
 use anchor_lang::prelude::{Pubkey, UpgradeableLoaderState};
 use anchor_lang::{AccountDeserialize, InstructionData, ToAccountMetas};
 
@@ -140,10 +141,13 @@ impl RegisterBuilder {
         orao_vrf: &anchor_client::Program<C>,
         program: Pubkey,
         state: Pubkey,
-    ) -> Result<anchor_client::RequestBuilder<C>, anchor_client::ClientError> {
+    ) -> Result<
+        anchor_client::RequestBuilder<C, Arc<dyn ThreadSafeSigner>>,
+        anchor_client::ClientError,
+    > {
         let mut builder = orao_vrf.request();
 
-        let program_account = orao_vrf.async_rpc().get_account(&program).await?;
+        let program_account = orao_vrf.rpc().get_account(&program).await?;
         let program_state = UpgradeableLoaderState::try_deserialize(&mut &*program_account.data)?;
         let program_data = match program_state {
             UpgradeableLoaderState::Uninitialized => None,

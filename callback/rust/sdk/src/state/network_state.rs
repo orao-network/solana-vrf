@@ -1,4 +1,4 @@
-use anchor_lang::{account, prelude::Pubkey, AnchorDeserialize, AnchorSerialize};
+use anchor_lang::{account, prelude::Pubkey, AnchorDeserialize, AnchorSerialize, Discriminator};
 
 use super::super::borsh;
 

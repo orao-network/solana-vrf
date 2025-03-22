@@ -2,7 +2,10 @@ mod misc;
 pub mod state;
 
 #[cfg(feature = "sdk")]
-use std::ops::Deref;
+use std::{ops::Deref, sync::Arc};
+
+#[cfg(feature = "sdk")]
+use anchor_client::ThreadSafeSigner;
 
 use anchor_lang::prelude::*;
 use orao_solana_vrf::program::OraoVrf;
@@ -132,7 +135,7 @@ pub async fn spin_and_pull_the_trigger<
 >(
     roulette: &'a anchor_client::Program<C>,
     vrf: &anchor_client::Program<C>,
-) -> std::result::Result<anchor_client::RequestBuilder<'a, C>, anchor_client::ClientError> {
+) -> std::result::Result<anchor_client::RequestBuilder<'a, C, Arc<dyn ThreadSafeSigner>>, anchor_client::ClientError> {
     let seed = rand::random();
 
     // roulette accounts

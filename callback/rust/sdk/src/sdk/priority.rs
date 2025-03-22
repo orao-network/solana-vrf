@@ -23,7 +23,7 @@ pub async fn get_recommended_micro_lamport_fee(
     }
 
     let mut fees = client.get_recent_prioritization_fees(&[]).await?;
-    
+
     if fees.is_empty() {
         return Ok(None);
     }
@@ -69,7 +69,7 @@ impl ComputeBudgetConfig {
 
         if !matches!(self.compute_unit_price, Some(0)) {
             if let Some(fee) = get_recommended_micro_lamport_fee(
-                &orao_vrf.async_rpc(),
+                &orao_vrf.rpc(),
                 self.compute_unit_price,
                 self.compute_unit_price_multiplier,
             )

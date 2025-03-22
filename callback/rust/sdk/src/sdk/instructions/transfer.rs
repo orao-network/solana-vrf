@@ -1,7 +1,10 @@
 use std::ops::Deref;
+use std::sync::Arc;
 
 use anchor_client::solana_sdk::instruction::Instruction;
 use anchor_client::solana_sdk::signer::Signer;
+use anchor_client::ThreadSafeSigner;
+
 use anchor_lang::prelude::Pubkey;
 use anchor_lang::{InstructionData, ToAccountMetas};
 
@@ -104,7 +107,10 @@ impl TransferBuilder {
         self,
         orao_vrf: &anchor_client::Program<C>,
         client: Pubkey,
-    ) -> Result<anchor_client::RequestBuilder<C>, anchor_client::ClientError> {
+    ) -> Result<
+        anchor_client::RequestBuilder<C, Arc<dyn ThreadSafeSigner>>,
+        anchor_client::ClientError,
+    > {
         let mut builder = orao_vrf.request();
 
         for ix in self

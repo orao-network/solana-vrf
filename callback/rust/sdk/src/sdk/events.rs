@@ -16,7 +16,7 @@ use crate::events::{
 pub struct UnknownEvent;
 
 /// This helper enumerates all the events emitted by the program.
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
 #[non_exhaustive]
 pub enum Event {
     CallbackUpdated(crate::events::CallbackUpdated),
@@ -42,37 +42,31 @@ impl Event {
     /// *   errors with [`UnknownEvent`] wrapped in [`io::ErrorKind::InvalidData`]
     ///     in case of unknown event
     pub fn try_from_bytes(mut bytes: &[u8]) -> io::Result<Self> {
-        let discriminator = <[u8; 8] as BorshDeserialize>::deserialize(&mut bytes)?;
-        match discriminator {
-            crate::events::CallbackUpdated::DISCRIMINATOR => {
-                crate::events::CallbackUpdated::deserialize(&mut bytes).map(Self::CallbackUpdated)
-            }
-            crate::events::CalledBack::DISCRIMINATOR => {
-                crate::events::CalledBack::deserialize(&mut bytes).map(Self::CalledBack)
-            }
-            crate::events::Fulfilled::DISCRIMINATOR => {
-                crate::events::Fulfilled::deserialize(&mut bytes).map(Self::Fulfilled)
-            }
-            crate::events::Registered::DISCRIMINATOR => {
-                crate::events::Registered::deserialize(&mut bytes).map(Self::Registered)
-            }
-            crate::events::Requested::DISCRIMINATOR => {
-                crate::events::Requested::deserialize(&mut bytes).map(Self::Requested)
-            }
-            crate::events::Responded::DISCRIMINATOR => {
-                crate::events::Responded::deserialize(&mut bytes).map(Self::Responded)
-            }
-            crate::events::Transferred::DISCRIMINATOR => {
-                crate::events::Transferred::deserialize(&mut bytes).map(Self::Transferred)
-            }
-            crate::events::Withdrawn::DISCRIMINATOR => {
-                crate::events::Withdrawn::deserialize(&mut bytes).map(Self::Withdrawn)
-            }
-            _ => Err(io::Error::new(
-                io::ErrorKind::InvalidData,
-                "unknown discriminator for an event",
-            )),
+        macro_rules! match_bytes {
+            ($($name:ident,)+) => {
+                $(
+                    if bytes.starts_with(crate::events::$name::DISCRIMINATOR) {
+                        return crate::events::$name::deserialize(&mut bytes).map(Self::$name);
+                    }
+                )+
+            };
         }
+
+        match_bytes!(
+            CallbackUpdated,
+            CalledBack,
+            Fulfilled,
+            Registered,
+            Requested,
+            Responded,
+            Transferred,
+            Withdrawn,
+        );
+
+        Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "unknown discriminator for an event",
+        ))
     }
 }
 

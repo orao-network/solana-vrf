@@ -3,6 +3,7 @@ use anchor_lang::prelude::*;
 /// Event that signals that new client was registered.
 #[event]
 #[derive(Debug, Clone, Eq, PartialEq)]
+#[cfg_attr(feature = "sdk", derive(serde::Serialize, serde::Deserialize))]
 #[non_exhaustive]
 pub struct Registered {
     pub owner: Pubkey,

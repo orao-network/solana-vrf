@@ -465,13 +465,34 @@ describe("example_client", () => {
         await (
             await new InitializeBuilder(vrf, new BN(10_000_000)).build()
         ).rpc();
+
         let state = await vrf.getNetworkState();
+
+        let authorities = [
+            web3.Keypair.fromSeed(Buffer.alloc(32, 4)),
+            web3.Keypair.fromSeed(Buffer.alloc(32, 5)),
+            web3.Keypair.fromSeed(Buffer.alloc(32, 6)),
+            web3.Keypair.fromSeed(Buffer.alloc(32, 7)),
+        ];
+
+        for (const a of authorities) {
+            let transfer = new web3.Transaction().add(
+                web3.SystemProgram.transfer({
+                    fromPubkey: vrf.provider.publicKey,
+                    toPubkey: a.publicKey,
+                    lamports: web3.LAMPORTS_PER_SOL * 1,
+                })
+            );
+            await vrf.provider.sendAndConfirm(transfer);
+        }
+
         await (
             await new ConfigureBuilder(vrf, {
                 ...state.config,
-                fulfillAuthorities: [vrf.provider.publicKey],
+                fulfillAuthorities: authorities.map((x) => x.publicKey),
             }).build()
         ).rpc();
+
         subscription = vrf.addEventListener(
             "requested",
             async (event, _slot, _signature) => {
@@ -480,26 +501,28 @@ describe("example_client", () => {
                         ...event.client.toBuffer(),
                         ...event.seed,
                     ]);
-                    let signature = nacl.sign.detached(
-                        message,
-                        testKeyPair.secretKey
-                    );
-                    let builder = await new FulfillBuilder(
-                        vrf,
-                        event.client,
-                        new Uint8Array(event.seed)
-                    ).build(testKeyPair.publicKey, signature);
-                    await builder
-                        .remainingAccounts([
-                            {
-                                pubkey: additionalAccountAddress,
-                                isSigner: false,
-                                isWritable: true,
-                            },
-                        ])
-                        .rpc();
+                    for (let a of authorities) {
+                        let signature = nacl.sign.detached(
+                            message,
+                            a.secretKey
+                        );
+                        let builder = await new FulfillBuilder(
+                            vrf,
+                            event.client,
+                            new Uint8Array(event.seed)
+                        ).build(a.publicKey, signature);
+                        await builder
+                            .remainingAccounts([
+                                {
+                                    pubkey: additionalAccountAddress,
+                                    isSigner: false,
+                                    isWritable: true,
+                                },
+                            ])
+                            .rpc();
+                    }
                 } catch (e) {
-                    console.error(e);
+                    // pass
                 }
             }
         );

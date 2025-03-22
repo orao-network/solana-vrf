@@ -15,6 +15,7 @@ use anchor_client::{
         compute_budget::ComputeBudgetInstruction, ed25519_instruction, instruction::Instruction,
         signature::Keypair, signer::Signer, sysvar,
     },
+    ThreadSafeSigner,
 };
 use anchor_lang::{
     prelude::{AccountMeta, Pubkey},
@@ -322,7 +323,10 @@ impl InitBuilder {
     pub async fn build<C: Deref<Target = impl Signer> + Clone>(
         self,
         orao_vrf: &anchor_client::Program<C>,
-    ) -> Result<anchor_client::RequestBuilder<C>, anchor_client::ClientError> {
+    ) -> Result<
+        anchor_client::RequestBuilder<C, Arc<dyn ThreadSafeSigner>>,
+        anchor_client::ClientError,
+    > {
         let network_state_address = network_state_account_address(&orao_vrf.id());
 
         let mut builder = orao_vrf.request();
@@ -512,7 +516,10 @@ impl UpdateBuilder {
     pub async fn build<C: Deref<Target = impl Signer> + Clone>(
         self,
         orao_vrf: &anchor_client::Program<C>,
-    ) -> Result<anchor_client::RequestBuilder<C>, anchor_client::ClientError> {
+    ) -> Result<
+        anchor_client::RequestBuilder<C, Arc<dyn ThreadSafeSigner>>,
+        anchor_client::ClientError,
+    > {
         let network_state_address = network_state_account_address(&orao_vrf.id());
         let network_state: NetworkState = orao_vrf.account(network_state_address).await?;
         let mut config = network_state.config;
@@ -725,7 +732,10 @@ impl RequestBuilder {
     pub async fn build<C: Deref<Target = impl Signer> + Clone>(
         self,
         orao_vrf: &anchor_client::Program<C>,
-    ) -> Result<anchor_client::RequestBuilder<C>, anchor_client::ClientError> {
+    ) -> Result<
+        anchor_client::RequestBuilder<C, Arc<dyn ThreadSafeSigner>>,
+        anchor_client::ClientError,
+    > {
         let network_state_address = network_state_account_address(&orao_vrf.id());
         let request_address = randomness_account_address(&orao_vrf.id(), &self.seed);
 
@@ -919,7 +929,10 @@ impl FulfillBuilder {
         self,
         orao_vrf: &'a anchor_client::Program<C>,
         fulfill_authority: &Keypair,
-    ) -> Result<anchor_client::RequestBuilder<'a, C>, anchor_client::ClientError> {
+    ) -> Result<
+        anchor_client::RequestBuilder<'a, C, Arc<dyn ThreadSafeSigner>>,
+        anchor_client::ClientError,
+    > {
         let network_state_address = network_state_account_address(&orao_vrf.id());
         let request_address = randomness_account_address(&orao_vrf.id(), &self.seed);
         let randomness_account_data = orao_vrf
@@ -989,7 +1002,7 @@ impl ComputeBudgetConfig {
 
         if !matches!(self.compute_unit_price, Some(0)) {
             if let Some(fee) = get_recommended_micro_lamport_fee(
-                &orao_vrf.async_rpc(),
+                &orao_vrf.rpc(),
                 self.compute_unit_price,
                 self.compute_unit_price_multiplier,
             )

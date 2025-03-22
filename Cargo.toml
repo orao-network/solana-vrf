@@ -1,13 +1,17 @@
 [workspace]
-members = ["rust/sdk", "rust/examples/off-chain", "callback/rust/sdk"]
-exclude = ["rust/examples/cpi", "callback/rust/examples/cpi"]
+members = ["rust/sdk", "rust/examples/off-chain"]
+exclude = [
+    "rust/examples/cpi",
+    "callback/rust/examples/cpi",
+    "callback/rust/sdk",
+]
 resolver = "2"
 
 [workspace.dependencies]
-anchor-lang = "0.30.1"
-anchor-spl = "0.30.1"
-anchor-client = { version = "0.30.1" }
+anchor-lang = "0.31.0"
+anchor-spl = "0.31.0"
+anchor-client = { version = "0.31.0" }
 ed25519-dalek = { version = "1.0.1" }
-solana-cli-config = { version = "1.18" }
+solana-cli-config = { version = "2.1.0" }
 rand = { version = "0.8" }
 bs58 = "0.4"
