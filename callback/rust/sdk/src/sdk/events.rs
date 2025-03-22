@@ -41,12 +41,14 @@ impl Event {
     ///
     /// *   errors with [`UnknownEvent`] wrapped in [`io::ErrorKind::InvalidData`]
     ///     in case of unknown event
-    pub fn try_from_bytes(mut bytes: &[u8]) -> io::Result<Self> {
+    pub fn try_from_bytes(bytes: &[u8]) -> io::Result<Self> {
         macro_rules! match_bytes {
             ($($name:ident,)+) => {
                 $(
                     if bytes.starts_with(crate::events::$name::DISCRIMINATOR) {
-                        return crate::events::$name::deserialize(&mut bytes).map(Self::$name);
+                        return crate::events::$name::deserialize(
+                            &mut &bytes[crate::events::$name::DISCRIMINATOR.len()..]
+                        ).map(Self::$name);
                     }
                 )+
             };
