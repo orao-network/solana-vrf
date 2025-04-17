@@ -6,17 +6,7 @@ authors = ["ORAO Devs <hello@orao.network>"]
 homepage = "https://orao.network"
 repository = "https://github.com/orao-network/solana-vrf/callback"
 license = "Apache-2.0"
-keywords = [
-    "solana",
-    "vrf",
-    "ed25519",
-    "anchor",
-    "randomizer",
-    "callback",
-    "solana-nft",
-    "gamblefi",
-    "casino",
-]
+keywords = ["solana", "vrf", "randomizer", "callback", "gamblefi"]
 description = "ORAO Verifiable Random Function with Callback for Solana."
 
 [lib]
