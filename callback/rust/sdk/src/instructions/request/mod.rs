@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-mod handler;
+pub(super) mod handler;
 pub use handler::handler as request_handler;
 
 use super::super::{
@@ -48,7 +48,14 @@ impl RequestParams {
 ///
 /// ### Accounts:
 ///
-/// See docs on individual fields.
+/// * `1     . payer` — see docs on [`Request::payer`]
+/// * `2     . state` — see docs on [`Request::state`]
+/// * `3     . client` — see docs on [`Request::client`]
+/// * `4     . network_state` — see docs on [`Request::network_state`]
+/// * `5     . treasury` — see docs on [`Request::treasury`]
+/// * `6     . request` — see docs on [`Request::request`]
+/// * `7     . system_program` — see docs on [`Request::system_program`]
+/// * `8 to _. writable accounts` — zero or more writable accounts to be authorized as "arbitrary writable" callback accounts
 #[derive(Accounts)]
 #[instruction(params: RequestParams)]
 pub struct Request<'info> {

@@ -32,5 +32,18 @@
         "@coral-xyz/anchor": "0.31.0",
         "@noble/ed25519": "^1.6.1",
         "tweetnacl": "^1.0.3"
-    }
+    },
+    "keywords": [
+        "vrf",
+        "randomizer",
+        "rng",
+        "solana-nft",
+        "on-chain",
+        "random",
+        "number",
+        "generator",
+        "solana-callback",
+        "casino",
+        "gamblefi"
+    ]
 }

@@ -83,7 +83,7 @@ impl AccountDeserialize for RandomnessAccountData {
             return Err(anchor_lang::error::ErrorCode::AccountDiscriminatorNotFound.into());
         };
 
-        match discriminator.try_into().unwrap() {
+        match discriminator {
             Randomness::DISCRIMINATOR => {
                 Randomness::try_deserialize_unchecked(buf).map(RandomnessAccountData::V1)
             }

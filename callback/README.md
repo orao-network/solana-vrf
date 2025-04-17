@@ -34,7 +34,7 @@ Here are the minimal requirements for a client program:
     going to be used as a request authority — this PDA will sign the CPI call
     to the `Request` instruction so that the request could be authorized by the
     Callback VRF.
-2.  Program must have an instruction that is going to invoke the `Request`
+2.  Program may have an instruction that is going to invoke the `Request`/`RequestAlt`
     instruction via CPI.
 
 Client programs can have one or more instructions that can be used as callbacks.
@@ -42,9 +42,9 @@ Client programs can have one or more instructions that can be used as callbacks.
     Callback instructions have some requirements imposed on their list
     of accounts (see the [Callback](#callback) section bellow).
 
-
 As you can see the minimal client program could have just two instructions:
-first one to initialize the state PDA and the second one to perform the Request CPi. The complete example of a Callback VRF client program
+first one to initialize the state PDA and the second one to perform the Request CPI.
+The complete example of a Callback VRF client program
 could be found in the [rust/examples/cpi](./rust/examples/cpi) folder.
 
 ### 2. Register your client program at the Callback VRF
@@ -57,7 +57,8 @@ used for the following purposes:
 
 Please note that only the program owner (it's [upgrade authority](https://solana.com/docs/core/programs#updating-solana-programs))
 is able to call the `Register` instruction — this account becomes an owner of
-the new client. The client ownership could later be transferred using the `Transfer` instruction (see bellow).
+the new client. The client ownership could later be transferred using the `Transfer` instruction
+(see bellow).
 
 Also note that you can register the same client program multiple times as long
 as unique State PDAs are used for every registration — every such registration
@@ -108,6 +109,12 @@ println!("Registered in {signature}");
 
 #### Callback
 
+---
+
+> **[Address Lookup Tables][lookup-tables] are supported since v0.3.0**
+
+---
+
 An arbitrary client program instruction can be used as a callback instruction
 as long as it expects the following list of accounts:
 
@@ -115,10 +122,19 @@ as long as it expects the following list of accounts:
 2.  (writable) State PDA will be writable within the callback
 3.  (readonly) VRF's `NetworkState` PDA will be available for reading
 4.  (readonly) Fulfilled `RequestAccount` PDA will be available for reading
-5.  (optional) ... zero or many additional accounts given upon registration
+5.  (optional) ... zero or more additional accounts given upon registration
     or upon the `Request` CPI (see bellow)
 
-There are two types of callbacks:
+From the features perspective there are two types of callbacks:
+
+1.  `Callback` — normal callback
+2.  `CallbackAlt` — _ALT_ here stands for [Address Lookup Tables][lookup-tables].
+    This type of callback is able to use Solana's feature that allows developers
+    to create a collection of related addresses to efficiently load more addresses
+    in a single transaction. This is only possible for a _request-level callback_
+    (see bellow).
+
+From the contract perspective there are two types of callbacks:
 
 1.  _Client-level_ callback — a callback (if any) that is given upon the
     client registration — it will be called for every fulfilled request
@@ -132,7 +148,8 @@ To define a callback you must provide the following information:
 
 1.  Borsh-serialized instruction data.
 
-    In rust it is convenient to use the `Callback::from_instruction_data` helper:
+    In rust it is convenient to use the `Callback::from_instruction_data` or
+    `CallbackAlt::from_instruction_data` helpers:
 
     ```rust
     let cb = Callback::from_instruction_data(SomeInstr::new(/* some params */));
@@ -150,48 +167,111 @@ To define a callback you must provide the following information:
     };
     ```
 
-2.  (optional) A list of remaining accounts — note that for a remaining account
-    to be writable you must prove that it's a client program's PDA by providing
-    seeds and bump:
+2.  (optional) A list of remaining accounts.
 
-    In rust it is convenient to use the `Callback::with_remaining_account` helper:
+    There are three types of remaining accounts:
 
-    ```rust
-    let cb = Callback::from_instruction_data(SomeInstr::new(/* some params */))
-        .with_remaining_account(RemainingAccount::readonly(some_address))
-        .with_remaining_account(RemainingAccount::writable(
-            some_other_address,
-            vec![ACCOUNT_SEED.to_vec(), vec![account_bump]],
-        ));
-    ```
+    -   **Arbitrary read-only account** — it is possible to give an arbitrary
+        read-only account to a callback. Use the `RemainingAccount::readonly`
+        constructor to build one.
+    -   **Arbitrary writable account** — it is possible to give an arbitrary
+        writable account as long as it is authorized by the caller - i.e.
+        if it is given as writable to the corresponding `Request`, `RequestAlt`
+        or `Register` instruction. Use the `RemainingAccount::arbitrary_writable`
+        constructor.
+    -   **Writable PDA** — it is always possible to give a writable account as long
+        as it is a PDA of the client program - just provide the proper seeds so
+        that VRF is able to verify the address. Use the `RemainingAccount::writable`
+        constructor.
 
-    In Typescript you just fill the object fields:
+    The following helpers exists to add remaining accounts to the callback:
 
-    ```typescript
-    let ixCoder = new anchor.BorshInstructionCoder(clientProgram.idl);
-    let callback = {
-        data: ixCoder.encode("some_instruction_name", {
+    -   **for `Callback`** — use `Callback::with_remaining_account`
+        and `Callback::with_remaining_accounts` helpers. Or just directly
+        extend the `Callback::remaining_accounts` field.
+
+        **Examples:**
+
+        ```rust
+        let instruction = MyCallbackInstruction { some_param: 13 };
+        Callback::from_instruction_data(&instruction)
+            .with_remaining_account(RemainingAccount::writable(
+                my_pda_address,
+                vec![b"MY_PDA_SEED".to_vec(), vec![my_pda_bump]],
+            ))
+        ```
+
+        For Typescript — just populate the `remainingAccounts` field:
+
+        ```typescript
+        let ixCoder = new anchor.BorshInstructionCoder(clientProgram.idl);
+        let data = ixCoder.encode("some_instruction_name", {
             /* some params */
-        }),
-        remainingAccounts: [
+        });
+        let remainingAccounts = [
+            // Arbitrary read-only account
+            { pubkey: some_address, seeds: null },
+            // Arbitrary writable account — note the empty array given for `seeds`
+            { pubkey: another_address, seeds: [] },
+            // Writable PDA
             {
-                pubkey: some_address,
-                seeds: null,
+                pubkey: my_pda,
+                seeds: [Buffer.from(MY_PDA_SEED), Buffer.from([my_pda_bump])],
             },
+        ];
+        let callback = { data, remainingAccounts };
+        ```
+
+    -   **for `CallbackAlt`** — first create a vec of `RemainingAccount`s
+        and then use the `CallbackAlt::compile_accounts` helper.
+
+        **Examples:**
+
+        ```rust
+        let instruction = MyCallbackAltInstruction { foo: 42 };
+        let accounts = vec![
+            RemainingAccount::readonly(address1),
+            RemainingAccount::arbitrary_writable(address2),
+        ];
+        let callback = CallbackAlt::from_instruction_data(&instruction)
+            .compile_accounts(accounts, &lookup_tables);
+        ```
+
+        For Typescript — use the `compileAccounts` helper:
+
+        ```typescript
+        let ixCoder = new anchor.BorshInstructionCoder(clientProgram.idl);
+        let data = ixCoder.encode("some_instruction_name", {
+            /* some params */
+        });
+        let accounts = [
+            // Arbitrary read-only account
+            { pubkey: someAddress, seeds: null },
+            // Arbitrary writable account — note the empty array given for `seeds`
+            { pubkey: anotherAddress, seeds: [] },
+            // Writable PDA
             {
-                pubkey: some_address,
-                seeds: [Buffer.from(ACCOUNT_SEED), Buffer.from([account_bump])],
+                pubkey: myPda,
+                seeds: [Buffer.from(MY_PDA_SEED), Buffer.from([myPdaBump])],
             },
-        ],
-    };
-    ```
+        ];
+        let(remainingAccounts, accountsHash) = compileAccounts(
+            accounts,
+            lookupTables
+        );
+        let callback = {
+            accountsHash,
+            data,
+            remainingAccounts,
+        };
+        ```
 
 ##### Updating client-level callback with `SetCallback` instruction
 
 There is a `SetCallback` instruction that allows a client owner to update/remove
 the client-level callback:
 
-- in typescript:
+-   in typescript:
 
     ```typescript
     let signature = await cbProgram2.methods
@@ -205,7 +285,7 @@ the client-level callback:
     console.log("Callback updated in:", signature);
     ```
 
-- in rust:
+-   in rust:
 
     ```rust
     let vrf = provider.program(orao_solana_vrf_cb::id())?;
@@ -220,7 +300,7 @@ the client-level callback:
 As soon as `Register` instruction is successfully executed a new Client PDA
 is allocated. Its address could be easily found using proper helper function:
 
-- in typescript:
+-   in typescript:
 
     ```typescript
     import { clientAddress } from "@orao-network/solana-vrf-cb";
@@ -230,7 +310,7 @@ is allocated. Its address could be easily found using proper helper function:
     );
     ```
 
-- in rust:
+-   in rust:
 
     ```rust
     use orao_solana_vrf_cb::state::Client;
@@ -241,11 +321,11 @@ is allocated. Its address could be easily found using proper helper function:
     );
     ```
 
-Now to make a `Request` CPI the Client PDA must be funded — it's balance will
-be used to pay request fees and rent:
+Now to make a `Request`/`RequestAlt` CPI the Client PDA must be funded —
+it's balance will be used to pay request fees and rent:
 
-- effective VRF fees can be observed in the VRF's `NetworkState` account
-- the request rent is reimbursed upon fulfill
+-   effective VRF fees can be observed in the VRF's `NetworkState` account
+-   the request rent is reimbursed upon fulfill
 
 To fund the client you need to transfer some funds to the Client PDA. You can
 do it directly or via your program's instruction — in fact Solana imposes no
@@ -271,14 +351,14 @@ This is a trivial operation but please note that you won't be able to withdraw
 past Client's funds necessary for rent exemption — there is a helper that
 returns the available client balance:
 
-- in typescript use `OraoCb.clientBalance` method:
+-   in typescript use `OraoCb.clientBalance` method:
 
     ```typescript
     let vrf = new OraoCb(anchorProvider);
     let availableBalance = await vrf.clientBalance(clientAddr);
     ```
 
-- in rust use `orao_solana_vrf_cb:sdk::client_balance`:
+-   in rust use `orao_solana_vrf_cb:sdk::client_balance`:
 
     ```rust
     let vrf = provider.program(orao_solana_vrf_cb::id())?;
@@ -287,7 +367,7 @@ returns the available client balance:
 
 Here is an example of off-chain `Withdraw` invocation:
 
-- in typescript:
+-   in typescript:
 
     ```typescript
     let vrf = new OraoCb(provider);
@@ -298,7 +378,7 @@ Here is an example of off-chain `Withdraw` invocation:
     console.log("Withdrawn in", signature);
     ```
 
-- in rust there is a `WithdrawBuilder` helper:
+-   in rust there is a `WithdrawBuilder` helper:
 
     ```rust
     let vrf = provider.program(orao_solana_vrf_cb::id())?;
@@ -310,16 +390,16 @@ Here is an example of off-chain `Withdraw` invocation:
 
 ### 4. Request new randomness
 
-Randomness requests are performed via CPI to the VRF's `Request` instruction, so
-it's a job for one of your program's instructions. Please note that you
+Randomness requests are performed via CPI to the VRF's `Request` or `RequestAlt` instruction,
+so it's a job for one of your program's instructions. Please note that you
 can provide a request-level callback and a list of its remaining accounts —
 you can decide that in the logic of your instruction (see the [Callback](#callback) section above).
 
-Every `Request` invocation has to provide a unique seed — this seed represents
+Every `Request`/`RequestAlt` invocation has to provide a unique seed — this seed represents
 a commitment necessary to verify the generated randomness. Note that every
 registered client has a separate seed space — you don't need to worry on whether
 some seed is already used by another client or not, but you still need to make
-sure that your seed is not already used by your client -  in case it's already used by your client 
+sure that your seed is not already used by your client - in case it's already used by your client
 the `Request` instruction will error out.
 
 #### An example of a simple `Request` CPI
@@ -419,9 +499,9 @@ see the [Callback](#callback) section above).
 Additionally our request-level callback will illustrate how one can provide
 additional accounts to a callback — we're going to provide two accounts
 
-- some read-only account — this illustrates basic functionality
-- a writable account — this illustrates how to give a writable Program's
-  PDA to a callback
+-   some read-only account — this illustrates basic functionality
+-   a writable account — this illustrates how to give a writable Program's
+    PDA to a callback
 
 ```rust
 /// This is the instruction of our program, that is going to perform `Request` CPI.
@@ -614,15 +694,15 @@ pub struct Callback<'info> {
 The effective owner of a client is stored in the `owner` field of a Client PDA.
 The owner is able to:
 
-- update client-level callback using `SetCallback` instruction
-- withdraw funds from the Client PDA
-- transfer ownership of the client
+-   update client-level callback using `SetCallback` instruction
+-   withdraw funds from the Client PDA
+-   transfer ownership of the client
 
 `Transfer` is a simple instruction requiring only the Client PDA being
 transferred and a new owner address, but the signer must be the current
 client owner:
 
-- in typescript:
+-   in typescript:
 
     ```typescript
     let vrf = new OraoCb(provider);
@@ -633,7 +713,7 @@ client owner:
     console.log("Transferred in:", signature);
     ```
 
-- in rust:
+-   in rust:
 
     ```rust
     let vrf = provider.program(orao_solana_vrf_cb::id())?;
@@ -642,3 +722,5 @@ client owner:
         .send().await?;
     println!("Transferred in {signature}");
     ```
+
+[lookup-tables]: https://solana.com/ru/developers/guides/advanced/lookup-tables

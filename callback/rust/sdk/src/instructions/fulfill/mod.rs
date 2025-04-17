@@ -6,7 +6,7 @@ use super::super::{
     CB_CLIENT_ACCOUNT_SEED, CB_CONFIG_ACCOUNT_SEED, CB_REQUEST_ACCOUNT_SEED,
 };
 
-mod handler;
+pub(in crate::instructions) mod handler;
 pub use handler::handler as fulfill_handler;
 
 #[derive(Default, Clone, AnchorSerialize, AnchorDeserialize)]

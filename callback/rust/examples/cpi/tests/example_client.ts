@@ -9,9 +9,11 @@ import {
     clientAddress,
     ConfigureBuilder,
     FulfillBuilder,
+    FulfillAltBuilder,
     requestAccountAddress,
     NetworkState,
     TransferBuilder,
+    requestAltAccountAddress,
 } from "@orao-network/solana-vrf-cb";
 import testSecretKey from "../test_keypair.json";
 import nacl from "tweetnacl";
@@ -156,7 +158,7 @@ describe("example_client", () => {
         assert.equal(client.bump, clientBump);
         assert.equal(
             client.owner.toBase58(),
-            exampleClient.provider.publicKey.toBase58()
+            exampleClient.provider.publicKey!.toBase58()
         );
         assert.equal(
             client.program.toBase58(),
@@ -174,12 +176,12 @@ describe("example_client", () => {
          */
         let transfer = new web3.Transaction().add(
             web3.SystemProgram.transfer({
-                fromPubkey: vrf.provider.publicKey,
+                fromPubkey: vrf.provider.publicKey!,
                 toPubkey: clientAddr,
                 lamports: web3.LAMPORTS_PER_SOL * 1,
             })
         );
-        await vrf.provider.sendAndConfirm(transfer);
+        await vrf.provider.sendAndConfirm!(transfer);
 
         /**
          * We are now ready to preform our first request. Requests are made
@@ -215,7 +217,7 @@ describe("example_client", () => {
          * Wait fulfilled is an off-chain helper function to wait for fulfilled randomness.
          * You can also listen for the `fulfilled` event.
          */
-        let fulfilled = await vrf.waitFulfilled(clientAddr, seed);
+        let fulfilled = await vrf.waitFulfilled(clientAddr, seed, "regular");
         assert(Buffer.from(fulfilled.seed).equals(seed)); // seed matches
         assert.equal(fulfilled.state.randomness.length, 64); // randomness size
         assert(!Buffer.alloc(64).equals(fulfilled.state.randomness)); // randomness is not zeroed
@@ -273,7 +275,7 @@ describe("example_client", () => {
             .rpc();
         console.log("Requested in", tx);
 
-        let fulfilled = await vrf.waitFulfilled(clientAddr, seed);
+        let fulfilled = await vrf.waitFulfilled(clientAddr, seed, "regular");
         assert(Buffer.from(fulfilled.seed).equals(seed)); // seed matches
         assert.equal(fulfilled.state.randomness.length, 64); // randomness size
         assert(!Buffer.alloc(64).equals(fulfilled.state.randomness)); // randomness is not zeroed
@@ -333,7 +335,7 @@ describe("example_client", () => {
          * Now let's assert that the request-level callback was called
          * and that the client-level callback wasn't called.
          */
-        let fulfilled = await vrf.waitFulfilled(clientAddr, seed);
+        let fulfilled = await vrf.waitFulfilled(clientAddr, seed, "regular");
         assert(Buffer.from(fulfilled.seed).equals(seed)); // seed matches
         assert.equal(fulfilled.state.randomness.length, 64); // randomness size
         assert(!Buffer.alloc(64).equals(fulfilled.state.randomness)); // randomness is not zeroed
@@ -398,7 +400,136 @@ describe("example_client", () => {
          * that the client-level callback wasn't called
          * and that the additional account was updated according to the callback logic.
          */
-        let fulfilled = await vrf.waitFulfilled(clientAddr, seed);
+        let fulfilled = await vrf.waitFulfilled(clientAddr, seed, "regular");
+        assert(Buffer.from(fulfilled.seed).equals(seed)); // seed matches
+        assert.equal(fulfilled.state.randomness.length, 64); // randomness size
+        assert(!Buffer.alloc(64).equals(fulfilled.state.randomness)); // randomness is not zeroed
+        console.log("Fulfilled:", bs58.encode(fulfilled.state.randomness));
+        let {
+            clientLevelCallbackRandomness,
+            requestLevelCallbackRandomness,
+            requestLevelCallbackParam,
+        } = await exampleClient.account.clientState.fetch(clientStateAddr);
+        assert.deepEqual(
+            clientLevelCallbackRandomness,
+            previousClientLevelCallbackRandomness
+        ); // client-level callback wasn't called
+        assert(
+            Buffer.from(requestLevelCallbackRandomness).equals(
+                fulfilled.state.randomness
+            ) && requestLevelCallbackParam === howToOverride.parameter
+        ); // request-level callback was called
+        let { randomness, param } =
+            await exampleClient.account.additionalAccount.fetch(
+                additionalAccountAddress
+            );
+        assert(
+            Buffer.from(randomness).equals(fulfilled.state.randomness) &&
+                param === howToOverride.parameter
+        ); // additional account wasn't involved in the request-level callback
+    });
+
+    it("RequestAlt with request-level callback (with additional writable account)", async () => {
+        /**
+         * This test is the same as the previous one, but we'll use request with
+         * support of AddressLookupTables
+         *
+         * > Note that it is also possible to use additional accounts
+         * > with a client-level callback
+         *
+         * The override logic is implemented in the {@link ExampleClient}'s `request_alt` instruction,
+         * so from the offchain-perspective we only need to give the following optional input parameter.
+         *
+         * See the source code and comments in
+         *     `program/example-client/src/instructions/request_alt.rs`
+         */
+        let howToOverride = {
+            parameter: 22, // this param will be given to the `requestLevelCallbackInstruction`
+            sendAdditionalAccount: true, // now we specify that additional account must be given
+            numLookupTables: 1, // we'll always use just one lookup table
+        };
+
+        /**
+         * Now we'll create a lookup table containing remaining account for our callback.
+         */
+        let [lookupTableInstruction, tableAddress] =
+            web3.AddressLookupTableProgram.createLookupTable({
+                authority: vrf.provider.publicKey!,
+                payer: vrf.provider.publicKey!,
+                recentSlot: 0,
+            });
+        let tx = new web3.Transaction().add(lookupTableInstruction);
+        let signature = await vrf.provider.sendAndConfirm!(
+            tx,
+            [vrf.provider.wallet!.payer!],
+            { maxRetries: 50 }
+        );
+        console.log("Lookup table created in:", signature);
+        let extendInstruction =
+            web3.AddressLookupTableProgram.extendLookupTable({
+                payer: vrf.provider.publicKey,
+                authority: vrf.provider.publicKey!,
+                lookupTable: tableAddress,
+                addresses: [
+                    web3.PublicKey.findProgramAddressSync(
+                        [Buffer.from("ADDITIONAL_ACCOUNT")],
+                        exampleClient.programId
+                    )[0],
+                ],
+            });
+        tx = new web3.Transaction().add(extendInstruction);
+        signature = await vrf.provider.sendAndConfirm!(
+            tx,
+            [vrf.provider.wallet!.payer!],
+            { maxRetries: 50 }
+        );
+        console.log("Lookup table populated in:", signature);
+
+        /**
+         * Now let's perform the RequestAlt with our lookup table
+         */
+        let networkState = await vrf.getNetworkState();
+        let seed = nacl.randomBytes(32);
+        let requestAddr = requestAltAccountAddress(clientAddr, seed)[0];
+        let sig = await exampleClient.methods
+            .requestAlt([...seed], howToOverride)
+            .accountsPartial({
+                vrf: vrf.programId,
+                clientState: clientStateAddr,
+                client: clientAddr,
+                networkState: NetworkState.createAddress(networkState.bump)[0],
+                treasury: networkState.config.treasury,
+                request: requestAddr,
+            })
+            .remainingAccounts([
+                { pubkey: tableAddress, isSigner: false, isWritable: false },
+            ])
+            .rpc();
+        console.log("Requested in", sig);
+
+        /**
+         * Let's assert that additional account is actually given by its index
+         * in the lookup table rather than as a plain address
+         */
+        let requestAccount = await vrf.getRequestAltAccount(
+            requestAddr,
+            "confirmed"
+        );
+        let lookupAccount =
+            requestAccount?.getPending()?.callback?.remainingAccounts[0];
+        assert(
+            "tableIndex" in lookupAccount! && lookupAccount.tableIndex === 0
+        );
+        assert(
+            "addressIndex" in lookupAccount! && lookupAccount.addressIndex === 0
+        );
+
+        /**
+         * Let's assert that the request-level callback was called,
+         * that the client-level callback wasn't called
+         * and that the additional account was updated according to the callback logic.
+         */
+        let fulfilled = await vrf.waitFulfilled(requestAddr);
         assert(Buffer.from(fulfilled.seed).equals(seed)); // seed matches
         assert.equal(fulfilled.state.randomness.length, 64); // randomness size
         assert(!Buffer.alloc(64).equals(fulfilled.state.randomness)); // randomness is not zeroed
@@ -461,6 +592,7 @@ describe("example_client", () => {
      * This sets up a test VRF instance. Just skip this part.
      */
     let subscription: number;
+    let subscriptionAlt: number;
     before(async () => {
         await (
             await new InitializeBuilder(vrf, new BN(10_000_000)).build()
@@ -478,12 +610,12 @@ describe("example_client", () => {
         for (const a of authorities) {
             let transfer = new web3.Transaction().add(
                 web3.SystemProgram.transfer({
-                    fromPubkey: vrf.provider.publicKey,
+                    fromPubkey: vrf.provider.publicKey!,
                     toPubkey: a.publicKey,
                     lamports: web3.LAMPORTS_PER_SOL * 1,
                 })
             );
-            await vrf.provider.sendAndConfirm(transfer);
+            await vrf.provider.sendAndConfirm!(transfer);
         }
 
         await (
@@ -526,9 +658,63 @@ describe("example_client", () => {
                 }
             }
         );
+        subscriptionAlt = vrf.addEventListener(
+            "requestedAlt",
+            async (event, _slot, _signature) => {
+                let lookupTables: web3.AddressLookupTableAccount[] = [];
+                for (const address of event.lookupTables) {
+                    let table =
+                        await vrf.provider.connection.getAddressLookupTable(
+                            address
+                        );
+                    lookupTables.push(table.value!);
+                }
+                try {
+                    let message = new Uint8Array([
+                        ...event.client.toBuffer(),
+                        ...event.seed,
+                    ]);
+                    for (let a of authorities) {
+                        let signature = nacl.sign.detached(
+                            message,
+                            a.secretKey
+                        );
+                        let instructions = await new FulfillAltBuilder(
+                            vrf,
+                            event.client,
+                            new Uint8Array(event.seed)
+                        ).build_instructions(
+                            a.publicKey,
+                            signature,
+                            lookupTables
+                        );
+                        const recentBlockhash =
+                            await vrf.provider.connection.getLatestBlockhash(
+                                "confirmed"
+                            );
+                        const messageV0 = new web3.TransactionMessage({
+                            payerKey: vrf.provider.publicKey!,
+                            recentBlockhash: recentBlockhash.blockhash,
+                            instructions,
+                        }).compileToV0Message(lookupTables);
+                        const transactionV0 = new web3.VersionedTransaction(
+                            messageV0
+                        );
+                        transactionV0.sign([vrf.provider.wallet!.payer!]);
+                        let sig = await vrf.provider.connection.sendTransaction(
+                            transactionV0
+                        );
+                        await vrf.provider.connection.confirmTransaction(sig);
+                    }
+                } catch (e) {
+                    // pass
+                }
+            }
+        );
     });
 
     after(async () => {
         vrf.removeEventListener(subscription);
+        vrf.removeEventListener(subscriptionAlt);
     });
 });

@@ -15,3 +15,7 @@ pub const CB_CLIENT_ACCOUNT_SEED: &[u8] = b"OraoVrfCbClient";
 /// Base [`crate::state::request::RequestAccount`] PDA seed.
 #[constant]
 pub const CB_REQUEST_ACCOUNT_SEED: &[u8] = b"OraoVrfCbRequest";
+
+/// Base [`crate::state::request_alt::RequestAltAccount`] PDA seed.
+#[constant]
+pub const CB_REQUEST_ALT_ACCOUNT_SEED: &[u8] = b"OraoVrfCbRequestAlt";

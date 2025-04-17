@@ -7,7 +7,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-example_client = "7ecjG7TZ1ynYvmtLCh7uXa6UJ6aiSCF1NtgquhY8pZ2d"
+example_client = "EioKxQafFaRbM5Yo1NXp1SP9HaFaqWWErZYpcb1a5eAC"
 
 [registry]
 url = "https://api.apr.dev"

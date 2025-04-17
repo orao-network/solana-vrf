@@ -5,8 +5,8 @@ use anchor_client::solana_sdk::{bs58, native_token::LAMPORTS_PER_SOL};
 use anchor_lang::{prelude::borsh::BorshDeserialize, Discriminator};
 
 use crate::events::{
-    CallbackUpdated, CalledBack, Fulfilled, Registered, Requested, Responded, Transferred,
-    Withdrawn,
+    CallbackUpdated, CalledBack, Fulfilled, Registered, Requested, RequestedAlt, Responded,
+    Transferred, Withdrawn,
 };
 
 /// It is an error indicating that the event discriminator does not match known events
@@ -24,6 +24,7 @@ pub enum Event {
     Fulfilled(crate::events::Fulfilled),
     Registered(crate::events::Registered),
     Requested(crate::events::Requested),
+    RequestedAlt(crate::events::RequestedAlt),
     Responded(crate::events::Responded),
     Transferred(crate::events::Transferred),
     Withdrawn(crate::events::Withdrawn),
@@ -80,6 +81,7 @@ impl fmt::Display for Event {
             Event::Fulfilled(ev) => ev.fmt(f),
             Event::Registered(ev) => ev.fmt(f),
             Event::Requested(ev) => ev.fmt(f),
+            Event::RequestedAlt(ev) => ev.fmt(f),
             Event::Responded(ev) => ev.fmt(f),
             Event::Transferred(ev) => ev.fmt(f),
             Event::Withdrawn(ev) => ev.fmt(f),
@@ -140,6 +142,22 @@ impl fmt::Display for Requested {
         write!(
             f,
             "Requested: {} by {} {with} callback",
+            bs58::encode(&self.seed).into_string(),
+            self.client,
+        )
+    }
+}
+
+impl fmt::Display for RequestedAlt {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let with = if self.callback.is_some() {
+            "with request-level"
+        } else {
+            "without"
+        };
+        write!(
+            f,
+            "Requested (ALT): {} by {} {with} callback",
             bs58::encode(&self.seed).into_string(),
             self.client,
         )

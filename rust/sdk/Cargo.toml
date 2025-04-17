@@ -6,7 +6,16 @@ authors = ["ORAO Devs <hello@orao.network>"]
 homepage = "https://orao.network"
 repository = "https://github.com/orao-network/solana-vrf"
 license = "Apache-2.0"
-keywords = ["solana", "vrf", "ed25519", "anchor"]
+keywords = [
+    "solana",
+    "vrf",
+    "ed25519",
+    "anchor",
+    "randomizer",
+    "solana-nft",
+    "gamblefi",
+    "casino",
+]
 description = "ORAO Verifiable Random Function for Solana."
 
 [features]

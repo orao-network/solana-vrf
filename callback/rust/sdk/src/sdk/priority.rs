@@ -1,7 +1,7 @@
 use std::ops::Deref;
 
 use anchor_client::{
-    solana_client::nonblocking::rpc_client::RpcClient,
+    solana_client::{client_error::ClientError, nonblocking::rpc_client::RpcClient},
     solana_sdk::{
         compute_budget::ComputeBudgetInstruction, instruction::Instruction, signer::Signer,
     },
@@ -17,7 +17,7 @@ pub async fn get_recommended_micro_lamport_fee(
     client: &RpcClient,
     priority_fee: Option<u64>,
     multiplier: Option<f64>,
-) -> Result<Option<u64>, anchor_client::ClientError> {
+) -> Result<Option<u64>, ClientError> {
     if priority_fee.is_some() {
         return Ok(priority_fee);
     }

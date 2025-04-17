@@ -37,8 +37,8 @@ pub use events::Event;
 mod events;
 
 impl RandomnessAccountVersion {
-    pub async fn resolve<'a, C: Deref<Target = impl Signer> + Clone>(
-        orao_vrf: &'a anchor_client::Program<C>,
+    pub async fn resolve<C: Deref<Target = impl Signer> + Clone>(
+        orao_vrf: &anchor_client::Program<C>,
         seed: &[u8; 32],
     ) -> Result<Self, anchor_client::ClientError> {
         match get_randomness(orao_vrf, seed).await? {

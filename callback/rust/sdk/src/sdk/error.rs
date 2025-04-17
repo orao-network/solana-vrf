@@ -21,6 +21,9 @@ impl ErrorCode {
             8 => Some(Self::InvalidFulfillMessage),
             9 => Some(Self::Fulfilled),
             10 => Some(Self::MalformedFulfill),
+            11 => Some(Self::CallbackAccountsHashMismatch),
+            12 => Some(Self::LookupIndexOutOfBounds),
+            13 => Some(Self::MissingLookupTables),
             _ => None,
         }
     }

@@ -1,7 +1,10 @@
 use anchor_lang::prelude::*;
 
+use crate::state::client::DecompileError;
+
 #[error_code]
 #[derive(PartialEq, Eq)]
+#[non_exhaustive]
 pub enum ErrorCode {
     #[msg("Not authorized")]
     NotAuthorized,
@@ -25,5 +28,20 @@ pub enum ErrorCode {
     Fulfilled,
     #[msg("Malformed Fulfill instruction")]
     MalformedFulfill,
+    #[msg("Callback accounts hash mismatch")]
+    CallbackAccountsHashMismatch,
+    #[msg("Lookup index out of bounds")]
+    LookupIndexOutOfBounds,
+    #[msg("Missing lookup tables")]
+    MissingLookupTables,
     // Update ErrorCode::from_custom_error in case of a new variant
+}
+
+impl From<DecompileError> for ErrorCode {
+    fn from(value: DecompileError) -> Self {
+        match value {
+            DecompileError::LookupError(_) => Self::LookupIndexOutOfBounds,
+            DecompileError::AccountsHashMismatch { .. } => Self::CallbackAccountsHashMismatch,
+        }
+    }
 }

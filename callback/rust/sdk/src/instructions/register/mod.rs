@@ -72,7 +72,14 @@ impl RegisterParams {
 ///
 /// ### Accounts:
 ///
-/// See docs on individual fields.
+/// * `1     . payer` — see docs on [`Register::payer`]
+/// * `2     . program` — see docs on [`Register::program`]
+/// * `3     . program_data` — see docs on [`Register::program_data`]
+/// * `4     . state` — see docs on [`Register::state`]
+/// * `5     . client` — see docs on [`Register::client`]
+/// * `6     . network_state` — see docs on [`Register::network_state`]
+/// * `7     . system_program` — see docs on [`Register::system_program`]
+/// * `8 to _. writable accounts` — zero or more writable accounts to be authorized as "arbitrary writable" callback accounts
 #[derive(Accounts)]
 #[instruction(params: RegisterParams)]
 pub struct Register<'info> {

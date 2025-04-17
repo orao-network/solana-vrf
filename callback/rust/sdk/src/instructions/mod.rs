@@ -1,17 +1,21 @@
 pub mod configure;
 pub mod fulfill;
+pub mod fulfill_alt;
 pub mod initialize;
 pub mod register;
 pub mod request;
+pub mod request_alt;
 pub mod set_callback;
 pub mod transfer;
 pub mod withdraw;
 
 pub use configure::*;
 pub use fulfill::*;
+pub use fulfill_alt::*;
 pub use initialize::*;
 pub use register::*;
 pub use request::*;
+pub use request_alt::*;
 pub use set_callback::*;
 pub use transfer::*;
 pub use withdraw::*;

@@ -1,6 +1,12 @@
-import { BN, IdlAccounts, web3 } from "@coral-xyz/anchor";
-import { networkStateAddress, PROGRAM_ID, requestAccountAddress } from ".";
+import { BN, IdlAccounts, IdlTypes, web3 } from "@coral-xyz/anchor";
+import {
+    networkStateAddress,
+    PROGRAM_ID,
+    requestAccountAddress,
+    requestAltAccountAddress,
+} from ".";
 import { OraoVrfCb } from "./types/orao_vrf_cb";
+import { sha256 } from "@noble/hashes/sha2";
 
 /**
  * On-chain VRF state.
@@ -148,9 +154,13 @@ export class Response {
         this.pubkey = pubkey;
         this.randomness = Array.isArray(randomness) ? new Uint8Array(randomness) : randomness;
     }
+
+    static fromRawData(data: IdlTypes<OraoVrfCb>["response"]): Response {
+        return new Response(data.pubkey, data.randomness);
+    }
 }
 
-/** Helper struct representing the fulfilled subset of the {@link RequestAccount} */
+/** Helper struct representing the fulfilled subset of the {@link RequestAccount}/{@link RequestAltAccount} */
 export interface FulfilledRequestAccount {
     /** Request account bump */
     bump: number;
@@ -161,6 +171,107 @@ export interface FulfilledRequestAccount {
     seed: Uint8Array;
     /** The state of this randomness request */
     state: Fulfilled;
+}
+
+/**
+ * A PDA allocated for every randomness request with Address Lookup Tables support.
+ *
+ * Holds request metadata and state.
+ */
+export class RequestAltAccount {
+    /** Request account bump */
+    bump: number;
+    /** The slot at which the request was made */
+    slot: BN;
+    /** The client created the request. */
+    client: web3.PublicKey;
+    /** Request seed */
+    seed: Uint8Array;
+    /** The state of this randomness request */
+    state: RequestAltState;
+
+    constructor(
+        bump: number,
+        slot: BN,
+        client: web3.PublicKey,
+        seed: number[] | Uint8Array,
+        state: RequestAltState,
+    ) {
+        this.bump = bump;
+        this.slot = slot;
+        this.client = client;
+        this.seed = Array.isArray(seed) ? new Uint8Array(seed) : seed;
+        this.state = state;
+    }
+
+    /** See {@link requestAccountAddress} */
+    static findAddress(
+        client: web3.PublicKey,
+        seed: Uint8Array,
+        vrf_id: web3.PublicKey = PROGRAM_ID,
+    ): [web3.PublicKey, number] {
+        return requestAltAccountAddress(client, seed, vrf_id);
+    }
+
+    /** See {@link requestAccountAddress} */
+    static createAddress(
+        client: web3.PublicKey,
+        seed: Uint8Array,
+        bump: number,
+        vrf_id: web3.PublicKey = PROGRAM_ID,
+    ): [web3.PublicKey, number] {
+        return requestAltAccountAddress(client, seed, bump, vrf_id);
+    }
+
+    static fromRawAccount(
+        accountData: IdlAccounts<OraoVrfCb>["requestAltAccount"],
+    ): RequestAltAccount {
+        let state =
+            "pending" in accountData.state
+                ? new PendingAlt(
+                      accountData.state.pending["0"].responses.map(Response.fromRawData),
+                      accountData.state.pending["0"].callback
+                          ? ValidatedCallbackAlt.fromRawData(
+                                accountData.state.pending["0"].callback,
+                            )
+                          : null,
+                      accountData.state.pending["0"].lookupTables,
+                  )
+                : new Fulfilled(
+                      accountData.state.fulfilled["0"].randomness,
+                      accountData.state.fulfilled["0"].responses
+                          ? accountData.state.fulfilled["0"].responses.map(Response.fromRawData)
+                          : null,
+                  );
+
+        return new RequestAltAccount(
+            accountData.bump,
+            accountData.slot,
+            accountData.client,
+            accountData.seed,
+            state,
+        );
+    }
+
+    /** Returns the request seed */
+    getSeed(): Uint8Array {
+        return this.seed;
+    }
+
+    /** Returns the {@link Client} PDA address */
+    getClient(): web3.PublicKey {
+        return this.client;
+    }
+
+    /** Returns pending state (or `null` if this request was fulfilled) */
+    getPending(): PendingAlt | null {
+        return "randomness" in this.state ? null : this.state;
+    }
+
+    /** Returns fulfilled state (or `null` if this request is still pending) */
+    getFulfilled(): Fulfilled | null {
+        return "randomness" in this.state ? this.state : null;
+    }
 }
 
 /**
@@ -217,13 +328,17 @@ export class RequestAccount {
         let state =
             "pending" in accountData.state
                 ? new Pending(
-                      accountData.state.pending["0"].responses,
-                      accountData.state.pending["0"].callback,
+                      accountData.state.pending["0"].responses.map(Response.fromRawData),
+                      accountData.state.pending["0"].callback
+                          ? ValidatedCallback.fromRawData(accountData.state.pending["0"].callback)
+                          : null,
                       accountData.state.pending["0"].callbackOverride,
                   )
                 : new Fulfilled(
                       accountData.state.fulfilled["0"].randomness,
-                      accountData.state.fulfilled["0"].responses,
+                      accountData.state.fulfilled["0"].responses
+                          ? accountData.state.fulfilled["0"].responses.map(Response.fromRawData)
+                          : null,
                   );
 
         return new RequestAccount(
@@ -257,6 +372,7 @@ export class RequestAccount {
 }
 
 export type RequestState = Pending | Fulfilled;
+export type RequestAltState = PendingAlt | Fulfilled;
 
 /** Represents a state of a pending randomness request {@link RequestAccount.state } */
 export class Pending {
@@ -282,6 +398,30 @@ export class Pending {
     }
 }
 
+/** Represents a state of a pending randomness request {@link RequestAltAccount.state } */
+export class PendingAlt {
+    /** Responses collected so far */
+    responses: Response[];
+    /** Callback (if any) */
+    callback: ValidatedCallbackAlt | null;
+    /** Lookup Tables given to the callback */
+    lookupTables: web3.PublicKey[];
+
+    constructor(
+        responses: Response[],
+        callback: ValidatedCallbackAlt | null,
+        lookupTables: web3.PublicKey[],
+    ) {
+        this.responses = responses;
+        this.callback = callback;
+        this.lookupTables = lookupTables;
+    }
+
+    isFulfilledBy(key: web3.PublicKey): boolean {
+        return this.responses.find((response) => response.pubkey.equals(key)) !== undefined;
+    }
+}
+
 /**
  * This is a validated callback stored on-chain (see {@link Callback}).
  */
@@ -295,6 +435,90 @@ export class ValidatedCallback {
         this.remainingAccounts = remainingAccounts;
         this.data = Array.isArray(data) ? new Uint8Array(data) : data;
     }
+
+    static fromRawData(data: IdlTypes<OraoVrfCb>["validatedCallback"]): ValidatedCallback {
+        return new ValidatedCallback(
+            data.remainingAccounts.map(ValidatedRemainingAccount.fromRawData),
+            Array.isArray(data.data) ? new Uint8Array(data.data) : data.data,
+        );
+    }
+}
+
+/**
+ * This is a validated callback stored on-chain (see {@link Callback}).
+ */
+export class ValidatedCallbackAlt {
+    /// This hash is used to validate the lookup accounts.
+    accountsHash: Uint8Array;
+    /// Remaining accounts.
+    remainingAccounts: ValidatedRemainingAccountAlt[];
+    /// Callback data.
+    data: Uint8Array;
+
+    constructor(
+        accountsHash: Uint8Array | number[],
+        remainingAccounts: ValidatedRemainingAccountAlt[],
+        data: Uint8Array | number[],
+    ) {
+        this.accountsHash = Array.isArray(accountsHash)
+            ? new Uint8Array(accountsHash)
+            : accountsHash;
+        this.remainingAccounts = remainingAccounts;
+        this.data = Array.isArray(data) ? new Uint8Array(data) : data;
+    }
+
+    static fromRawData(data: IdlTypes<OraoVrfCb>["validatedCallbackAlt"]): ValidatedCallbackAlt {
+        return new ValidatedCallbackAlt(
+            Array.isArray(data.accountsHash)
+                ? new Uint8Array(data.accountsHash)
+                : data.accountsHash,
+            data.remainingAccounts.map((x: IdlTypes<OraoVrfCb>["validatedRemainingAccountAlt"]) => {
+                return "lookup" in x
+                    ? ValidatedLookupAccount.fromRawData(x.lookup[0])
+                    : ValidatedRemainingAccount.fromRawData(x.plain[0]);
+            }),
+            Array.isArray(data.data) ? new Uint8Array(data.data) : data.data,
+        );
+    }
+
+    /**
+     * Resolves lookup accounts back to plain accounts (see {@link compileAccounts}).
+     *
+     * @param lookupTables - the list of lookup tables given upon compilation
+     */
+    decompile(lookupTables: web3.AddressLookupTableAccount[]): ValidatedRemainingAccount[] {
+        const accountsHashData = Buffer.alloc(32 * this.remainingAccounts.length);
+        const output: ValidatedRemainingAccount[] = [];
+        for (const account of this.remainingAccounts) {
+            if ("tableIndex" in account) {
+                let table = lookupTables[account.tableIndex];
+                if (!table) {
+                    throw new Error("Table index out of bounds");
+                }
+                let address = table.state.addresses[account.addressIndex];
+                if (!table) {
+                    throw new Error("Address index out of bounds");
+                }
+                output.push({ pubkey: address, isWritable: account.isWritable });
+            } else {
+                output.push(account);
+            }
+        }
+
+        for (let i = 0; i < output.length; i++) {
+            output[i].pubkey.toBuffer().copy(accountsHashData, 32 * i);
+        }
+
+        let expectedHash = Buffer.from(sha256(accountsHashData));
+
+        if (!expectedHash.equals(this.accountsHash)) {
+            throw new Error(
+                `accountsHash mismatch ${expectedHash.toString("hex")} != ${Buffer.from(this.accountsHash).toString("hex")} `,
+            );
+        }
+
+        return output;
+    }
 }
 
 /** This is a validated remaining account stored on-chain (see {@link RemainingAccount}) */
@@ -305,6 +529,31 @@ export class ValidatedRemainingAccount {
     constructor(pubkey: web3.PublicKey, isWritable: boolean) {
         this.pubkey = pubkey;
         this.isWritable = isWritable;
+    }
+
+    static fromRawData(
+        data: IdlTypes<OraoVrfCb>["validatedRemainingAccount"],
+    ): ValidatedRemainingAccount {
+        return new ValidatedRemainingAccount(data.pubkey, data.isWritable);
+    }
+}
+
+type ValidatedRemainingAccountAlt = ValidatedRemainingAccount | ValidatedLookupAccount;
+
+/** This is a validated remaining account stored on-chain (see {@link RemainingAccount}) */
+export class ValidatedLookupAccount {
+    tableIndex: number;
+    addressIndex: number;
+    isWritable: boolean;
+
+    constructor(tableIndex: number, addressIndex: number, isWritable: boolean) {
+        this.tableIndex = tableIndex;
+        this.addressIndex = addressIndex;
+        this.isWritable = isWritable;
+    }
+
+    static fromRawData(data: IdlTypes<OraoVrfCb>["validatedLookupAccount"]) {
+        return new ValidatedLookupAccount(data.tableIndex, data.addressIndex, data.isWritable);
     }
 }
 

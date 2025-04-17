@@ -6,6 +6,7 @@
         "module": "commonjs",
         "target": "es6",
         "esModuleInterop": true,
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "strict": true
     }
 }

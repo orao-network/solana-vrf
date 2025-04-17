@@ -1,13 +1,23 @@
 [package]
 name = "orao-solana-vrf-cb"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2021"
 authors = ["ORAO Devs <hello@orao.network>"]
 homepage = "https://orao.network"
 repository = "https://github.com/orao-network/solana-vrf/callback"
 license = "Apache-2.0"
-keywords = ["solana", "vrf", "ed25519", "anchor", "callback"]
-description = "ORAO Verifiable Random Function for Solana."
+keywords = [
+    "solana",
+    "vrf",
+    "ed25519",
+    "anchor",
+    "randomizer",
+    "callback",
+    "solana-nft",
+    "gamblefi",
+    "casino",
+]
+description = "ORAO Verifiable Random Function with Callback for Solana."
 
 [lib]
 crate-type = ["cdylib", "lib"]

@@ -1,10 +1,11 @@
-import { BN, IdlAccounts, Program, Provider, web3 } from "@coral-xyz/anchor";
+import { BN, IdlAccounts, Instruction, Program, Provider, web3 } from "@coral-xyz/anchor";
 import {
     Ed25519Program,
     ComputeBudgetProgram,
     TransactionInstruction,
     SYSVAR_INSTRUCTIONS_PUBKEY,
     AccountMeta,
+    AddressLookupTableAccount,
 } from "@solana/web3.js";
 import {
     FulfilledRequestAccount,
@@ -15,12 +16,14 @@ import {
     ValidatedCallback,
     ValidatedRemainingAccount,
     Callback,
+    RequestAltAccount,
 } from "./state";
 import { OraoVrfCb } from "./types/orao_vrf_cb";
 import IDL from "./types/orao_vrf_cb.json";
 import { MethodsBuilder } from "@coral-xyz/anchor/dist/cjs/program/namespace/methods";
-import { AllInstructionsMap } from "@coral-xyz/anchor/dist/cjs/program/namespace/types";
+import { AllInstructionsMap, IdlTypes } from "@coral-xyz/anchor/dist/cjs/program/namespace/types";
 import { decodeUpgradeableLoaderState } from "@coral-xyz/anchor/dist/cjs/utils/registry";
+import { sha256 } from "@noble/hashes/sha2";
 
 export { Provider, MethodsBuilder, web3 };
 
@@ -46,6 +49,7 @@ export const MAX_FULFILLMENT_AUTHORITIES: number = 10;
 export const CB_CONFIG_ACCOUNT_SEED: Buffer = Buffer.from("OraoVrfCbConfig");
 export const CB_CLIENT_ACCOUNT_SEED: Buffer = Buffer.from("OraoVrfCbClient");
 export const CB_REQUEST_ACCOUNT_SEED: Buffer = Buffer.from("OraoVrfCbRequest");
+export const CB_REQUEST_ALT_ACCOUNT_SEED: Buffer = Buffer.from("OraoVrfCbRequestAlt");
 
 /**
  * Creates VRF Configuration PDA address (see helper {@link OraoCb.getNetworkState}).
@@ -150,7 +154,64 @@ export function clientAddress(
 }
 
 /**
- * Creates RequestAccount PDA and bump for the given `client` and `seed`
+ * Creates RequestAltAccount PDA address and bump for the given `client` and `seed`
+ * (see helper {@link OraoCb.getRequestAltAccount}).
+ *
+ * ```typescript
+ * const [address, bump] = requestAltAccountAddress(client, seed, knownBump);
+ * assert(bump === knownBump);
+ * ```
+ *
+ * @param client client address.
+ * @param seed seed buffer.
+ * @param bump known PDA bump.
+ * @param [vrf_id=PROGRAM_ID] - you can override the program ID.
+ */
+export function requestAltAccountAddress(
+    client: web3.PublicKey,
+    seed: Buffer | Uint8Array,
+    bump: number,
+    vrf_id?: web3.PublicKey,
+): [web3.PublicKey, number];
+/**
+ * Finds RequestAltAccount PDA address and bump for the given `client` and `seed`
+ * (see helper {@link OraoCb.getRequestAltAccount}).
+ *
+ * ```typescript
+ * const [address, bump] = requestAltAccountAddress(client, seed);
+ * ```
+ *
+ * @param client client address.
+ * @param seed seed buffer.
+ * @param [vrf_id=PROGRAM_ID] - you can override the program ID.
+ */
+export function requestAltAccountAddress(
+    client: web3.PublicKey,
+    seed: Buffer | Uint8Array,
+    vrf_id?: web3.PublicKey,
+): [web3.PublicKey, number];
+export function requestAltAccountAddress(
+    client: web3.PublicKey,
+    seed: Buffer | Uint8Array,
+    bump?: number | web3.PublicKey,
+    vrf_id = PROGRAM_ID,
+): [web3.PublicKey, number] {
+    let seeds = [CB_REQUEST_ALT_ACCOUNT_SEED, client.toBuffer(), seed];
+    if ("number" === typeof bump) {
+        return [
+            web3.PublicKey.createProgramAddressSync([...seeds, new Uint8Array([bump])], vrf_id),
+            bump,
+        ];
+    } else {
+        if (bump !== undefined) {
+            vrf_id = bump;
+        }
+        return web3.PublicKey.findProgramAddressSync(seeds, vrf_id);
+    }
+}
+
+/**
+ * Creates RequestAccount PDA address and bump for the given `client` and `seed`
  * (see helper {@link OraoCb.getRequestAccount}).
  *
  * ```typescript
@@ -215,6 +276,50 @@ export function requestAccountAddress(
  */
 export function quorum(count: number, total: number): boolean {
     return count >= Math.floor((total * 2) / 3 + 1);
+}
+
+/**
+ * Compiles given `accounts` to a pair of `RemainingAccountAlt[]` and accountsHash
+ * given the list of lookup tables.
+ *
+ * This helper function can be used to populate the `CallbackAlt` structure fields.
+ */
+export function compileAccounts(
+    accounts: IdlTypes<OraoVrfCb>["remainingAccount"],
+    lookupTables: AddressLookupTableAccount[],
+): [IdlTypes<OraoVrfCb>["remainingAccountAlt"][], Uint8Array] {
+    let accountsHashData = Buffer.alloc(32 * accounts.length, 0);
+    const out = [];
+
+    top: for (const account of accounts) {
+        account.pubkey.toBuffer().copy(accountsHashData, 32 * out.length);
+        for (let i in lookupTables) {
+            const table = lookupTables[i];
+            for (let j in table.state.addresses) {
+                const address = table.state.addresses[j];
+                if (address.equals(account.pubkey)) {
+                    out.push({
+                        lookup: {
+                            0: {
+                                tableIndex: i,
+                                addressIndex: j,
+                                seeds: account.seeds,
+                            },
+                        },
+                    });
+                    continue top;
+                }
+            }
+        }
+
+        out.push({
+            plain: {
+                0: account,
+            },
+        });
+    }
+
+    return [out, sha256(accountsHashData)];
 }
 
 /** Orao VRF program */
@@ -399,18 +504,83 @@ export class OraoCb extends Program<OraoVrfCb> {
     }
 
     /**
+     * Returns request account data for the given client and seed (or `null` if missing).
+     *
+     * ```typescript
+     * const requestAccount = await vrf.getRequestAltAccount(clientAddress, seed);
+     * const fulfilled = requestAccount.getFulfilled();
+     * if (fulfilled == null) {
+     *     console.error("Randomness is not yet fulfilled");
+     * } else {
+     *     console.log("Randomness is fulfilled " + bs58.encode(fulfilled.randomness));
+     * }
+     * ```
+     *
+     * @param client - client address
+     * @param seed - seed buffer
+     * @param commitment - you can override the provider's commitment level.
+     */
+    async getRequestAltAccount(
+        client: web3.PublicKey,
+        seed: Uint8Array,
+        commitment?: web3.Commitment,
+    ): Promise<RequestAltAccount | null>;
+    /**
+     * Returns request account data at the given address (or `null` if missing).
+     *
+     * Throws if account couldn't be decoded.
+     *
+     * ```typescript
+     * const requestAccount = await vrf.getRequestAccount(accountAddress);
+     * const fulfilled = requestAccount.getFulfilled();
+     * if (fulfilled == null) {
+     *     console.error("Randomness is not yet fulfilled");
+     * } else {
+     *     console.log("Randomness is fulfilled " + bs58.encode(fulfilled.randomness));
+     * }
+     * ```
+     *
+     * @param accountAddress - request account address.
+     * @param commitment - you can override the provider's commitment level.
+     */
+    async getRequestAltAccount(
+        accountAddress: web3.PublicKey,
+        commitment?: web3.Commitment,
+    ): Promise<RequestAltAccount | null>;
+    async getRequestAltAccount(
+        arg1: web3.PublicKey,
+        arg2?: Uint8Array | web3.Commitment,
+        commitment?: web3.Commitment,
+    ): Promise<RequestAltAccount | null> {
+        let accountAddress = arg1;
+        if ("string" !== typeof arg2 && arg2 !== undefined) {
+            accountAddress = requestAltAccountAddress(arg1, arg2, this.programId)[0];
+        }
+        let requestAccount = await this.account.requestAltAccount.fetchNullable(
+            accountAddress,
+            commitment,
+        );
+        if (requestAccount === null) {
+            return null;
+        }
+
+        return requestAccount === null ? null : RequestAltAccount.fromRawAccount(requestAccount);
+    }
+
+    /**
      * Waits for the given randomness to be fulfilled.
      *
      * @param client - client address
      * @param seed - seed
+     * @param requestKind - whether it is regular request or ALT request
      * @param commitment - you can override the provider's commitment level.
      */
     async waitFulfilled(
         client: web3.PublicKey,
         seed: Buffer | Uint8Array,
+        requestKind: "regular" | "alt",
         commitment?: web3.Commitment,
     ): Promise<FulfilledRequestAccount>;
-
     /**
      * Waits for the given randomness to be fulfilled.
      *
@@ -424,21 +594,28 @@ export class OraoCb extends Program<OraoVrfCb> {
     async waitFulfilled(
         arg1: web3.PublicKey,
         arg2?: Buffer | Uint8Array | web3.Commitment,
-        commitment?: web3.Commitment,
+        commitment?: web3.Commitment | "regular" | "alt",
     ): Promise<FulfilledRequestAccount> {
         let accountAddress = arg1;
         if ("string" !== typeof arg2 && arg2 !== undefined) {
-            accountAddress = requestAccountAddress(arg1, arg2, this.programId)[0];
+            if (commitment == "regular") {
+                accountAddress = requestAccountAddress(arg1, arg2, this.programId)[0];
+            } else {
+                accountAddress = requestAltAccountAddress(arg1, arg2, this.programId)[0];
+            }
         }
         let actualCommitment = this.provider.connection.commitment;
-        if (commitment) {
+        if (commitment && commitment != "regular" && commitment != "alt") {
             actualCommitment = commitment;
         }
 
         return new Promise(async (_resolve, reject) => {
             let resolved = false;
 
-            let maybeResolve = (subscriptionId: number, requestAccount: RequestAccount) => {
+            let maybeResolve = (
+                subscriptionId: number,
+                requestAccount: RequestAccount | RequestAltAccount,
+            ) => {
                 if (requestAccount.getFulfilled() === null) {
                     return;
                 }
@@ -454,17 +631,34 @@ export class OraoCb extends Program<OraoVrfCb> {
                 let subscriptionId = this.provider.connection.onAccountChange(
                     accountAddress,
                     (accountInfo, _ctx) => {
-                        let decoded: IdlAccounts<OraoVrfCb>["requestAccount"] =
-                            this.coder.accounts.decode("requestAccount", accountInfo.data);
-                        maybeResolve(subscriptionId, RequestAccount.fromRawAccount(decoded));
+                        try {
+                            let decoded: IdlAccounts<OraoVrfCb>["requestAccount"] =
+                                this.coder.accounts.decode("requestAccount", accountInfo.data);
+                            maybeResolve(subscriptionId, RequestAccount.fromRawAccount(decoded));
+                        } catch {
+                            let decoded: IdlAccounts<OraoVrfCb>["requestAltAccount"] =
+                                this.coder.accounts.decode("requestAltAccount", accountInfo.data);
+                            maybeResolve(subscriptionId, RequestAltAccount.fromRawAccount(decoded));
+                        }
                     },
                     { commitment: actualCommitment },
                 );
 
                 // In case it's already fulfilled
-                let requestAccount = await this.getRequestAccount(accountAddress, actualCommitment);
-                if (requestAccount !== null) {
-                    maybeResolve(subscriptionId, requestAccount);
+                let rawAccount = await this.provider.connection.getAccountInfo(
+                    accountAddress,
+                    actualCommitment,
+                );
+                if (rawAccount) {
+                    try {
+                        let decoded: IdlAccounts<OraoVrfCb>["requestAccount"] =
+                            this.coder.accounts.decode("requestAccount", rawAccount.data);
+                        maybeResolve(subscriptionId, RequestAccount.fromRawAccount(decoded));
+                    } catch {
+                        let decoded: IdlAccounts<OraoVrfCb>["requestAltAccount"] =
+                            this.coder.accounts.decode("requestAltAccount", rawAccount.data);
+                        maybeResolve(subscriptionId, RequestAltAccount.fromRawAccount(decoded));
+                    }
                 }
             } catch (e) {
                 reject(e);
@@ -1386,6 +1580,149 @@ export class FulfillBuilder {
         const tx_signature = await tx.rpc();
 
         return tx_signature;
+    }
+}
+
+/**
+ * A convenient builder for the `FulfillAlt` instruction.
+ *
+ * Note that by default it will guess and apply a prioritization fee (see
+ * {@link RegisterBuilder.withComputeUnitPrice} and {@link RegisterBuilder.withComputeUnitLimit}
+ * to opt-out)
+ *
+ * @hidden
+ */
+export class FulfillAltBuilder {
+    vrf: OraoCb;
+    client: web3.PublicKey;
+    seed: Uint8Array;
+    private computeBudgetConfig: ComputeBudgetConfig = new ComputeBudgetConfig();
+
+    /**
+     * Creates a fulfill instruction builder.
+     *
+     * @param vrf ORAO VRF program instance.
+     * @param client the client that made the request
+     * @param seed seed value (32 bytes).
+     */
+    constructor(vrf: OraoCb, client: web3.PublicKey, seed: Uint8Array) {
+        this.vrf = vrf;
+        this.client = client;
+        this.seed = seed;
+    }
+
+    /**
+     * Adds a prioritization fee in micro-lamports (applied per compute unit).
+     *
+     * Adds `ComputeBudgetInstruction::SetComputeUnitPrice` to the request builder.
+     *
+     * *   if not specified, then median fee of the last 150 confirmed
+     *     slots is used (this is by default)
+     * *   if zero, then compute unit price is not applied at all.
+     */
+    withComputeUnitPrice(computeUnitPrice: bigint): FulfillAltBuilder {
+        this.computeBudgetConfig.computeUnitPrice = computeUnitPrice;
+        return this;
+    }
+
+    /**
+     * Defines a multiplier that is applied to a median compute unit price.
+     *
+     * This is only applied if no compute_unit_price specified, i.e. if compute unit price
+     * is measured as a median fee of the last 150 confirmed slots.
+     *
+     * *   if not specified, then no multiplier is applied (this is by default)
+     * *   if specified, then applied as follows: `compute_unit_price = median * multiplier`
+     */
+    withComputeUnitPriceMultiplier(multiplier: number): FulfillAltBuilder {
+        this.computeBudgetConfig.computeUnitPriceMultiplier = multiplier;
+        return this;
+    }
+
+    /** Defines a specific compute unit limit that the transaction is allowed to consume.
+     *
+     * Adds `ComputeBudgetInstruction::SetComputeUnitLimit` to the request builder.
+     *
+     * *   if not specified, then compute unit limit is not applied at all
+     *     (this is by default)
+     * *   if specified, then applied as is
+     */
+    withComputeUnitLimit(computeUnitLimit: number): FulfillAltBuilder {
+        this.computeBudgetConfig.computeUnitLimit = computeUnitLimit;
+        return this;
+    }
+
+    async build_instructions(
+        fulfillAuthority: web3.PublicKey,
+        signature: Uint8Array,
+        lookup_tables: AddressLookupTableAccount[],
+    ): Promise<TransactionInstruction[]> {
+        const networkState = networkStateAddress(this.vrf.programId)[0];
+
+        const clientAccount = await this.vrf.account.client.fetch(this.client);
+        const requestAccount = await this.vrf.getRequestAltAccount(this.client, this.seed);
+
+        if (requestAccount === null) {
+            throw new Error("RequestAccount not found");
+        }
+
+        const pending = requestAccount.getPending();
+        if (pending === null) {
+            throw new Error("Already fulfilled");
+        }
+
+        let params = {};
+        let accounts = {
+            program: clientAccount.program,
+            state: clientAccount.state,
+            client: this.client,
+            request: requestAltAccountAddress(this.client, this.seed, requestAccount.bump)[0],
+            networkState,
+            instructionAcc: SYSVAR_INSTRUCTIONS_PUBKEY,
+        };
+
+        let remainingAccounts: Array<AccountMeta> = lookup_tables.map((x) => ({
+            pubkey: x.key,
+            isSigner: false,
+            isWritable: false,
+        }));
+        if (pending.callback) {
+            remainingAccounts = [
+                ...remainingAccounts,
+                ...pending.callback.decompile(lookup_tables).map((x) => ({
+                    pubkey: x.pubkey,
+                    isSigner: false,
+                    isWritable: x.isWritable,
+                })),
+            ];
+        }
+
+        let fulfillAltInstruction = await this.vrf.methods
+            .fulfillAlt(params)
+            .accountsPartial(accounts)
+            .remainingAccounts(remainingAccounts)
+            .instruction();
+
+        let instructions: TransactionInstruction[] = [];
+
+        if (!this.computeBudgetConfig.isEmpty()) {
+            instructions.push(
+                ...(await this.computeBudgetConfig.getInstructions(this.vrf.provider.connection)),
+            );
+        }
+
+        let message = new Uint8Array([...this.client.toBuffer(), ...this.seed]);
+        instructions.push(
+            Ed25519Program.createInstructionWithPublicKey({
+                publicKey: fulfillAuthority.toBytes(),
+                message,
+                signature,
+            }),
+        );
+
+        instructions.push(fulfillAltInstruction);
+
+        return instructions;
     }
 }
 

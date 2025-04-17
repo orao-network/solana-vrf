@@ -2,7 +2,7 @@
   "address": "VRFCBePmGTpZ234BhbzNNzmyg39Rgdd6VgdfhHwKypU",
   "metadata": {
     "name": "orao_vrf_cb",
-    "version": "0.1.0",
+    "version": "0.3.0",
     "spec": "0.1.0",
     "description": "Created with Anchor"
   },
@@ -178,6 +178,117 @@
           "type": {
             "defined": {
               "name": "FulfillParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "fulfill_alt",
+      "discriminator": [
+        252,
+        32,
+        164,
+        64,
+        170,
+        220,
+        68,
+        136
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "program"
+        },
+        {
+          "name": "state",
+          "writable": true
+        },
+        {
+          "name": "client",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  79,
+                  114,
+                  97,
+                  111,
+                  86,
+                  114,
+                  102,
+                  67,
+                  98,
+                  67,
+                  108,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "program"
+              },
+              {
+                "kind": "account",
+                "path": "state"
+              }
+            ]
+          }
+        },
+        {
+          "name": "request",
+          "writable": true
+        },
+        {
+          "name": "network_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  79,
+                  114,
+                  97,
+                  111,
+                  86,
+                  114,
+                  102,
+                  67,
+                  98,
+                  67,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "instruction_acc",
+          "docs": [
+            "Instructions sysvar account.",
+            ""
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "FulfillAltParams"
             }
           }
         }
@@ -514,6 +625,143 @@
       ]
     },
     {
+      "name": "request_alt",
+      "discriminator": [
+        193,
+        213,
+        137,
+        32,
+        88,
+        106,
+        157,
+        1
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "docs": [
+            "Whoever sent the transaction to the network.",
+            "",
+            "This account will only pay tx fees and will not pay rent nor request fee."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "state",
+          "docs": [
+            "Client request authority PDA (see [`Client::state`]).",
+            "",
+            "This account signs the CPI call."
+          ],
+          "signer": true
+        },
+        {
+          "name": "client",
+          "docs": [
+            "A client PDA.",
+            "",
+            "It will pay request rent and fee."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  79,
+                  114,
+                  97,
+                  111,
+                  86,
+                  114,
+                  102,
+                  67,
+                  98,
+                  67,
+                  108,
+                  105,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "client.program",
+                "account": "Client"
+              },
+              {
+                "kind": "account",
+                "path": "state"
+              }
+            ]
+          }
+        },
+        {
+          "name": "network_state",
+          "docs": [
+            "A PDA holding the oracle state and configuration."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  79,
+                  114,
+                  97,
+                  111,
+                  86,
+                  114,
+                  102,
+                  67,
+                  98,
+                  67,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "treasury",
+          "docs": [
+            "A treasury address matching the current `network_state`.",
+            ""
+          ],
+          "writable": true
+        },
+        {
+          "name": "request",
+          "docs": [
+            "Request PDA being created.",
+            ""
+          ],
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "RequestAltParams"
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "set_callback",
       "discriminator": [
         173,
@@ -781,6 +1029,19 @@
         152,
         121
       ]
+    },
+    {
+      "name": "RequestAltAccount",
+      "discriminator": [
+        22,
+        215,
+        127,
+        203,
+        71,
+        221,
+        36,
+        48
+      ]
     }
   ],
   "events": [
@@ -834,6 +1095,19 @@
         135,
         173,
         205
+      ]
+    },
+    {
+      "name": "RequestedAlt",
+      "discriminator": [
+        35,
+        45,
+        235,
+        194,
+        198,
+        184,
+        209,
+        54
       ]
     },
     {
@@ -944,6 +1218,21 @@
       "code": 6010,
       "name": "MalformedFulfill",
       "msg": "Malformed Fulfill instruction"
+    },
+    {
+      "code": 6011,
+      "name": "CallbackAccountsHashMismatch",
+      "msg": "Callback accounts hash mismatch"
+    },
+    {
+      "code": 6012,
+      "name": "LookupIndexOutOfBounds",
+      "msg": "Lookup index out of bounds"
+    },
+    {
+      "code": 6013,
+      "name": "MissingLookupTables",
+      "msg": "Missing lookup tables"
     }
   ],
   "types": [
@@ -976,6 +1265,68 @@
               "vec": {
                 "defined": {
                   "name": "RemainingAccount"
+                }
+              }
+            }
+          },
+          {
+            "name": "data",
+            "docs": [
+              "Borsh-serialized instruction data."
+            ],
+            "type": "bytes"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CallbackAlt",
+      "docs": [
+        "A client callback with [Address Lookup Tables][lookup-tables] support.",
+        "",
+        "This callback type could be handy if callback accounts does not fit into",
+        "the Solana transaction.",
+        "",
+        "There are functions added for convenience:",
+        "",
+        "-   [`CallbackAlt::from_instruction_data`]",
+        "-   [`CallbackAlt::compile_accounts`]",
+        "",
+        "[lookup-tables]: https://solana.com/ru/developers/guides/advanced/lookup-tables"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "accounts_hash",
+            "docs": [
+              "This hash is used to validate lookup accounts.",
+              "",
+              "Asserts the order and values of public keys in the [`CallbackAlt::remaining_accounts`]."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "remaining_accounts",
+            "docs": [
+              "Additional accounts to add to the callback CPI call.",
+              "",
+              "-   the first one will always be the [`Client`] PDA (signer)",
+              "-   the second one will always be the client state PDA of the client program (writable)",
+              "-   the third one will always be the [`super::network_state::NetworkState`] PDA",
+              "-   the fourth one will always be the corresponding [`super::request::RequestAccount`] PDA",
+              "-   subsequent accounts will be remaining accounts given here —",
+              "note that writable remaining accounts must be authorized (see [`RemainingAccount::seeds`])."
+            ],
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "RemainingAccountAlt"
                 }
               }
             }
@@ -1123,6 +1474,13 @@
       }
     },
     {
+      "name": "FulfillAltParams",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
       "name": "FulfillParams",
       "type": {
         "kind": "struct",
@@ -1140,6 +1498,50 @@
               "Per-request fee in lamports."
             ],
             "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LookupAccount",
+      "docs": [
+        "Points to an account in a lookup table."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "table_index",
+            "docs": [
+              "An index of a particular lookup table in the list of lookup tables given",
+              "to the [`crate::RequestAlt`] instruction."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "address_index",
+            "docs": [
+              "An index of a particular address in the specified lookup table."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "seeds",
+            "docs": [
+              "This seeds are used to set account as writable.",
+              "",
+              "-   `None` here means a read-only account",
+              "-   empty vector here means arbitrary writable account — this requires",
+              "the account to be given as writable to the corresponding \"request\"",
+              "or \"register\" instruction.",
+              "-   empty/non-empty vector here means client program PDA — account",
+              "becomes writable if derived address matches"
+            ],
+            "type": {
+              "option": {
+                "vec": "bytes"
+              }
+            }
           }
         ]
       }
@@ -1293,6 +1695,52 @@
       }
     },
     {
+      "name": "PendingAlt",
+      "docs": [
+        "Pending randomness request."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "responses",
+            "docs": [
+              "Responses collected so far."
+            ],
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "Response"
+                }
+              }
+            }
+          },
+          {
+            "name": "callback",
+            "docs": [
+              "Callback (if any)."
+            ],
+            "type": {
+              "option": {
+                "defined": {
+                  "name": "ValidatedCallbackAlt"
+                }
+              }
+            }
+          },
+          {
+            "name": "lookup_tables",
+            "docs": [
+              "Lookup Tables given to the callback."
+            ],
+            "type": {
+              "vec": "pubkey"
+            }
+          }
+        ]
+      }
+    },
+    {
       "name": "RegisterParams",
       "docs": [
         "[`Register`] instruction parameters."
@@ -1372,16 +1820,51 @@
           {
             "name": "seeds",
             "docs": [
-              "Seeds to assert that this account belongs to the client program.",
+              "This seeds are used to set account as writable.",
               "",
-              "This is used to set `is_writable` flag on the instruction account.",
-              "Only client program accounts could be writable."
+              "-   `None` here means a read-only account",
+              "-   empty vector here means arbitrary writable account — this requires",
+              "the account to be given as writable to the corresponding \"request\"",
+              "or \"register\" instruction.",
+              "-   empty/non-empty vector here means client program PDA — account",
+              "becomes writable if derived address matches"
             ],
             "type": {
               "option": {
                 "vec": "bytes"
               }
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RemainingAccountAlt",
+      "docs": [
+        "A callback account definition with Address Lookup Tables support."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Plain",
+            "fields": [
+              {
+                "defined": {
+                  "name": "RemainingAccount"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Lookup",
+            "fields": [
+              {
+                "defined": {
+                  "name": "LookupAccount"
+                }
+              }
+            ]
           }
         ]
       }
@@ -1437,6 +1920,139 @@
                 "name": "RequestState"
               }
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RequestAltAccount",
+      "docs": [
+        "The account holding a randomness request state."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "slot",
+            "docs": [
+              "The slot this request was created at."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "client",
+            "docs": [
+              "The client created the request."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "seed",
+            "docs": [
+              "Request seed."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "state",
+            "docs": [
+              "The state of this randomness request."
+            ],
+            "type": {
+              "defined": {
+                "name": "RequestAltState"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RequestAltParams",
+      "docs": [
+        "[`RequestAlt`] instruction parameters."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "seed",
+            "docs": [
+              "A random seed necessary to verify the generated randomness."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "callback",
+            "docs": [
+              "An optional request-level callback.",
+              "",
+              "This overrides the client-level callback (see [`Client::callback`])."
+            ],
+            "type": {
+              "option": {
+                "defined": {
+                  "name": "CallbackAlt"
+                }
+              }
+            }
+          },
+          {
+            "name": "num_lookup_tables",
+            "docs": [
+              "Number of lookup tables expected in the list of remaining accounts",
+              "of the [`RequestAlt`] instruction (see the \"Account Order Convention\"",
+              "section in the main crate docs)."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RequestAltState",
+      "docs": [
+        "Randomness request state."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Pending",
+            "fields": [
+              {
+                "defined": {
+                  "name": "PendingAlt"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Fulfilled",
+            "fields": [
+              {
+                "defined": {
+                  "name": "orao_vrf_cb::state::request::Fulfilled"
+                }
+              }
+            ]
           }
         ]
       }
@@ -1550,6 +2166,52 @@
               "True if [`Requested::callback`] is a request-level callback."
             ],
             "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RequestedAlt",
+      "docs": [
+        "Event that signals a new request."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "client",
+            "type": "pubkey"
+          },
+          {
+            "name": "seed",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "callback",
+            "docs": [
+              "The callback that would be called."
+            ],
+            "type": {
+              "option": {
+                "defined": {
+                  "name": "ValidatedCallbackAlt"
+                }
+              }
+            }
+          },
+          {
+            "name": "lookup_tables",
+            "docs": [
+              "Lookup Tables given to the callback."
+            ],
+            "type": {
+              "vec": "pubkey"
+            }
           }
         ]
       }
@@ -1682,9 +2344,7 @@
     {
       "name": "ValidatedCallback",
       "docs": [
-        "A client callback where writable account ownership is validated.",
-        "",
-        "In other words all the writable accounts belongs to the client program."
+        "See [`Callback`]."
       ],
       "type": {
         "kind": "struct",
@@ -1692,8 +2352,6 @@
           {
             "name": "remaining_accounts",
             "docs": [
-              "Remaining account whose ownership is validated.",
-              "",
               "See [`Callback::remaining_accounts`]."
             ],
             "type": {
@@ -1715,11 +2373,75 @@
       }
     },
     {
+      "name": "ValidatedCallbackAlt",
+      "docs": [
+        "See [`CallbackAlt`]."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "accounts_hash",
+            "docs": [
+              "This hash is used to validate the lookup accounts."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "remaining_accounts",
+            "docs": [
+              "See [`CallbackAlt::remaining_accounts`]."
+            ],
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "ValidatedRemainingAccountAlt"
+                }
+              }
+            }
+          },
+          {
+            "name": "data",
+            "docs": [
+              "See [`CallbackAlt::data`]."
+            ],
+            "type": "bytes"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ValidatedLookupAccount",
+      "docs": [
+        "Validated [`LookupAccount`]"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "table_index",
+            "type": "u8"
+          },
+          {
+            "name": "address_index",
+            "type": "u8"
+          },
+          {
+            "name": "is_writable",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
       "name": "ValidatedRemainingAccount",
       "docs": [
-        "Remaining account whose ownership is validated.",
-        "",
-        "I.e. if it is writable, then it belongs to the client program."
+        "Validated [`RemainingAccount`]."
       ],
       "type": {
         "kind": "struct",
@@ -1731,6 +2453,37 @@
           {
             "name": "is_writable",
             "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ValidatedRemainingAccountAlt",
+      "docs": [
+        "Validated [`RemainingAccountAlt`]"
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Plain",
+            "fields": [
+              {
+                "defined": {
+                  "name": "ValidatedRemainingAccount"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Lookup",
+            "fields": [
+              {
+                "defined": {
+                  "name": "ValidatedLookupAccount"
+                }
+              }
+            ]
           }
         ]
       }
@@ -1879,6 +2632,14 @@
       ],
       "type": "bytes",
       "value": "[79, 114, 97, 111, 86, 114, 102, 67, 98, 82, 101, 113, 117, 101, 115, 116]"
+    },
+    {
+      "name": "CB_REQUEST_ALT_ACCOUNT_SEED",
+      "docs": [
+        "Base [`crate::state::request_alt::RequestAltAccount`] PDA seed."
+      ],
+      "type": "bytes",
+      "value": "[79, 114, 97, 111, 86, 114, 102, 67, 98, 82, 101, 113, 117, 101, 115, 116, 65, 108, 116]"
     },
     {
       "name": "MAX_FULFILLMENT_AUTHORITIES",
