@@ -27,7 +27,7 @@
         "typescript": "^5.7.2"
     },
     "dependencies": {
-        "@coral-xyz/anchor": "^0.31.0",
+        "@coral-xyz/anchor": "^0.31.1",
         "@noble/ed25519": "^2.1.0",
         "tweetnacl": "^1.0.3"
     },

@@ -8,9 +8,9 @@ exclude = [
 resolver = "2"
 
 [workspace.dependencies]
-anchor-lang = "0.31.0"
-anchor-spl = "0.31.0"
-anchor-client = { version = "0.31.0" }
+anchor-lang = "0.31.1"
+anchor-spl = "0.31.1"
+anchor-client = { version = "0.31.1" }
 ed25519-dalek = { version = "1.0.1" }
 solana-cli-config = { version = "2.1.0" }
 rand = { version = "0.8" }

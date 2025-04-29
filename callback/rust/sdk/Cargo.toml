@@ -30,8 +30,8 @@ sdk = [
 ]
 
 [dependencies]
-anchor-lang = "0.31.0"
-anchor-client = { version = "0.31.0", optional = true, features = ["async"] }
+anchor-lang = "0.31.1"
+anchor-client = { version = "0.31.1", optional = true, features = ["async"] }
 byteorder = "1.5.0"
 ed25519-dalek = { version = "1.0.1", optional = true }
 serde = { version = "1", optional = true }

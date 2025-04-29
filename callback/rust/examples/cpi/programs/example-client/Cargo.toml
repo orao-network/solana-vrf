@@ -17,7 +17,7 @@ no-log-ix-name = []
 idl-build = ["anchor-lang/idl-build", "orao-solana-vrf-cb/idl-build"]
 
 [dependencies]
-anchor-lang = "0.31.0"
+anchor-lang = "0.31.1"
 
 [dependencies.orao-solana-vrf-cb]
 path = "../../../../sdk"

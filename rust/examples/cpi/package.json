@@ -4,7 +4,7 @@
         "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"
     },
     "dependencies": {
-        "@coral-xyz/anchor": "^0.31.0"
+        "@coral-xyz/anchor": "^0.31.1"
     },
     "devDependencies": {
         "@orao-network/solana-vrf": "file:../../../js",
