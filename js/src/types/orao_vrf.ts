@@ -8,7 +8,7 @@ export type OraoVrf = {
   "address": "VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y",
   "metadata": {
     "name": "oraoVrf",
-    "version": "0.5.0",
+    "version": "0.6.1",
     "spec": "0.1.0",
     "description": "ORAO VRF contract"
   },

@@ -4,10 +4,10 @@
         "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"
     },
     "dependencies": {
-        "@coral-xyz/anchor": "^0.31.0"
+        "@coral-xyz/anchor": "^0.31.1"
     },
     "devDependencies": {
-        "@orao-network/solana-vrf": "file:../../../js",
+        "@orao-network/solana-vrf": "0.6.1",
         "@types/bn.js": "^5.1.0",
         "@types/chai": "^4.3.0",
         "@types/mocha": "^9.0.0",

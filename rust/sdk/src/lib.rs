@@ -49,7 +49,7 @@ pub mod events;
 pub mod state;
 
 mod sdk;
-#[cfg(feature = "sdk")]
+#[cfg(all(feature = "sdk", not(feature = "idl-build")))]
 pub use crate::sdk::*;
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

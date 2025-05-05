@@ -8,7 +8,7 @@ export type OraoVrfCb = {
   "address": "VRFCBePmGTpZ234BhbzNNzmyg39Rgdd6VgdfhHwKypU",
   "metadata": {
     "name": "oraoVrfCb",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "spec": "0.1.0",
     "description": "Created with Anchor"
   },
@@ -1438,13 +1438,16 @@ export type OraoVrfCb = {
             "docs": [
               "An optional client-level callback.",
               "",
+              "**Note:** this callback does not apply to [`RequestAlt`].",
+              "",
               "If it is `None`, then no callback will be called upon request fulfill, but you can",
               "override this using the request-level callback (see [`RequestParams::callback`]).",
               "",
               "You can update this value using the [`SetCallback`] instruction.",
               "",
               "[`RequestParams::callback`]: crate::RequestParams::callback",
-              "[`SetCallback`]: crate::SetCallback"
+              "[`SetCallback`]: crate::SetCallback",
+              "[`RequestAlt`]: crate::RequestAlt"
             ],
             "type": {
               "option": {
@@ -2010,7 +2013,7 @@ export type OraoVrfCb = {
             "docs": [
               "An optional request-level callback.",
               "",
-              "This overrides the client-level callback (see [`Client::callback`])."
+              "Note that client-level callback won't get applied to this request."
             ],
             "type": {
               "option": {
