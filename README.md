@@ -14,10 +14,23 @@
 <br />
 
 
-
 This repository provides off-chain Rust and JS web3 SDKs for requesting on-chain randomness using ORAO VRF program.
 
-Program account (devnet/mainnet): `VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y`
+<p align="center">
+
+![Latest peformance updates show sub-second fulfilment with basic tx fees](./solana-vrf-histogram.png)
+
+Latest peformance updates show sub-second fulfilment with basic tx fees
+</p>
+
+<p align="left">
+
+Program account Classic VRF: (devnet/mainnet): ```VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y``` 
+
+Program account Callback VRF: (devnet/mainnet): ```VRFCBePmGTpZ234BhbzNNzmyg39Rgdd6VgdfhHwKypU```
+
+</p>
+
 <p align="center">
   <a href="https://www.npmjs.com/package/@orao-network/solana-vrf"><img src="https://img.shields.io/npm/v/%40orao-network%2Fsolana-vrf?logo=npm&color=377CC0" /></a>
   <a href="https://crates.io/crates/orao-solana-vrf"><img src="https://img.shields.io/crates/v/orao-solana-vrf?logo=rust&color=darkgreen" /></a><br />
@@ -66,7 +79,7 @@ is fulfilled).
 This examples is based on the [Anchor Framework](https://github.com/coral-xyz/anchor).
 Please consult the [Anchor Book](https://book.anchor-lang.com/) on how to create a contract.
 
-**Note:** we use Anchor v0.29
+**Note:** we use Anchor v0.31.1
 
 To perform a CPI call you'll need to add the orao VRF rust SDK with the `cpi` feature
 into the list of your dependencies:
