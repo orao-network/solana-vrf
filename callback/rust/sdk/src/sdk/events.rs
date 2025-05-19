@@ -61,6 +61,7 @@ impl Event {
             Fulfilled,
             Registered,
             Requested,
+            RequestedAlt,
             Responded,
             Transferred,
             Withdrawn,
