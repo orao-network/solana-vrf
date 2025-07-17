@@ -213,7 +213,7 @@ use anchor_lang::prelude::*;
 pub use constants::*;
 pub use instructions::*;
 
-#[cfg_attr(docsrs, doc(cfg(feature = "sdk")))]
+#[cfg_attr(docsrs, doc(cfg(all(feature = "sdk", not(feature = "idl-build")))))]
 pub mod sdk;
 
 declare_id!("VRFCBePmGTpZ234BhbzNNzmyg39Rgdd6VgdfhHwKypU");

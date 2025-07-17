@@ -52,11 +52,17 @@ impl RandomnessAccountVersion {
 #[derive(Debug, thiserror::Error)]
 pub enum WaitFulfilledError {
     #[error(transparent)]
-    Client(#[from] anchor_client::ClientError),
+    Client(Box<anchor_client::ClientError>),
     #[error("Subscription was dropped without being resolved")]
     Dropped,
     #[error(transparent)]
     Join(#[from] JoinError),
+}
+
+impl From<anchor_client::ClientError> for WaitFulfilledError {
+    fn from(value: anchor_client::ClientError) -> Self {
+        Self::Client(Box::new(value))
+    }
 }
 
 /// Waits for the given randomness request to be fulfilled.

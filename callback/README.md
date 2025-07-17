@@ -123,7 +123,7 @@ as long as it expects the following list of accounts:
 3.  (readonly) VRF's `NetworkState` PDA will be available for reading
 4.  (readonly) Fulfilled `RequestAccount` PDA will be available for reading
 5.  (optional) ... zero or more additional accounts given upon registration
-    or upon the `Request` CPI (see bellow)
+    or upon the `Request`/`RequestAlt` CPI (see bellow)
 
 From the features perspective there are two types of callbacks:
 
@@ -266,6 +266,39 @@ To define a callback you must provide the following information:
         };
         ```
 
+##### Faulty callback policy and the request explorer
+
+Among other important characteristics the oracle’s design was built with an
+emphasis on ensuring that all client requests must be fulfilled in one way
+or another. In the context of arbitrary callbacks, this means that the oracle
+must be able to ignore potential errors and still fulfill the client’s request.
+The Solana platform does not allow catching CPI errors, so the oracle uses
+a configurable deadline (expressed in slots) during which the callback has
+a chance to execute successfully. Once this deadline is reached, the randomness
+request will be fulfilled, but the callback will be ignored.
+
+For the client, this means their callback should never fail — for debugging
+purposes, the [request explorer][request-explorer] is available. Using this tool,
+you can view your callback logs even if they are not accessible in the Solana
+explorer, as well as identify other potential issues with your callback
+(e.g. exceeding the maximum transaction size).
+
+[request-explorer]: https://vrf-explorer.orao.network
+
+##### Callback Directives
+
+It is possible for a callback to send a directive to the VRF contract
+using the `DirectiveGuard` structure.
+
+There is currently just a single directive:
+
+-   `ReimburseTo` — Use this directive to override the default VRF behavior of
+    reimbursing extra rent of the fulfilled request.
+
+    By default VRF will reimburse extra rent back to the rent payer that is the
+    client PDA. If this directive was set, then the extra rent will be reimbursed
+    to the given `pubkey`.
+
 ##### Updating client-level callback with `SetCallback` instruction
 
 There is a `SetCallback` instruction that allows a client owner to update/remove
@@ -325,7 +358,9 @@ Now to make a `Request`/`RequestAlt` CPI the Client PDA must be funded —
 it's balance will be used to pay request fees and rent:
 
 -   effective VRF fees can be observed in the VRF's `NetworkState` account
--   the request rent is reimbursed upon fulfill
+-   pending VRF request requires more rent than the fulfilled VRF request,
+    so the extra rent will be reimbursed back to the Client PDA upon fulfill
+    (use the `ReimburseTo` callback directive to override this behavior)
 
 To fund the client you need to transfer some funds to the Client PDA. You can
 do it directly or via your program's instruction — in fact Solana imposes no
@@ -723,4 +758,29 @@ client owner:
     println!("Transferred in {signature}");
     ```
 
+## Pushing solana limits
+
+Solana network imposes some limitations on the size and computation complexity
+of a transaction. In general there are four limits:
+
+1. Transaction size limit — maximum size of a serialized transaction can't exceed 1,232 bytes.
+   A callback could hit this limit if its `data` field is large or if it uses high number of
+   accounts. If one of this statements are true for your callback, and your callback wasn't
+   called by the VRF, then it might be the case that you hit this limit. Consider shorten
+   the callback data or using `RequestAlt` with a lookup table that holds all the fixed
+   accounts used by your callback — this should reduce the tx size.
+2. CU limit — VRF will set the maximum possible CU limit of 1.4 million CUs, but you should
+   note that some part of this CU allocation is consumed by the VRF contract. It is less common
+   for your callback to hit this limit, but it's better to always apply some basic
+   [optimization techniques][optimization-techniques].
+3. Heap size limit — the default Solana heap size is 32KB, but you should note that the default
+   Solana allocator is Bump Allocator — this type of allocators are never actually free so
+   every allocation/reallocation will reduce the remaining heap size. The general rule here is
+   to always either borrow the data that is already available, or to always preallocate the
+   necessary capacity for your containers to avoid reallocations.
+4. Maximum locked accounts limit — at the moment there is no way for an instruction to lock more
+   than 64 unique accounts even though other limits allows you to define a callback with larger
+   number of accounts. There is no way to increase this limit.
+
 [lookup-tables]: https://solana.com/ru/developers/guides/advanced/lookup-tables
+[optimization-techniques]: https://solana.com/ru/developers/guides/advanced/how-to-optimize-compute

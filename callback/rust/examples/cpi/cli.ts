@@ -178,21 +178,12 @@ program
         }
         let networkState = await vrf.getNetworkState();
 
-        let builder = exampleClient.methods
-            .request([...seeds[0].toBytes()], howToOverride)
-            .accountsPartial({
-                vrf: VrfProgramId,
-                clientState: clientStateAddr,
-                client: clientAddr,
-                networkState: NetworkState.createAddress(networkState.bump)[0],
-                treasury: networkState.config.treasury,
-                request: requestAddrs[0],
-            });
-
-        let instructions = [];
-        for (let i = 1; i < options.amount; i++) {
-            let instruction = await exampleClient.methods
-                .request([...seeds[i].toBytes()], howToOverride)
+        const INSTRUCTIONS_PER_TX = 10;
+        const signatures = [];
+        for (let j = 0; j * INSTRUCTIONS_PER_TX < options.amount; j++) {
+            let offset = j * INSTRUCTIONS_PER_TX;
+            let builder = exampleClient.methods
+                .request([...seeds[offset].toBytes()], howToOverride)
                 .accountsPartial({
                     vrf: VrfProgramId,
                     clientState: clientStateAddr,
@@ -201,22 +192,47 @@ program
                         networkState.bump
                     )[0],
                     treasury: networkState.config.treasury,
-                    request: requestAddrs[i],
-                })
-                .instruction();
-            instructions.push(instruction);
+                    request: requestAddrs[offset],
+                });
+
+            let instructions = [];
+            for (
+                let i = 1;
+                i < INSTRUCTIONS_PER_TX && offset + i < options.amount;
+                i++
+            ) {
+                let instruction = await exampleClient.methods
+                    .request([...seeds[offset + i].toBytes()], howToOverride)
+                    .accountsPartial({
+                        vrf: VrfProgramId,
+                        clientState: clientStateAddr,
+                        client: clientAddr,
+                        networkState: NetworkState.createAddress(
+                            networkState.bump
+                        )[0],
+                        treasury: networkState.config.treasury,
+                        request: requestAddrs[offset + i],
+                    })
+                    .instruction();
+                instructions.push(instruction);
+            }
+            builder.postInstructions(instructions);
+
+            signatures.push(builder.rpc());
         }
-        builder.postInstructions(instructions);
 
-        let tx = await builder.rpc();
-
-        console.log("Requested in", tx);
+        for (let tx of await Promise.all(signatures)) {
+            console.log("Requested in", tx);
+        }
         console.log("");
 
         for (let i = 0; i < options.amount; i++) {
             for (let j = 0; j < 10; j++) {
                 try {
                     let request = await vrf.getRequestAccount(requestAddrs[i]);
+                    if (!request) {
+                        continue;
+                    }
                     console.log(
                         `=== Request Account for ${seeds[
                             i
@@ -251,6 +267,9 @@ program
                     milliseconds / 1000
                 ).toFixed(3)} seconds`
             );
+            if (milliseconds < 0) {
+                console.dir([txs, fulfilled], { depth: 20 });
+            }
         }
         console.log("");
 
@@ -363,6 +382,7 @@ program
                 [additionalAccountAddress]
             );
         }
+        console.log("");
 
         let seeds = [...Buffer.alloc(options.amount)].map(
             (_x) => web3.Keypair.generate().publicKey
@@ -381,28 +401,12 @@ program
         }
         let networkState = await vrf.getNetworkState();
 
-        let builder = exampleClient.methods
-            .requestAlt([...seeds[0].toBytes()], howToOverride)
-            .accountsPartial({
-                vrf: VrfProgramId,
-                clientState: clientStateAddr,
-                client: clientAddr,
-                networkState: NetworkState.createAddress(networkState.bump)[0],
-                treasury: networkState.config.treasury,
-                request: requestAddrs[0],
-            })
-            .remainingAccounts([
-                {
-                    pubkey: lookupTableAddress,
-                    isSigner: false,
-                    isWritable: false,
-                },
-            ]);
-
-        let instructions = [];
-        for (let i = 1; i < options.amount; i++) {
-            let instruction = await exampleClient.methods
-                .requestAlt([...seeds[i].toBytes()], howToOverride)
+        const INSTRUCTIONS_PER_TX = 10;
+        const signatures = [];
+        for (let j = 0; j * INSTRUCTIONS_PER_TX < options.amount; j++) {
+            let offset = j * INSTRUCTIONS_PER_TX;
+            let builder = exampleClient.methods
+                .requestAlt([...seeds[offset].toBytes()], howToOverride)
                 .accountsPartial({
                     vrf: VrfProgramId,
                     clientState: clientStateAddr,
@@ -411,7 +415,7 @@ program
                         networkState.bump
                     )[0],
                     treasury: networkState.config.treasury,
-                    request: requestAddrs[i],
+                    request: requestAddrs[offset],
                 })
                 .remainingAccounts([
                     {
@@ -419,15 +423,44 @@ program
                         isSigner: false,
                         isWritable: false,
                     },
-                ])
-                .instruction();
-            instructions.push(instruction);
+                ]);
+
+            let instructions = [];
+            for (
+                let i = 1;
+                i < INSTRUCTIONS_PER_TX && offset + i < options.amount;
+                i++
+            ) {
+                let instruction = await exampleClient.methods
+                    .requestAlt([...seeds[offset + i].toBytes()], howToOverride)
+                    .accountsPartial({
+                        vrf: VrfProgramId,
+                        clientState: clientStateAddr,
+                        client: clientAddr,
+                        networkState: NetworkState.createAddress(
+                            networkState.bump
+                        )[0],
+                        treasury: networkState.config.treasury,
+                        request: requestAddrs[offset + i],
+                    })
+                    .remainingAccounts([
+                        {
+                            pubkey: lookupTableAddress,
+                            isSigner: false,
+                            isWritable: false,
+                        },
+                    ])
+                    .instruction();
+                instructions.push(instruction);
+            }
+            builder.postInstructions(instructions);
+
+            signatures.push(builder.rpc());
         }
-        builder.postInstructions(instructions);
 
-        let sig = await builder.rpc();
-
-        console.log("Requested in", sig);
+        for (let tx of await Promise.all(signatures)) {
+            console.log("Requested in", tx);
+        }
         console.log("");
 
         for (let i = 0; i < options.amount; i++) {
@@ -436,6 +469,9 @@ program
                     let request = await vrf.getRequestAltAccount(
                         requestAddrs[i]
                     );
+                    if (!request) {
+                        continue;
+                    }
                     console.log(
                         `=== Request Account for ${seeds[
                             i
