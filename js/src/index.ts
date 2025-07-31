@@ -33,7 +33,17 @@ export {
     NetworkConfiguration,
     NetworkState,
     OraoTokenFeeConfig,
+    RandomnessAccountData,
+    RandomnessAccountDataV1,
+    RandomnessV2,
+    RandomnessAccountDataV2,
+    PendingRequest,
+    FulfilledRequest,
+    FulfilledRandomnessAccountData,
+    RandomnessAccountVersion,
+    Request,
 } from "./state";
+export { OraoVrf } from "./types/orao_vrf";
 
 export const PROGRAM_ADDRESS: string = IDL.address;
 export const PROGRAM_ID: web3.PublicKey = new web3.PublicKey(PROGRAM_ADDRESS);
@@ -128,9 +138,8 @@ interface IPendingRequest {
 
 /** Orao VRF program */
 export class Orao extends Program<OraoVrf> {
-    readonly _payer: web3.PublicKey;
-    get payer(): web3.PublicKey {
-        return this._payer;
+    get payer(): web3.PublicKey | undefined {
+        return this.provider.publicKey;
     }
 
     /**
@@ -144,10 +153,6 @@ export class Orao extends Program<OraoVrf> {
      */
     constructor(provider: Provider, id = PROGRAM_ID) {
         super({ ...IDL, address: id.toString() } as OraoVrf, provider);
-        if (!provider.publicKey) {
-            throw new Error("Wallet not provided");
-        }
-        this._payer = provider.publicKey;
     }
 
     /**
@@ -356,7 +361,7 @@ export class Orao extends Program<OraoVrf> {
                 );
 
                 // In case it's already fulfilled
-                let randomness = await this.getRandomness(seed, commitment);
+                let randomness = await this.getRandomness(seed, actualCommitment);
                 maybeResolve(subscriptionId, randomness);
             } catch (e) {
                 reject(e);
@@ -365,7 +370,7 @@ export class Orao extends Program<OraoVrf> {
     }
 }
 
-class ComputeBudgetConfig {
+export class ComputeBudgetConfig {
     public computeUnitPrice: bigint | null = null;
     public computeUnitPriceMultiplier: number | null = null;
     public computeUnitLimit: number | null = null;
@@ -428,6 +433,10 @@ export class InitBuilder {
         fulfillmentAuthorities: web3.PublicKey[],
         requestFee: BN
     ) {
+        if (!vrf.payer) {
+            throw new Error("Wallet not provided");
+        }
+
         this.vrf = vrf;
         this.config = new NetworkConfiguration(
             authority,
@@ -549,6 +558,10 @@ export class UpdateBuilder {
      * @param vrf ORAO VRF program instance.
      */
     constructor(vrf: Orao) {
+        if (!vrf.payer) {
+            throw new Error("Wallet not provided");
+        }
+
         this.vrf = vrf;
     }
 
@@ -690,6 +703,10 @@ export class RequestBuilder {
      * @param seed seed value (32 bytes).
      */
     constructor(vrf: Orao, seed: Uint8Array) {
+        if (!vrf.payer) {
+            throw new Error("Wallet not provided");
+        }
+
         this.vrf = vrf;
         this.seed = seed;
         this.tokenWallet = null;
@@ -807,6 +824,10 @@ export class FulfillBuilder {
      * @param seed seed value (32 bytes).
      */
     constructor(vrf: Orao, seed: Uint8Array) {
+        if (!vrf.payer) {
+            throw new Error("Wallet not provided");
+        }
+
         this.vrf = vrf;
         this.seed = seed;
     }

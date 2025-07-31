@@ -1,0 +1,6 @@
+// typedoc.json
+{
+    "externalSymbolLinkMappings": {
+        "@coral-xyz/anchor": { "default": "#", "MethodsBuilder": "#" }
+    }
+}

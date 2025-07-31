@@ -1,6 +1,6 @@
 {
     "name": "@orao-network/solana-vrf",
-    "version": "0.6.1",
+    "version": "0.7.0",
     "description": "ORAO Verifiable Random Function for Solana.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
