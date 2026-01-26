@@ -24,9 +24,10 @@ pub async fn client_balance<C: Deref<Target = impl Signer> + Clone>(
     client_addr: Pubkey,
 ) -> std::result::Result<u64, anchor_client::ClientError> {
     let rpc = orao_vrf.rpc();
-    let account = rpc.get_account(&client_addr).await?;
+    let account = rpc.get_account(&client_addr).await.map_err(Box::new)?;
     let rent = rpc
         .get_minimum_balance_for_rent_exemption(account.data.len())
-        .await?;
+        .await
+        .map_err(Box::new)?;
     Ok(account.lamports.saturating_sub(rent))
 }

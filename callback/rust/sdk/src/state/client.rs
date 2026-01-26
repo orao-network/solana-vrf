@@ -1,11 +1,7 @@
-use anchor_lang::{
-    prelude::*,
-    solana_program::{
-        address_lookup_table::AddressLookupTableAccount,
-        hash::{Hash, Hasher},
-    },
-    InstructionData,
-};
+use anchor_lang::{prelude::*, InstructionData};
+use solana_hash::Hash;
+use solana_message::AddressLookupTableAccount;
+use solana_sha256_hasher::Hasher;
 
 use super::super::borsh;
 

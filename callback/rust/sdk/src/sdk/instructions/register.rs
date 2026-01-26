@@ -3,10 +3,10 @@ use std::sync::Arc;
 
 use anchor_client::solana_sdk::instruction::Instruction;
 use anchor_client::solana_sdk::signer::Signer;
-use anchor_client::solana_sdk::system_program;
 use anchor_client::{ClientError, ThreadSafeSigner};
 use anchor_lang::prelude::{Pubkey, UpgradeableLoaderState};
 use anchor_lang::{AccountDeserialize, InstructionData, ToAccountMetas};
+use solana_system_interface::program as system_program;
 
 use crate::state::client::{Callback, Client};
 use crate::state::network_state::NetworkState;
@@ -121,7 +121,7 @@ impl RegisterBuilder {
                 state,
                 client: Client::find_address(&program, &state, &id).0,
                 network_state: NetworkState::find_address(&id).0,
-                system_program: system_program::ID,
+                system_program: Pubkey::new_from_array(system_program::ID.to_bytes()),
             }
             .to_account_metas(None),
         )
@@ -138,16 +138,20 @@ impl RegisterBuilder {
     /// is not an upgradable loader state program account.
     pub async fn build<C: Deref<Target = impl Signer> + Clone>(
         self,
-        orao_vrf: &anchor_client::Program<C>,
+        orao_vrf: &'_ anchor_client::Program<C>,
         program: Pubkey,
         state: Pubkey,
     ) -> Result<
-        anchor_client::RequestBuilder<C, Arc<dyn ThreadSafeSigner>>,
+        anchor_client::RequestBuilder<'_, C, Arc<dyn ThreadSafeSigner>>,
         anchor_client::ClientError,
     > {
         let mut builder = orao_vrf.request();
 
-        let program_account = orao_vrf.rpc().get_account(&program).await?;
+        let program_account = orao_vrf
+            .rpc()
+            .get_account(&program)
+            .await
+            .map_err(Box::new)?;
         let program_state = UpgradeableLoaderState::try_deserialize(&mut &*program_account.data)?;
         let program_data = match program_state {
             UpgradeableLoaderState::Uninitialized => None,
@@ -174,7 +178,7 @@ impl RegisterBuilder {
                 state,
                 client: Client::find_address(&program, &state, &orao_vrf.id()).0,
                 network_state: NetworkState::find_address(&orao_vrf.id()).0,
-                system_program: system_program::ID,
+                system_program: Pubkey::new_from_array(system_program::ID.to_bytes()),
             })
             .args(crate::instruction::Register {
                 params: self.params,

@@ -6,7 +6,7 @@
         "cli": "ts-node cli.ts"
     },
     "dependencies": {
-        "@coral-xyz/anchor": "^0.31.1",
+        "@coral-xyz/anchor": "^0.32.1",
         "@orao-network/solana-vrf-cb": "0.3.1",
         "commander": "12.1.0"
     },

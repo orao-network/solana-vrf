@@ -3,7 +3,6 @@ mod command;
 use std::{str::FromStr, sync::Arc};
 
 use anchor_client::{
-    solana_client::rpc_config::RpcSendTransactionConfig,
     solana_sdk::{
         bs58,
         commitment_config::{CommitmentConfig, CommitmentLevel},
@@ -16,6 +15,7 @@ use anchor_client::{
 use anchor_lang::prelude::Pubkey;
 use orao_solana_vrf::{wait_fulfilled, RequestBuilder};
 use solana_cli_config::{Config, CONFIG_FILE};
+use solana_rpc_client_api::config::RpcSendTransactionConfig;
 
 use crate::command::CliOpts;
 use clap::Parser;

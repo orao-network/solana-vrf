@@ -104,10 +104,10 @@ impl WithdrawBuilder {
     /// so feel free to put more instructions into it.
     pub async fn build<C: Deref<Target = impl Signer> + Clone>(
         self,
-        orao_vrf: &anchor_client::Program<C>,
+        orao_vrf: &'_ anchor_client::Program<C>,
         client: Pubkey,
     ) -> Result<
-        anchor_client::RequestBuilder<C, Arc<dyn ThreadSafeSigner>>,
+        anchor_client::RequestBuilder<'_, C, Arc<dyn ThreadSafeSigner>>,
         anchor_client::ClientError,
     > {
         let mut builder = orao_vrf.request();

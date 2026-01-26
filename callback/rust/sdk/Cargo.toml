@@ -1,6 +1,6 @@
 [package]
 name = "orao-solana-vrf-cb"
-version = "0.3.3"
+version = "0.4.0"
 edition = "2021"
 authors = ["ORAO Devs <hello@orao.network>"]
 homepage = "https://orao.network"
@@ -23,6 +23,8 @@ idl-build = ["anchor-lang/idl-build"]
 sdk = [
     "no-entrypoint",
     "anchor-client",
+    "solana-rpc-client",
+    "solana-rpc-client-api",
     "ed25519-dalek",
     "serde",
     "tokio",
@@ -30,8 +32,18 @@ sdk = [
 ]
 
 [dependencies]
-anchor-lang = "0.31.1"
-anchor-client = { version = "0.31.1", optional = true, features = ["async"] }
+anchor-lang = "0.32.1"
+anchor-client = { version = "0.32.1", optional = true, features = ["async"] }
+solana-rpc-client = { version = "2.3", optional = true }
+solana-rpc-client-api = { version = "2.3", optional = true }
+solana-hash = { version = "2.3" }
+solana-message = { version = "2.3" }
+solana-address-lookup-table-interface = { version = "2.2", features = [
+    "bincode",
+    "bytemuck",
+] }
+solana-sha256-hasher = { version = "2.3" }
+solana-system-interface = { version = "2" }
 byteorder = "1.5.0"
 ed25519-dalek = { version = "1.0.1", optional = true }
 serde = { version = "1", optional = true }

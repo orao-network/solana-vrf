@@ -3,10 +3,10 @@ use std::sync::Arc;
 
 use anchor_client::solana_sdk::instruction::Instruction;
 use anchor_client::solana_sdk::signer::Signer;
-use anchor_client::solana_sdk::system_program;
 use anchor_client::ThreadSafeSigner;
 use anchor_lang::prelude::Pubkey;
 use anchor_lang::{InstructionData, ToAccountMetas};
+use solana_system_interface::program as system_program;
 
 use crate::state::client::Callback;
 use crate::SetCallbackParams;
@@ -99,7 +99,7 @@ impl SetCallbackBuilder {
             crate::accounts::SetCallback {
                 payer,
                 client,
-                system_program: system_program::ID,
+                system_program: Pubkey::new_from_array(system_program::ID.to_bytes()),
             }
             .to_account_metas(None),
         )
@@ -111,10 +111,10 @@ impl SetCallbackBuilder {
     /// so feel free to put more instructions into it.
     pub async fn build<C: Deref<Target = impl Signer> + Clone>(
         self,
-        orao_vrf: &anchor_client::Program<C>,
+        orao_vrf: &'_ anchor_client::Program<C>,
         client: Pubkey,
     ) -> Result<
-        anchor_client::RequestBuilder<C, Arc<dyn ThreadSafeSigner>>,
+        anchor_client::RequestBuilder<'_, C, Arc<dyn ThreadSafeSigner>>,
         anchor_client::ClientError,
     > {
         let mut builder = orao_vrf.request();
@@ -131,7 +131,7 @@ impl SetCallbackBuilder {
             .accounts(crate::accounts::SetCallback {
                 payer: orao_vrf.payer(),
                 client,
-                system_program: system_program::ID,
+                system_program: Pubkey::new_from_array(system_program::ID.to_bytes()),
             })
             .args(crate::instruction::SetCallback {
                 params: self.params,

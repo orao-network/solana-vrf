@@ -1,12 +1,12 @@
 [package]
 name = "roulette-cli"
-version = "0.6.1"
+version = "0.7.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anchor-client = "0.31.1"
+anchor-client = "0.32.1"
 anyhow = "1"
 env_logger = "0.9"
 indicatif = "0.17"
@@ -14,8 +14,9 @@ orao-solana-vrf = { path = "../../../../sdk" }
 russian-roulette = { path = "../../programs/russian-roulette", features = [
     "sdk",
 ] }
-solana-sdk = "2.1"
-solana-client = "2.1"
-solana-cli-config = "2.1"
+solana-sdk = "2.3"
+solana-rpc-client = "2.3"
+solana-rpc-client-api = "2.3"
+solana-cli-config = "2.3"
 structopt = "0.3"
 tokio = { version = "1", features = ["macros"] }

@@ -7,10 +7,6 @@ use std::{
 };
 
 use anchor_client::{
-    solana_client::{
-        client_error::{ClientError, ClientErrorKind},
-        nonblocking::rpc_client::RpcClient,
-    },
     solana_sdk::{
         compute_budget::ComputeBudgetInstruction, ed25519_instruction, instruction::Instruction,
         signature::Keypair, signer::Signer, sysvar,
@@ -22,6 +18,7 @@ use anchor_lang::{
     system_program, InstructionData, ToAccountMetas,
 };
 use anchor_spl::token;
+use solana_rpc_client::nonblocking::rpc_client::RpcClient;
 use tokio::{sync::oneshot, task::JoinError};
 
 use crate::{
@@ -193,7 +190,10 @@ pub async fn get_recommended_micro_lamport_fee(
         return Ok(priority_fee);
     }
 
-    let mut fees = client.get_recent_prioritization_fees(&[]).await?;
+    let mut fees = client
+        .get_recent_prioritization_fees(&[])
+        .await
+        .map_err(Box::new)?;
 
     // Get the median fee from the most recent recent 150 slots' prioritization fee
     fees.sort_unstable_by_key(|fee| fee.prioritization_fee);
@@ -328,9 +328,9 @@ impl InitBuilder {
     /// so feel free to put more instructions into the request.
     pub async fn build<C: Deref<Target = impl Signer> + Clone>(
         self,
-        orao_vrf: &anchor_client::Program<C>,
+        orao_vrf: &'_ anchor_client::Program<C>,
     ) -> Result<
-        anchor_client::RequestBuilder<C, Arc<dyn ThreadSafeSigner>>,
+        anchor_client::RequestBuilder<'_, C, Arc<dyn ThreadSafeSigner>>,
         anchor_client::ClientError,
     > {
         let network_state_address = network_state_account_address(&orao_vrf.id());
@@ -521,9 +521,9 @@ impl UpdateBuilder {
     /// so feel free to put more instructions into the request.
     pub async fn build<C: Deref<Target = impl Signer> + Clone>(
         self,
-        orao_vrf: &anchor_client::Program<C>,
+        orao_vrf: &'_ anchor_client::Program<C>,
     ) -> Result<
-        anchor_client::RequestBuilder<C, Arc<dyn ThreadSafeSigner>>,
+        anchor_client::RequestBuilder<'_, C, Arc<dyn ThreadSafeSigner>>,
         anchor_client::ClientError,
     > {
         let network_state_address = network_state_account_address(&orao_vrf.id());
@@ -737,9 +737,9 @@ impl RequestBuilder {
     /// so feel free to put more instructions into the request.
     pub async fn build<C: Deref<Target = impl Signer> + Clone>(
         self,
-        orao_vrf: &anchor_client::Program<C>,
+        orao_vrf: &'_ anchor_client::Program<C>,
     ) -> Result<
-        anchor_client::RequestBuilder<C, Arc<dyn ThreadSafeSigner>>,
+        anchor_client::RequestBuilder<'_, C, Arc<dyn ThreadSafeSigner>>,
         anchor_client::ClientError,
     > {
         let network_state_address = network_state_account_address(&orao_vrf.id());
@@ -749,11 +749,16 @@ impl RequestBuilder {
         let config = network_state.config;
 
         let (treasury, remaining_accounts) = if let Some(token_wallet) = self.token_wallet {
-            let token_fee_config = config.token_fee_config.ok_or_else(|| {
-                ClientError::from(ClientErrorKind::Custom(
-                    "Token fee is not configured for the given VRF instance".to_string(),
-                ))
-            })?;
+            let token_fee_config = config
+                .token_fee_config
+                .ok_or_else(|| {
+                    use solana_rpc_client_api::client_error::{Error, ErrorKind};
+
+                    Error::from(ErrorKind::Custom(
+                        "Token fee is not configured for the given VRF instance".to_string(),
+                    ))
+                })
+                .map_err(Box::new)?;
             (
                 token_fee_config.treasury,
                 vec![

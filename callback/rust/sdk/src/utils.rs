@@ -7,11 +7,10 @@ use anchor_lang::{
         borsh::{BorshDeserialize, BorshSerialize},
         *,
     },
-    solana_program::{
-        address_lookup_table::{self, state::AddressLookupTable, AddressLookupTableAccount},
-        program::{get_return_data, set_return_data},
-    },
+    solana_program::program::set_return_data,
 };
+use solana_address_lookup_table_interface::state::AddressLookupTable;
+use solana_message::AddressLookupTableAccount;
 
 /// This helper will parse the given slice of accounts as Address Lookup Table accounts.
 ///
@@ -24,7 +23,7 @@ pub fn parse_lookup_tables(
     let mut lookup_tables = Vec::with_capacity(accounts.len());
 
     for (i, account_info) in accounts.iter().enumerate() {
-        if *account_info.owner != address_lookup_table::program::ID {
+        if *account_info.owner != solana_address_lookup_table_interface::program::ID {
             return Err(
                 Error::from(AccountOwnedByWrongProgram).with_account_name(format!(
                     "remaining account #{} must be owned by the Address Lookup Table program",
@@ -70,7 +69,7 @@ pub fn with_parsed_lookup_tables<
     let mut lookup_tables = Vec::with_capacity(accounts.len());
 
     for (i, account_info) in accounts.iter().enumerate() {
-        if *account_info.owner != address_lookup_table::program::ID {
+        if *account_info.owner != solana_address_lookup_table_interface::program::ID {
             return Err(
                 Error::from(AccountOwnedByWrongProgram).with_account_name(format!(
                     "remaining account #{} must be owned by the Address Lookup Table program",
@@ -83,7 +82,7 @@ pub fn with_parsed_lookup_tables<
     }
 
     for (i, (data, info)) in borrowed_data.iter().zip(accounts).enumerate() {
-        let lookup_table = AddressLookupTable::deserialize(&data).map_err(|e| {
+        let lookup_table = AddressLookupTable::deserialize(data).map_err(|e| {
             msg!("Unable to deserialize AddressLookupTable: {}", e);
             Error::from(AccountDidNotDeserialize).with_account_name(format!(
                 "remaining account #{} as Address Lookup Table account",
@@ -94,8 +93,7 @@ pub fn with_parsed_lookup_tables<
         lookup_tables.push((info.key, lookup_table));
     }
 
-    let result = f(&lookup_tables);
-    result
+    f(&lookup_tables)
 }
 
 /// This guard is used to send directives to the VRF contract.

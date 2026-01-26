@@ -1,11 +1,12 @@
 use std::ops::Deref;
 
 use anchor_client::{
-    solana_client::{client_error::ClientError, nonblocking::rpc_client::RpcClient},
     solana_sdk::{
         compute_budget::ComputeBudgetInstruction, instruction::Instruction, signer::Signer,
     },
+    ClientError,
 };
+use solana_rpc_client::nonblocking::rpc_client::RpcClient;
 
 /// Calculates recommended fee based on the median fee of the last 150 slots.
 ///
@@ -22,7 +23,10 @@ pub async fn get_recommended_micro_lamport_fee(
         return Ok(priority_fee);
     }
 
-    let mut fees = client.get_recent_prioritization_fees(&[]).await?;
+    let mut fees = client
+        .get_recent_prioritization_fees(&[])
+        .await
+        .map_err(Box::new)?;
 
     if fees.is_empty() {
         return Ok(None);
