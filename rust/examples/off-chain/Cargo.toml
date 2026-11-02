@@ -13,8 +13,8 @@ anyhow = "1"
 futures-util = "0.3"
 tracing = "0.1.28"
 solana-cli-config.workspace = true
-anchor-client.workspace = true
-anchor-lang.workspace = true
+anchor-client = { workspace = true, features = ["solana-v4"] }
+anchor-lang = { workspace = true, features = ["solana-v4"] }
 indicatif = "0.17"
 orao-solana-vrf = { path = "../../sdk" }
 solana-sdk.workspace = true

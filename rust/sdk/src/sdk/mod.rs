@@ -13,8 +13,9 @@ use anchor_lang::{
 };
 use anchor_spl::token;
 use solana_compute_budget_interface::ComputeBudgetInstruction;
-use solana_rpc_client::nonblocking::rpc_client::RpcClient;
-use solana_sdk::{instruction::Instruction, signature::Keypair, signer::Signer, sysvar};
+use anchor_client::compat::solana_rpc_client::nonblocking::rpc_client::RpcClient;
+use anchor_client::{Instruction, Signer};
+use solana_keypair::Keypair;
 use tokio::{sync::oneshot, task::JoinError};
 
 use crate::{
@@ -157,7 +158,7 @@ pub async fn wait_fulfilled<C: Deref<Target = impl Signer> + Sync + Send + 'stat
 /// ```no_run
 /// # fn main() { async {
 /// # use orao_solana_vrf;
-/// # use solana_sdk::signer::keypair::Keypair;
+/// # use solana_keypair::Keypair;
 /// use anchor_client::*;
 ///
 /// # let payer: std::sync::Arc<Keypair> = panic!();
@@ -185,7 +186,7 @@ pub async fn get_network_state<C: Deref<Target = impl Signer> + Clone>(
 /// ```no_run
 /// # fn main() { async {
 /// # use orao_solana_vrf;
-/// # use solana_sdk::signer::keypair::Keypair;
+/// # use solana_keypair::Keypair;
 /// use anchor_client::*;
 ///
 /// # let (payer, seed): (std::sync::Arc<Keypair>, [u8; 32]) = panic!();
@@ -630,7 +631,7 @@ impl UpdateBuilder {
 /// ```no_run
 /// # fn main() { async {
 /// # use orao_solana_vrf;
-/// # use solana_sdk::signer::keypair::Keypair;
+/// # use solana_keypair::Keypair;
 /// use anchor_client::*;
 ///
 /// # let payer: std::sync::Arc<Keypair> = panic!();
@@ -787,7 +788,7 @@ impl RequestBuilder {
             let token_fee_config = config
                 .token_fee_config
                 .ok_or_else(|| {
-                    use solana_rpc_client_api::client_error::{Error, ErrorKind};
+                    use anchor_client::{SolanaClientError as Error, SolanaClientErrorKind as ErrorKind};
 
                     Error::from(ErrorKind::Custom(
                         "Token fee is not configured for the given VRF instance".to_string(),
@@ -943,7 +944,7 @@ impl FulfillBuilder {
                 &instruction::Fulfill.data(),
                 accounts::Fulfill {
                     payer,
-                    instruction_acc: sysvar::instructions::ID,
+                    instruction_acc: solana_sdk_ids::sysvar::instructions::ID,
                     network_state: network_state_address,
                     request: request_address,
                 }
@@ -954,7 +955,7 @@ impl FulfillBuilder {
                 &instruction::FulfillV2.data(),
                 accounts::FulfillV2 {
                     payer,
-                    instruction_acc: sysvar::instructions::ID,
+                    instruction_acc: solana_sdk_ids::sysvar::instructions::ID,
                     network_state: network_state_address,
                     request: request_address,
                     client,
@@ -1007,7 +1008,7 @@ impl FulfillBuilder {
                 .accounts(crate::accounts::Fulfill {
                     payer: orao_vrf.payer(),
                     network_state: network_state_address,
-                    instruction_acc: sysvar::instructions::ID,
+                    instruction_acc: solana_sdk_ids::sysvar::instructions::ID,
                     request: request_address,
                 })
                 .args(crate::instruction::Fulfill),
@@ -1015,7 +1016,7 @@ impl FulfillBuilder {
                 .accounts(crate::accounts::FulfillV2 {
                     payer: orao_vrf.payer(),
                     network_state: network_state_address,
-                    instruction_acc: sysvar::instructions::ID,
+                    instruction_acc: solana_sdk_ids::sysvar::instructions::ID,
                     request: request_address,
                     client: *client,
                     system_program: system_program::ID,

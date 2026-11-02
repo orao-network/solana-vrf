@@ -15,6 +15,21 @@
 //! * [`randomness_account_address`] – helper to derive randomness request state address
 //! * [`network_state_account_address`] – helper to derive VRF on-chain configuration address
 //!
+//! ## Crate features
+//!
+//! * `sdk` (default) – the off-chain client built on `anchor-client`
+//! * `cpi` – on-chain integration (CPI) for Anchor programs
+//! * `solana-v4` (default) / `solana-v3` – the Solana crate cohort, mirroring the
+//!   features of `anchor-lang` 1.2: enable the one your `anchor-lang` uses. With
+//!   `cpi` alone the crate follows the cohort your program enables on `anchor-lang`.
+//!
+//! ```toml
+//! # off-chain client on Anchor's default (`solana-v3`) cohort
+//! orao-solana-vrf = { version = "0.8.1", default-features = false, features = ["sdk", "solana-v3"] }
+//! # on-chain CPI, cohort taken from your `anchor-lang`
+//! orao-solana-vrf = { version = "0.8.1", default-features = false, features = ["cpi"] }
+//! ```
+//!
 //! ## Cross Program Invocation
 //!
 //! For CPI please look into the `cpi` example and account requirements for the [`Request`]
@@ -36,6 +51,15 @@
 //! ```
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![allow(deprecated)]
+
+#[cfg(all(feature = "solana-v3", feature = "solana-v4"))]
+compile_error!(
+    "orao-solana-vrf: features `solana-v3` and `solana-v4` are mutually exclusive; enable the one your `anchor-lang` uses."
+);
+#[cfg(all(feature = "sdk", not(any(feature = "solana-v3", feature = "solana-v4"))))]
+compile_error!(
+    "orao-solana-vrf: the `sdk` feature needs a Solana crate cohort; enable `solana-v4` (the default) or `solana-v3` to match your `anchor-lang`."
+);
 
 use anchor_lang::prelude::*;
 use state::{NetworkState, OraoTokenFeeConfig, Randomness, RandomnessV2};

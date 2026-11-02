@@ -1,11 +1,9 @@
 use std::ops::Deref;
 use std::sync::Arc;
 
-use anchor_client::ThreadSafeSigner;
+use anchor_client::{Instruction, Signer, ThreadSafeSigner};
 use anchor_lang::prelude::Pubkey;
 use anchor_lang::{InstructionData, ToAccountMetas};
-use solana_sdk::instruction::Instruction;
-use solana_sdk::signer::Signer;
 
 use crate::TransferParams;
 

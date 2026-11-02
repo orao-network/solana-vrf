@@ -7,15 +7,16 @@ authors = ["ORAO Devs <hello@orao.network>"]
 homepage = "https://orao.network"
 repository = "https://github.com/orao-network/solana-vrf/callback"
 license = "Apache-2.0"
-keywords = ["solana", "vrf", "randomizer", "callback", "gamblefi"]
-description = "ORAO Verifiable Random Function with Callback for Solana."
+keywords = ["solana", "vrf", "randomness", "oracle", "callback"]
+categories = ["cryptography::cryptocurrencies", "api-bindings"]
+description = "ORAO VRF with Callback for Solana: verifiable randomness (VRF) delivered to your program through a CPI callback. Rust SDK and Anchor client for provably fair on-chain random numbers in games, NFT mints, lotteries and GambleFi."
 
 [lib]
 crate-type = ["cdylib", "lib"]
 name = "orao_solana_vrf_cb"
 
 [features]
-default = ["sdk"]
+default = ["sdk", "solana-v4"]
 cpi = ["no-entrypoint"]
 no-entrypoint = []
 no-idl = []
@@ -25,29 +26,43 @@ idl-build = ["anchor-lang/idl-build"]
 sdk = [
     "no-entrypoint",
     "anchor-client",
-    "solana-sdk",
-    "solana-rpc-client",
-    "solana-rpc-client-api",
     "solana-compute-budget-interface",
+    "solana-native-token",
+    "dep:solana-rpc-client-pin",
+    "dep:solana-rpc-client-api-pin",
     "bs58",
     "ed25519-dalek",
     "serde",
     "tokio",
     "thiserror",
 ]
+# The Solana crate cohort, mirroring the features of `anchor-lang` 1.2: enable
+# exactly one, the one your `anchor-lang` uses (`solana-v3` is Anchor's default).
+# `AddressLookupTableAccount` differs between the cohorts, so unlike the classic
+# crate this one needs the cohort named even for `cpi` builds.
+solana-v3 = ["anchor-lang/solana-v3", "anchor-client?/solana-v3", "dep:solana-message-v3"]
+solana-v4 = ["anchor-lang/solana-v4", "anchor-client?/solana-v4", "dep:solana-message-v4"]
 
 [dependencies]
-anchor-lang = { version = "1.2.1", default-features = false, features = ["solana-v4"] }
-anchor-client = { version = "1.2.1", optional = true, default-features = false, features = ["async", "solana-v4"] }
-solana-sdk = { version = "4", optional = true }
-# Agave 4.4 client crates moved to solana-transaction 5, which anchor-client 1.2
-# still cannot use; stay on the 4.3 line until Anchor catches up.
-solana-rpc-client = { version = "~4.3", optional = true }
-solana-rpc-client-api = { version = "~4.3", optional = true }
+anchor-lang = { version = "1.2.1", default-features = false }
+anchor-client = { version = "1.2.1", optional = true, default-features = false, features = ["async"] }
+# The RPC client types come through `anchor_client::compat`, so they always match
+# the cohort in use; the rest of the former `solana-sdk` dependency is cohort-neutral.
 solana-compute-budget-interface = { version = "3", optional = true }
+solana-native-token = { version = "3", optional = true }
+# Not used by the code. anchor-client 1.2 allows the Agave 4.4 client crates, which moved
+# to solana-transaction 5 and no longer compile with it; these keep a fresh resolution of
+# the `solana-v4` cohort on the 4.3 line (under `solana-v3` they are an unused extra copy).
+# Drop them once Anchor pins the line itself.
+solana-rpc-client-pin = { package = "solana-rpc-client", version = "~4.3", optional = true }
+solana-rpc-client-api-pin = { package = "solana-rpc-client-api", version = "~4.3", optional = true }
 bs58 = { version = "0.5", optional = true }
 solana-hash = "4"
-solana-message = "4"
+# Aliased back to `solana_message` in `lib.rs` according to the cohort. Default
+# features enable `std`, whose modules import types that solana-transaction-error
+# only defines for non-Solana targets, so they stay off for on-chain builds.
+solana-message-v3 = { package = "solana-message", version = "3", default-features = false, optional = true }
+solana-message-v4 = { package = "solana-message", version = "4", default-features = false, optional = true }
 solana-address-lookup-table-interface = { version = "3", features = ["bincode", "bytemuck"] }
 solana-sha256-hasher = "3"
 byteorder = "1.5.0"

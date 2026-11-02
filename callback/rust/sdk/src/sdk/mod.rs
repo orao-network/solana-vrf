@@ -15,7 +15,7 @@ use anchor_lang::prelude::*;
 pub use events::{Event, UnknownEvent};
 pub use instructions::*;
 pub use priority::*;
-use solana_sdk::signer::Signer;
+use anchor_client::{Instruction, Signer};
 
 pub use anchor_client;
 
@@ -27,7 +27,7 @@ pub use anchor_client;
 pub fn new_ed25519_instruction(
     keypair: &ed25519_dalek::Keypair,
     message: &[u8],
-) -> solana_sdk::instruction::Instruction {
+) -> Instruction {
     use ed25519_dalek::Signer as _;
 
     const PUBKEY_OFFSET: u16 = 2 + 14; // header + offsets
@@ -54,7 +54,7 @@ pub fn new_ed25519_instruction(
     data.extend_from_slice(&signature);
     data.extend_from_slice(message);
 
-    solana_sdk::instruction::Instruction {
+    Instruction {
         program_id: crate::ED25519_PROGRAM_ID,
         accounts: vec![],
         data,

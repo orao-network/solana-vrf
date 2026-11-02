@@ -24,6 +24,7 @@ anchor-lang = { version = "1.2.1", default-features = false, features = ["solana
 blake3 = "=1.8.2"
 orao-solana-vrf = { path = "../../../../sdk", default-features = false, features = [
     "cpi",
+    "solana-v4",
 ] }
 rand = { version = "0.8", optional = true }
 solana-sdk = { version = "4", optional = true }

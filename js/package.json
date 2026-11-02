@@ -1,7 +1,40 @@
 {
     "name": "@orao-network/solana-vrf",
-    "version": "0.9.0",
-    "description": "ORAO Verifiable Random Function for Solana.",
+    "version": "0.9.1",
+    "description": "ORAO VRF for Solana: TypeScript SDK to request verifiable, provably fair on-chain randomness (verifiable random function) from the ORAO VRF oracle program. Random numbers for games, NFT mints, raffles, lotteries and GambleFi dApps.",
+    "keywords": [
+        "solana",
+        "vrf",
+        "verifiable-random-function",
+        "randomness",
+        "random",
+        "rng",
+        "oracle",
+        "random-number-generator",
+        "on-chain",
+        "anchor",
+        "web3",
+        "blockchain",
+        "nft",
+        "solana-nft",
+        "gaming",
+        "lottery",
+        "raffle",
+        "casino",
+        "gamblefi",
+        "orao"
+    ],
+    "homepage": "https://github.com/orao-network/solana-vrf#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/orao-network/solana-vrf.git",
+        "directory": "js"
+    },
+    "bugs": {
+        "url": "https://github.com/orao-network/solana-vrf/issues"
+    },
+    "author": "ORAO Network <hello@orao.network>",
+    "license": "Apache-2.0",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
@@ -17,10 +50,13 @@
         "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
         "prepublishOnly": "npm run build"
     },
-    "author": "",
-    "license": "Apache-2.0",
     "engines": {
         "node": ">=20.18"
+    },
+    "dependencies": {
+        "@anchor-lang/core": "^1.2.1",
+        "@solana/web3.js": "^1.98.4",
+        "tweetnacl": "^1.0.3"
     },
     "devDependencies": {
         "@types/mocha": "^9.1.1",
@@ -29,23 +65,5 @@
         "prettier": "^2.7.1",
         "ts-mocha": "^10.0.0",
         "typescript": "^5.7.2"
-    },
-    "dependencies": {
-        "@anchor-lang/core": "^1.2.1",
-        "@solana/web3.js": "^1.98.4",
-        "tweetnacl": "^1.0.3"
-    },
-    "keywords": [
-        "vrf",
-        "randomizer",
-        "rng",
-        "solana-nft",
-        "on-chain",
-        "random",
-        "number",
-        "generator",
-        "solana-callback",
-        "casino",
-        "gamblefi"
-    ]
+    }
 }

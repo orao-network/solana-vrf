@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 1320 820"
+     font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif">
+
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="0%" r="100%">
+      <stop offset="0%" stop-color="#1A2240"/>
+      <stop offset="60%" stop-color="#0E1426"/>
+      <stop offset="100%" stop-color="#070A14"/>
+    </radialGradient>
+
+    <pattern id="dots" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="1.2" cy="1.2" r="1.2" fill="#FFFFFF" fill-opacity="0.045"/>
+    </pattern>
+
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Stronger glow for the CPI element -->
+    <filter id="cpiGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <linearGradient id="accentClient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22D3EE"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+    <linearGradient id="accentVrf" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#F97316"/>
+    </linearGradient>
+    <linearGradient id="accentBot" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A78BFA"/>
+      <stop offset="100%" stop-color="#EC4899"/>
+    </linearGradient>
+    <linearGradient id="accentSig" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+
+    <linearGradient id="arrowFlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A78BFA"/>
+      <stop offset="100%" stop-color="#EC4899"/>
+    </linearGradient>
+
+    <!-- Bright CPI gradient (the headline arrow) -->
+    <linearGradient id="cpiGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FB923C"/>
+      <stop offset="50%" stop-color="#F472B6"/>
+      <stop offset="100%" stop-color="#22D3EE"/>
+    </linearGradient>
+
+    <linearGradient id="solanaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9945FF"/>
+      <stop offset="50%" stop-color="#7B5BFF"/>
+      <stop offset="100%" stop-color="#14F195"/>
+    </linearGradient>
+
+    <marker id="arrowGrad" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#EC4899"/>
+    </marker>
+    <marker id="arrowMuted" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#94A3B8"/>
+    </marker>
+    <marker id="arrowCpi" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="9" markerHeight="9" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#22D3EE"/>
+    </marker>
+
+    <clipPath id="logoClip">
+      <circle cx="40" cy="40" r="40"/>
+    </clipPath>
+  </defs>
+
+  <!-- ============ Background ============ -->
+  <rect width="1320" height="820" fill="url(#bgGrad)"/>
+  <rect width="1320" height="820" fill="url(#dots)"/>
+
+  <g filter="url(#softGlow)" opacity="0.35">
+    <circle cx="660" cy="240" r="100" fill="#7C3AED"/>
+  </g>
+
+  <!-- ============ Title ============ -->
+  <text x="60" y="68" font-size="13" fill="#94A3B8" letter-spacing="3" font-weight="500">
+    ORAO VRF · CALLBACK FLOW
+  </text>
+  <text x="60" y="105" font-size="30" fill="#F1F5F9" font-weight="700">
+    Randomness delivered to your program via CPI
+  </text>
+  <text x="60" y="132" font-size="14" fill="#94A3B8">
+    No polling, no second transaction — the VRF program calls your callback instruction directly.
+  </text>
+
+  <!-- ============ "Single Solana tx" atomic indicator ============ -->
+  <g>
+    <!-- Rounded outline wrapping steps 4 → 5 → 6 -->
+    <path d="M 460 360
+             Q 460 350 470 350
+             L 1255 350
+             Q 1265 350 1265 360
+             L 1265 700
+             Q 1265 710 1255 710
+             L 470 710
+             Q 460 710 460 700
+             Z"
+          fill="none" stroke="#475569" stroke-width="1.3"
+          stroke-dasharray="6 6" opacity="0.5"/>
+    <!-- Atomic-tx pill -->
+    <g transform="translate(820 340)">
+      <rect x="0" y="0" width="220" height="26" rx="13"
+            fill="#0F1729" stroke="#475569" stroke-width="1"/>
+      <circle cx="14" cy="13" r="4" fill="#10B981"/>
+      <text x="26" y="17" font-size="11" fill="#CBD5E1" letter-spacing="1.5" font-weight="600">
+        ATOMIC · single Solana tx
+      </text>
+    </g>
+  </g>
+
+  <!-- ============ ORAO offchain bot card ============ -->
+  <g>
+    <rect x="555" y="165" width="210" height="195" rx="16" fill="#131A2E" stroke="#A78BFA" stroke-width="1.5"/>
+    <rect x="555" y="165" width="210" height="4" rx="2" fill="url(#accentBot)"/>
+
+    <g transform="translate(620 188)">
+      <circle cx="40" cy="40" r="40" fill="#0A0F1C"/>
+      <image x="0" y="0" width="80" height="80"
+             clip-path="url(#logoClip)" preserveAspectRatio="xMidYMid slice"
+             xlink:href="data:image/jpeg;base64,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"/>
+      <circle cx="40" cy="40" r="40" fill="none" stroke="#A78BFA" stroke-width="1.2" stroke-opacity="0.7"/>
+    </g>
+
+    <text x="660" y="300" text-anchor="middle" font-size="11" fill="#A78BFA" letter-spacing="2.5" font-weight="600">
+      FULFILLER
+    </text>
+    <text x="660" y="326" text-anchor="middle" font-size="17" fill="#F1F5F9" font-weight="600">
+      ORAO offchain bot
+    </text>
+    <text x="660" y="346" text-anchor="middle" font-size="12" fill="#94A3B8">
+      Ed25519 signer
+    </text>
+  </g>
+
+  <!-- ============ Signature pill ============ -->
+  <g transform="translate(870 235)">
+    <rect x="0" y="0" width="170" height="58" rx="29" fill="#131A2E" stroke="#10B981" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="58" rx="3" fill="url(#accentSig)"/>
+    <text x="85" y="26" text-anchor="middle" font-size="11" fill="#10B981" letter-spacing="2" font-weight="600">
+      ARTIFACT
+    </text>
+    <text x="85" y="46" text-anchor="middle" font-size="16" fill="#F1F5F9" font-weight="600">
+      Ed25519 signature
+    </text>
+  </g>
+
+  <!-- ============ Client program card (with callback ix sub-region) ============ -->
+  <g transform="translate(60 480)">
+    <rect x="0" y="0" width="320" height="170" rx="14" fill="#131A2E" stroke="#22D3EE" stroke-width="1.5"/>
+    <rect x="0" y="0" width="320" height="4" rx="2" fill="url(#accentClient)"/>
+
+    <text x="24" y="44" font-size="11" fill="#22D3EE" letter-spacing="2.5" font-weight="600">
+      REGISTERED CLIENT
+    </text>
+    <text x="24" y="74" font-size="22" fill="#F1F5F9" font-weight="700">
+      Client program
+    </text>
+    <text x="24" y="98" font-size="12" fill="#94A3B8">
+      State PDA · Client PDA
+    </text>
+
+    <!-- Callback ix highlighted sub-region -->
+    <g transform="translate(20 115)">
+      <!-- glow halo -->
+      <rect x="-4" y="-4" width="288" height="48" rx="10" fill="#22D3EE" opacity="0.10" filter="url(#cpiGlow)"/>
+      <rect x="0" y="0" width="280" height="40" rx="8"
+            fill="#0B1426" stroke="#22D3EE" stroke-width="1.4"/>
+      <circle cx="20" cy="20" r="5" fill="#22D3EE">
+        <animate attributeName="opacity" values="0.35;1;0.35" dur="2.2s" repeatCount="indefinite"/>
+      </circle>
+      <text x="36" y="18" font-size="10" fill="#22D3EE" letter-spacing="1.8" font-weight="700">CALLBACK IX</text>
+      <text x="36" y="33" font-size="12" fill="#F1F5F9" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">
+        fn callback(seed, randomness) { … }
+      </text>
+    </g>
+  </g>
+
+  <!-- ============ VRF Callback card ============ -->
+  <g transform="translate(970 480)">
+    <rect x="0" y="0" width="290" height="170" rx="14" fill="#131A2E" stroke="#F59E0B" stroke-width="1.5"/>
+    <rect x="0" y="0" width="290" height="4" rx="2" fill="url(#accentVrf)"/>
+    <text x="24" y="44" font-size="11" fill="#F59E0B" letter-spacing="2.5" font-weight="600">
+      ON-CHAIN PROGRAM
+    </text>
+    <text x="24" y="74" font-size="22" fill="#F1F5F9" font-weight="700">
+      ORAO VRF Callback
+    </text>
+    <text x="24" y="98" font-size="12" fill="#94A3B8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">
+      VRFCBe…KypU
+    </text>
+
+    <!-- fulfill_v2 sub-region with CPI dispatcher hint -->
+    <g transform="translate(20 115)">
+      <rect x="0" y="0" width="250" height="40" rx="8"
+            fill="#0B1426" stroke="#F59E0B" stroke-width="1.3" stroke-opacity="0.6"/>
+      <text x="14" y="18" font-size="10" fill="#F59E0B" letter-spacing="1.8" font-weight="700">FULFILL_V2</text>
+      <text x="14" y="33" font-size="11" fill="#F1F5F9" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">
+        verify → persist → <tspan fill="#22D3EE" font-weight="700">CPI dispatch</tspan>
+      </text>
+    </g>
+  </g>
+
+  <!-- ============ Arrows ============ -->
+
+  <!-- 1: Client → VRF (CPI request) -->
+  <path d="M 390 545 L 960 545" stroke="url(#arrowFlow)" stroke-width="2.6"
+        fill="none" marker-end="url(#arrowGrad)"/>
+
+  <!-- 2: VRF → Bot (observe, dashed) -->
+  <path d="M 1110 475 C 1110 370 920 300 770 290"
+        stroke="#94A3B8" stroke-width="1.8" fill="none"
+        stroke-dasharray="6 6" marker-end="url(#arrowMuted)"/>
+
+  <!-- 3: Bot ↔ Signature -->
+  <path d="M 768 245 L 866 252" stroke="#94A3B8" stroke-width="1.8"
+        fill="none" stroke-dasharray="6 6" marker-end="url(#arrowMuted)"/>
+
+  <!-- 4: Bot → VRF (fulfill) -->
+  <path d="M 760 330 C 920 400 1010 450 1100 475"
+        stroke="url(#arrowFlow)" stroke-width="2.6" fill="none"
+        marker-end="url(#arrowGrad)"/>
+
+  <!-- 6: VRF → Client callback ix (CPI — the headline arrow) -->
+  <g filter="url(#cpiGlow)" opacity="0.85">
+    <path d="M 970 640 C 760 740 460 740 220 645"
+          stroke="url(#cpiGradient)" stroke-width="6" fill="none" opacity="0.35"/>
+  </g>
+  <path d="M 970 640 C 760 740 460 740 220 645"
+        stroke="url(#cpiGradient)" stroke-width="3.6" fill="none"
+        marker-end="url(#arrowCpi)"/>
+
+  <!-- CPI badge sitting on the headline arrow -->
+  <g transform="translate(595 728)">
+    <rect x="-46" y="-16" width="92" height="32" rx="16"
+          fill="#0F1729" stroke="url(#cpiGradient)" stroke-width="1.6"/>
+    <text x="0" y="5" text-anchor="middle" font-size="12"
+          fill="#22D3EE" letter-spacing="3" font-weight="700">CPI</text>
+  </g>
+
+  <!-- ============ Step badges + labels ============ -->
+
+  <!-- Step 1 -->
+  <g transform="translate(670 518)">
+    <circle cx="0" cy="0" r="16" fill="url(#accentBot)"/>
+    <text x="0" y="5" text-anchor="middle" font-size="14" fill="#F1F5F9" font-weight="700">1</text>
+  </g>
+  <text x="670" y="495" text-anchor="middle" font-size="13" fill="#E2E8F0" font-weight="600">
+    CPI: request(seed, callback)
+  </text>
+  <text x="670" y="512" text-anchor="middle" font-size="12" fill="#94A3B8">
+    Client PDA pays fee · State PDA signs
+  </text>
+
+  <!-- Step 2 -->
+  <g transform="translate(1020 340)">
+    <circle cx="0" cy="0" r="16" fill="#475569" stroke="#94A3B8" stroke-width="1.5"/>
+    <text x="0" y="5" text-anchor="middle" font-size="14" fill="#F1F5F9" font-weight="700">2</text>
+  </g>
+  <text x="1052" y="335" font-size="13" fill="#E2E8F0" font-weight="600">
+    detects new request
+  </text>
+  <text x="1052" y="353" font-size="12" fill="#94A3B8">
+    subscribes to Request events
+  </text>
+
+  <!-- Step 3 -->
+  <g transform="translate(880 205)">
+    <circle cx="0" cy="0" r="16" fill="url(#accentSig)"/>
+    <text x="0" y="5" text-anchor="middle" font-size="14" fill="#F1F5F9" font-weight="700">3</text>
+  </g>
+  <text x="904" y="200" font-size="13" fill="#E2E8F0" font-weight="600">
+    sign seed (Ed25519)
+  </text>
+  <text x="904" y="217" font-size="12" fill="#94A3B8">
+    randomness = signature
+  </text>
+
+  <!-- Step 4 -->
+  <g transform="translate(890 400)">
+    <circle cx="0" cy="0" r="16" fill="url(#accentBot)"/>
+    <text x="0" y="5" text-anchor="middle" font-size="14" fill="#F1F5F9" font-weight="700">4</text>
+  </g>
+  <text x="912" y="395" font-size="13" fill="#E2E8F0" font-weight="600">
+    submit fulfill tx
+  </text>
+  <text x="912" y="413" font-size="12" fill="#94A3B8">
+    Ed25519Verify · fulfill_v2
+  </text>
+
+  <!-- Step 5 -->
+  <g transform="translate(1110 670)">
+    <circle cx="0" cy="0" r="16" fill="url(#accentVrf)"/>
+    <text x="0" y="5" text-anchor="middle" font-size="14" fill="#F1F5F9" font-weight="700">5</text>
+  </g>
+  <text x="1132" y="665" font-size="13" fill="#E2E8F0" font-weight="600">
+    verify + persist
+  </text>
+  <text x="1132" y="683" font-size="12" fill="#94A3B8">
+    randomness → RequestAccount
+  </text>
+
+  <!-- Step 6 — the headline -->
+  <g transform="translate(220 690)">
+    <circle cx="0" cy="0" r="18" fill="url(#cpiGradient)"/>
+    <text x="0" y="6" text-anchor="middle" font-size="15" fill="#0A0F1C" font-weight="800">6</text>
+  </g>
+  <text x="220" y="772" text-anchor="middle" font-size="13" fill="#22D3EE" font-weight="700">
+    callback CPI into client program
+  </text>
+  <text x="220" y="789" text-anchor="middle" font-size="11" fill="#94A3B8">
+    Client PDA signs · State PDA writable · randomness available
+  </text>
+
+  <!-- ============ Footer legend ============ -->
+  <g transform="translate(60 780)">
+    <circle cx="0" cy="0" r="4" fill="#A78BFA"/>
+    <text x="14" y="4" font-size="11" fill="#94A3B8">on-chain flow</text>
+    <line x1="120" y1="0" x2="148" y2="0" stroke="#94A3B8" stroke-width="1.6" stroke-dasharray="4 4"/>
+    <text x="158" y="4" font-size="11" fill="#94A3B8">offchain observe / signal</text>
+    <circle cx="320" cy="0" r="4" fill="url(#cpiGradient)"/>
+    <text x="334" y="4" font-size="11" fill="#22D3EE" font-weight="600">cross-program invocation (CPI)</text>
+  </g>
+
+  <!-- ============ Built on (Solana + Anchor) ============ -->
+  <g transform="translate(1080 775)" opacity="0.75">
+    <text x="0" y="9" font-size="10" fill="#64748B" letter-spacing="2" font-weight="600">BUILT ON</text>
+    <g transform="translate(72 -4)">
+      <path d="M 2 4 L 18 4 L 16 7 L 0 7 Z" fill="url(#solanaGrad)"/>
+      <path d="M 0 10 L 16 10 L 18 13 L 2 13 Z" fill="url(#solanaGrad)"/>
+      <path d="M 2 16 L 18 16 L 16 19 L 0 19 Z" fill="url(#solanaGrad)"/>
+    </g>
+    <text x="98" y="9" font-size="12" fill="#CBD5E1" font-weight="600">Solana</text>
+    <g transform="translate(168 -2)" stroke="#94A3B8" stroke-width="1.6" fill="none"
+       stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="9" cy="4" r="2"/>
+      <line x1="9" y1="6" x2="9" y2="19"/>
+      <line x1="5" y1="9" x2="13" y2="9"/>
+      <path d="M 2 13 C 2 18 5 20 9 20 C 13 20 16 18 16 13"/>
+    </g>
+    <text x="196" y="9" font-size="12" fill="#CBD5E1" font-weight="600">Anchor</text>
+  </g>
+
+</svg>

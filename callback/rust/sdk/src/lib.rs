@@ -9,12 +9,15 @@
 //!
 //!  * `sdk` (default) — use this feature to build an off-chain client
 //!  * `cpi` — use this feature to integrate your program with the oracle
+//!  * `solana-v4` (default) / `solana-v3` — the Solana crate cohort, mirroring the
+//!    features of `anchor-lang` 1.2: enable exactly one, the one your `anchor-lang` uses
+//!    (`solana-v3` is Anchor's default)
 //!
 //!     ```toml
 //!     [dependencies.orao-solana-vrf-cb]
 //!     version = "..."
 //!     default-features = false
-//!     features = ["cpi"]
+//!     features = ["cpi", "solana-v3"]
 //!     ```
 //!
 //! ## Integration
@@ -200,6 +203,22 @@
 //! [`parse_lookup_tables`]: crate::utils::parse_lookup_tables
 //! [`Context::remaining_accounts`]: anchor_lang::prelude::Context::remaining_accounts
 #![cfg_attr(docsrs, feature(doc_cfg))]
+
+#[cfg(all(feature = "solana-v3", feature = "solana-v4"))]
+compile_error!(
+    "orao-solana-vrf-cb: features `solana-v3` and `solana-v4` are mutually exclusive; enable the one your `anchor-lang` uses."
+);
+#[cfg(not(any(feature = "solana-v3", feature = "solana-v4")))]
+compile_error!(
+    "orao-solana-vrf-cb: enable exactly one of the `solana-v3` / `solana-v4` features, the one your `anchor-lang` uses (e.g. `features = [\"cpi\", \"solana-v3\"]`)."
+);
+
+// `AddressLookupTableAccount` is a different type in each cohort, so the matching
+// `solana-message` is aliased back to its plain name for the whole crate.
+#[cfg(feature = "solana-v3")]
+extern crate solana_message_v3 as solana_message;
+#[cfg(feature = "solana-v4")]
+extern crate solana_message_v4 as solana_message;
 
 pub mod constants;
 pub mod error;

@@ -8,11 +8,15 @@ exclude = [
 resolver = "2"
 
 [workspace.dependencies]
-anchor-lang = { version = "1.2.1", default-features = false, features = ["solana-v4"] }
-anchor-spl = { version = "1.2.1", default-features = false, features = ["solana-v4", "associated_token", "mint", "token", "token_2022", "token_2022_extensions"] }
-anchor-client = { version = "1.2.1", default-features = false, features = ["async", "solana-v4"] }
+# The Solana crate cohort (`solana-v3` / `solana-v4`) is not fixed here: the SDK
+# exposes it as features of its own, the examples enable `solana-v4` themselves.
+anchor-lang = { version = "1.2.1", default-features = false }
+anchor-spl = { version = "1.2.1", default-features = false, features = ["associated_token", "mint", "token", "token_2022", "token_2022_extensions"] }
+anchor-client = { version = "1.2.1", default-features = false, features = ["async"] }
 ed25519-dalek = { version = "1.0.1" }
 solana-cli-config = { version = "4" }
+solana-keypair = { version = "3" }
+solana-sdk-ids = { version = "3" }
 solana-sdk = { version = "4" }
 # Agave 4.4 client crates moved to solana-transaction 5, which anchor-client 1.2
 # still cannot use; stay on the 4.3 line until Anchor catches up.

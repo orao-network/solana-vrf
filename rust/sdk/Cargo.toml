@@ -1,14 +1,15 @@
 [package]
 name = "orao-solana-vrf"
-version = "0.8.0"
+version = "0.8.1"
 edition = "2021"
 rust-version = "1.89"
 authors = ["ORAO Devs <hello@orao.network>"]
 homepage = "https://orao.network"
 repository = "https://github.com/orao-network/solana-vrf"
 license = "Apache-2.0"
-keywords = ["solana", "vrf", "randomizer", "gamblefi", "anchor"]
-description = "ORAO Verifiable Random Function for Solana."
+keywords = ["solana", "vrf", "randomness", "oracle", "anchor"]
+categories = ["cryptography::cryptocurrencies", "api-bindings"]
+description = "Verifiable randomness (VRF) oracle for Solana: Rust SDK and Anchor CPI client for ORAO VRF. Provably fair on-chain random numbers for games, NFT mints, lotteries and GambleFi."
 
 [features]
 no-entrypoint = []
@@ -19,25 +20,39 @@ idl-build = ["anchor-lang/idl-build"]
 cpi = ["no-entrypoint"]
 sdk = [
     "anchor-client",
+    "anchor-spl",
     "ed25519-dalek",
     "no-entrypoint",
     "solana-compute-budget-interface",
-    "solana-rpc-client",
-    "solana-rpc-client-api",
-    "solana-sdk",
+    "solana-keypair",
+    "solana-sdk-ids",
+    "dep:solana-rpc-client-pin",
+    "dep:solana-rpc-client-api-pin",
     "thiserror",
     "tokio",
 ]
-default = ["sdk"]
+# The Solana crate cohort, mirroring the features of `anchor-lang` 1.2: enable the
+# one your `anchor-lang` uses. `cpi` builds that enable neither follow the cohort
+# the consuming program enables on `anchor-lang`; `sdk` needs one explicitly.
+solana-v3 = ["anchor-lang/solana-v3", "anchor-spl?/solana-v3", "anchor-client?/solana-v3"]
+solana-v4 = ["anchor-lang/solana-v4", "anchor-spl?/solana-v4", "anchor-client?/solana-v4"]
+default = ["sdk", "solana-v4"]
 
 [dependencies]
 anchor-lang.workspace = true
-anchor-spl.workspace = true
+anchor-spl = { workspace = true, optional = true }
 anchor-client = { workspace = true, optional = true }
-solana-sdk = { workspace = true, optional = true }
-solana-rpc-client = { workspace = true, optional = true }
-solana-rpc-client-api = { workspace = true, optional = true }
+# Cohort-neutral pieces of the former `solana-sdk` dependency: the RPC client types
+# come through `anchor_client::compat`, so they always match the cohort in use.
+solana-keypair = { workspace = true, optional = true }
+solana-sdk-ids = { workspace = true, optional = true }
 solana-compute-budget-interface = { workspace = true, optional = true }
+# Not used by the code. anchor-client 1.2 allows the Agave 4.4 client crates, which moved
+# to solana-transaction 5 and no longer compile with it; these keep a fresh resolution of
+# the `solana-v4` cohort on the 4.3 line (under `solana-v3` they are an unused extra copy).
+# Drop them once Anchor pins the line itself.
+solana-rpc-client-pin = { package = "solana-rpc-client", version = "~4.3", optional = true }
+solana-rpc-client-api-pin = { package = "solana-rpc-client-api", version = "~4.3", optional = true }
 ed25519-dalek = { workspace = true, optional = true }
 tokio = { version = "1", optional = true }
 thiserror = { version = "1", optional = true }

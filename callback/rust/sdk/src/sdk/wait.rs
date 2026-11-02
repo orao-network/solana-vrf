@@ -5,7 +5,7 @@ use std::{
 };
 
 use anchor_lang::prelude::Pubkey;
-use solana_sdk::signer::Signer;
+use anchor_client::Signer;
 use tokio::{sync::oneshot, task::JoinError};
 
 use crate::{events, state::request::RequestAccount};

@@ -252,7 +252,7 @@ export class Orao extends Program<OraoVrf> {
      * Prepares a randomness request (see {@link RequestBuilder}).
      *
      * ```typescript
-     * const [seed, tx] = await vrf.request().rpc();
+     * const [seed, tx] = await (await vrf.request()).rpc();
      * console.log("Your transaction signature", tx);
      *
      * // ...

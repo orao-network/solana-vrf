@@ -2,7 +2,7 @@ use core::fmt;
 use std::io;
 
 use anchor_lang::{prelude::borsh::BorshDeserialize, Discriminator};
-use solana_sdk::native_token::LAMPORTS_PER_SOL;
+use solana_native_token::LAMPORTS_PER_SOL;
 
 use crate::events::{
     CallbackUpdated, CalledBack, Fulfilled, Registered, Requested, RequestedAlt, Responded,

@@ -1,12 +1,10 @@
 use std::ops::Deref;
 use std::sync::Arc;
 
-use anchor_client::{ClientError, ThreadSafeSigner};
+use anchor_client::{ClientError, Instruction, Signer, ThreadSafeSigner};
 use anchor_lang::prelude::{Pubkey, UpgradeableLoaderState};
 use anchor_lang::system_program;
 use anchor_lang::{AccountDeserialize, InstructionData, ToAccountMetas};
-use solana_sdk::instruction::Instruction;
-use solana_sdk::signer::Signer;
 
 use crate::state::client::{Callback, Client};
 use crate::state::network_state::NetworkState;
