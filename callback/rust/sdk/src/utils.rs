@@ -3,10 +3,7 @@ use anchor_lang::{
         Error,
         ErrorCode::{AccountDidNotDeserialize, AccountOwnedByWrongProgram},
     },
-    prelude::{
-        borsh::{BorshDeserialize, BorshSerialize},
-        *,
-    },
+    prelude::*,
     solana_program::program::set_return_data,
 };
 use solana_address_lookup_table_interface::state::AddressLookupTable;
@@ -160,7 +157,7 @@ impl Drop for DirectiveGuard {
     }
 }
 
-#[derive(BorshDeserialize, BorshSerialize)]
+#[derive(AnchorDeserialize, AnchorSerialize)]
 pub(crate) enum CallbackReturnData {
     ReimburseTo(Pubkey),
 }

@@ -6,22 +6,14 @@
   Generate on-chain randomness on Solana. ORAO's Verifiable Random Function for Solana offers unbiased, fast and affordable randomness for your Solana programs. Create unique NFT characteristics, generate random levels for games and weapons, randomize airdrops and provide secure, verifiable lottery. Built using Anchor framework.
 </p>
 
-<p align="center">
- <h2>
-    For VRF Callback functionality guide please explore the <a href="/callback/README.md">callback folder</a>.
- </h2>
-</p>
-<br />
+> 📌 **Looking for the Callback variant?** See the [`callback/`](./callback/README.md) folder
+> for the VRF Callback integration guide.
 
+**New here?**
+👉 [**Getting Started**](./GETTING_STARTED.md) — 5-minute path for both classic and callback, with a decision matrix between the two.
+👉 [**Recipes**](./RECIPES.md) — copy-pasteable patterns: NFT trait selection, weighted raffle, off-chain verification, multi-round games.
 
 This repository provides off-chain Rust and JS web3 SDKs for requesting on-chain randomness using ORAO VRF program.
-
-<p align="center">
-
-![Latest peformance updates show sub-second fulfilment with basic tx fees](./solana-vrf-histogram.png)
-
-Latest peformance updates show sub-second fulfilment with basic tx fees
-</p>
 
 <p align="left">
 
@@ -37,28 +29,18 @@ Program account Callback VRF: (devnet/mainnet): ```VRFCBePmGTpZ234BhbzNNzmyg39Rg
   
 </p>
 
-## Notes on v0.4.0 update
+## Table of contents
 
-Since v0.4.0 the cost of a request is significantly reduced, but this imposes some caveats:
-
--   You should now use `RandomnessAccountData` to decode the randomness account:
-
-    ```rust
-    let request_address = randomness_account_address(&orao_vrf.id(), &self.seed);
-
-    // This old version will fail on new accounts:
-    // let randomness_account_data = orao_vrf
-    //     .account::<Randomness>(request_address)
-    //     .await?;
-
-    // Now you should use this code to load the account
-    let randomness_account_data = orao_vrf
-        .account::<RandomnessAccountData>(request_address)
-        .await?;
-
-    // Respectively the following snippet will decode raw account data:
-    // let request = RandomnessAccountData::try_deserialize(&mut raw_account_data)?;
-    ```
+- [Getting Started](./GETTING_STARTED.md) — quick start for both variants + decision matrix
+- [Recipes](./RECIPES.md) — common use-case patterns
+- [Developer Integration Guide — CPI Example](#developer-integration-guide---cpi-example)
+  - [1. Create your contract](#1-create-your-contract)
+  - [2. Collect the necessary accounts](#2-collect-the-necessary-accounts)
+  - [3. Perform a CPI call](#3-perform-a-cpi-call)
+  - [4. Use the fulfilled randomness](#4-use-the-fulfilled-randomness)
+- [Rust SDK](#rust-sdk)
+- [JS / TS SDK](#js--ts-sdk)
+- [Running a local test validator](#running-a-local-test-validator)
 
 ## Developer Integration Guide - CPI Example
 
@@ -79,7 +61,7 @@ is fulfilled).
 This examples is based on the [Anchor Framework](https://github.com/coral-xyz/anchor).
 Please consult the [Anchor Book](https://book.anchor-lang.com/) on how to create a contract.
 
-**Note:** we use Anchor v0.31.1
+**Note:** we use Anchor v1.2.1
 
 To perform a CPI call you'll need to add the orao VRF rust SDK with the `cpi` feature
 into the list of your dependencies:
@@ -87,7 +69,7 @@ into the list of your dependencies:
 ```toml
 [dependencies]
 # ...
-orao-solana-vrf = { version = "0.4.0", default-features = false, features = ["cpi"] }
+orao-solana-vrf = { version = "0.7", default-features = false, features = ["cpi"] }
 ```
 
 ### 2. Collect the necessary accounts
@@ -232,37 +214,66 @@ fn is_dead(randomness: &[u8; 64]) -> bool {
 [5]: https://docs.rs/orao-solana-vrf/latest/orao_solana_vrf/struct.RequestBuilder.html
 [6]: https://github.com/orao-network/solana-vrf/tree/master/rust/examples/cpi
 
-1. Rust SDK ([source code](https://github.com/orao-network/solana-vrf/tree/master/rust)) is based on the [`anchor-client`](https://docs.rs/anchor-client) library, so you'll need
-   to acquire the `Program` instance to use it:
+## Rust SDK
+
+The Rust SDK ([source code](https://github.com/orao-network/solana-vrf/tree/master/rust))
+is based on the [`anchor-client`](https://docs.rs/anchor-client) library, so you'll
+acquire a `Program` instance to use it:
 
 ```rust
-// please choose the necessary commitment level
-let commitment_config = CommitmentConfig::confirmed();
-// get this from the solana configuration
-let payer: Keypair = ..;
-// we'll wrap payer into an Arc so it plays well with the tokio runtime
-let payer = std::sync::Arc::new(payer);
-// please choose the proper cluster
-let client = Client::new_with_options(Cluster::Devnet, payer, commitment_config);
-let program = client.program(orao_solana_vrf::id());
+use anchor_client::{Client, Cluster, solana_sdk::commitment_config::CommitmentConfig};
+use std::sync::Arc;
+
+let payer = Arc::new(payer_keypair);
+let client = Client::new_with_options(Cluster::Devnet, payer, CommitmentConfig::confirmed());
+let program = client.program(orao_solana_vrf::id())?;
 ```
 
-### Rust SDK
+A minimal randomness request from off-chain code:
 
-Check out the source code.
+```rust
+use orao_solana_vrf::{wait_fulfilled, RequestBuilder};
 
-It's simple to integrate ORAO VRF into an on-chain game. We've built a [Russian Roulette contract and CLI](https://github.com/orao-network/solana-vrf/tree/master/rust/examples/cpi). New developers can reference it to get insight into doing Solana CPI - Cross Program Invocation.
+let seed: [u8; 32] = rand::random();
+let fulfilled = wait_fulfilled(seed, program.clone()).await;
 
-### JS / TS SDK
+RequestBuilder::new(seed).build(&program).await?.send().await?;
 
-Browse through [js SDK](https://github.com/orao-network/solana-vrf/tree/master/js) and it's subdirectories for more info.
-Check out [sample Typescript integration](https://github.com/orao-network/solana-vrf/blob/master/rust/examples/cpi/tests/russian-roulette.ts)
+let randomness = fulfilled.await?;
+```
 
-### How to run a test validator.
+For an on-chain CPI integration see the [Russian Roulette contract and CLI](https://github.com/orao-network/solana-vrf/tree/master/rust/examples/cpi)
+example or follow the CPI walkthrough above.
 
-Note that `anchor test` will run it for the [cpi](rust/examples/cpi) tests.
+## JS / TS SDK
 
-Here is an example:
+Install the [`@orao-network/solana-vrf`](https://www.npmjs.com/package/@orao-network/solana-vrf)
+package and use the `Orao` class:
+
+```typescript
+import { AnchorProvider } from "@anchor-lang/core";
+import { Orao } from "@orao-network/solana-vrf";
+
+const provider = AnchorProvider.env();
+const vrf = new Orao(provider);
+
+// Request randomness with a random seed.
+const [seed, tx] = await vrf.request().rpc();
+console.log("Request tx:", tx);
+
+// Wait for fulfillment (default commitment is "finalized").
+const randomness = await vrf.waitFulfilled(seed);
+console.log("Randomness:", randomness.randomness);
+```
+
+See the [js SDK](https://github.com/orao-network/solana-vrf/tree/master/js) and
+[sample Typescript integration](https://github.com/orao-network/solana-vrf/blob/master/rust/examples/cpi/tests/russian-roulette.ts)
+for more.
+
+## Running a local test validator
+
+`anchor test` will spin up a local validator automatically for the [cpi](rust/examples/cpi)
+tests. To run a validator manually with the VRF program preloaded:
 
 ```sh
 solana-test-validator -r \

@@ -1,6 +1,6 @@
 [toolchain]
-anchor_version = "0.32.1"
-solana_version = "2.3.0"
+anchor_version = "1.2.1"
+solana_version = "4.3.2"
 
 [features]
 resolution = true
@@ -8,9 +8,6 @@ skip-lint = false
 
 [programs.localnet]
 example_client = "EioKxQafFaRbM5Yo1NXp1SP9HaFaqWWErZYpcb1a5eAC"
-
-[registry]
-url = "https://api.apr.dev"
 
 [provider]
 cluster = "Localnet"

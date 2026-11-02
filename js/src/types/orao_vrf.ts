@@ -8,7 +8,7 @@ export type OraoVrf = {
   "address": "VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y",
   "metadata": {
     "name": "oraoVrf",
-    "version": "0.6.1",
+    "version": "0.7.0",
     "spec": "0.1.0",
     "description": "ORAO VRF contract"
   },
@@ -40,46 +40,7 @@ export type OraoVrf = {
         },
         {
           "name": "networkState",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  111,
-                  114,
-                  97,
-                  111,
-                  45,
-                  118,
-                  114,
-                  102,
-                  45,
-                  110,
-                  101,
-                  116,
-                  119,
-                  111,
-                  114,
-                  107,
-                  45,
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103,
-                  117,
-                  114,
-                  97,
-                  116,
-                  105,
-                  111,
-                  110
-                ]
-              }
-            ]
-          }
+          "writable": true
         },
         {
           "name": "request",
@@ -114,98 +75,24 @@ export type OraoVrf = {
         },
         {
           "name": "networkState",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  111,
-                  114,
-                  97,
-                  111,
-                  45,
-                  118,
-                  114,
-                  102,
-                  45,
-                  110,
-                  101,
-                  116,
-                  119,
-                  111,
-                  114,
-                  107,
-                  45,
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103,
-                  117,
-                  114,
-                  97,
-                  116,
-                  105,
-                  111,
-                  110
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "name": "request",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  111,
-                  114,
-                  97,
-                  111,
-                  45,
-                  118,
-                  114,
-                  102,
-                  45,
-                  114,
-                  97,
-                  110,
-                  100,
-                  111,
-                  109,
-                  110,
-                  101,
-                  115,
-                  115,
-                  45,
-                  114,
-                  101,
-                  113,
-                  117,
-                  101,
-                  115,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "request"
-              }
-            ]
-          }
-        },
-        {
-          "name": "client",
           "writable": true
         },
         {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
+          "name": "request",
+          "writable": true
+        },
+        {
+          "name": "client",
+          "docs": [
+            "",
+            "`dup` — the client may well be the fee payer (e.g. a request fulfilled by its",
+            "own author), which Anchor 1.x would otherwise reject as a duplicate mutable",
+            "account."
+          ],
+          "writable": true
+        },
+        {
+          "name": "systemProgram"
         }
       ],
       "args": []
@@ -240,53 +127,13 @@ export type OraoVrf = {
         },
         {
           "name": "networkState",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  111,
-                  114,
-                  97,
-                  111,
-                  45,
-                  118,
-                  114,
-                  102,
-                  45,
-                  110,
-                  101,
-                  116,
-                  119,
-                  111,
-                  114,
-                  107,
-                  45,
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103,
-                  117,
-                  114,
-                  97,
-                  116,
-                  105,
-                  111,
-                  110
-                ]
-              }
-            ]
-          }
+          "writable": true
         },
         {
           "name": "treasury"
         },
         {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
+          "name": "systemProgram"
         }
       ],
       "args": [
@@ -342,46 +189,7 @@ export type OraoVrf = {
         },
         {
           "name": "networkState",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  111,
-                  114,
-                  97,
-                  111,
-                  45,
-                  118,
-                  114,
-                  102,
-                  45,
-                  110,
-                  101,
-                  116,
-                  119,
-                  111,
-                  114,
-                  107,
-                  45,
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103,
-                  117,
-                  114,
-                  97,
-                  116,
-                  105,
-                  111,
-                  110
-                ]
-              }
-            ]
-          }
+          "writable": true
         },
         {
           "name": "treasury",
@@ -389,51 +197,10 @@ export type OraoVrf = {
         },
         {
           "name": "request",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  111,
-                  114,
-                  97,
-                  111,
-                  45,
-                  118,
-                  114,
-                  102,
-                  45,
-                  114,
-                  97,
-                  110,
-                  100,
-                  111,
-                  109,
-                  110,
-                  101,
-                  115,
-                  115,
-                  45,
-                  114,
-                  101,
-                  113,
-                  117,
-                  101,
-                  115,
-                  116
-                ]
-              },
-              {
-                "kind": "arg",
-                "path": "seed"
-              }
-            ]
-          }
+          "writable": true
         },
         {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
+          "name": "systemProgram"
         }
       ],
       "args": [
@@ -473,46 +240,7 @@ export type OraoVrf = {
         },
         {
           "name": "networkState",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  111,
-                  114,
-                  97,
-                  111,
-                  45,
-                  118,
-                  114,
-                  102,
-                  45,
-                  110,
-                  101,
-                  116,
-                  119,
-                  111,
-                  114,
-                  107,
-                  45,
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103,
-                  117,
-                  114,
-                  97,
-                  116,
-                  105,
-                  111,
-                  110
-                ]
-              }
-            ]
-          }
+          "writable": true
         },
         {
           "name": "treasury",
@@ -520,51 +248,10 @@ export type OraoVrf = {
         },
         {
           "name": "request",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  111,
-                  114,
-                  97,
-                  111,
-                  45,
-                  118,
-                  114,
-                  102,
-                  45,
-                  114,
-                  97,
-                  110,
-                  100,
-                  111,
-                  109,
-                  110,
-                  101,
-                  115,
-                  115,
-                  45,
-                  114,
-                  101,
-                  113,
-                  117,
-                  101,
-                  115,
-                  116
-                ]
-              },
-              {
-                "kind": "arg",
-                "path": "seed"
-              }
-            ]
-          }
+          "writable": true
         },
         {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
+          "name": "systemProgram"
         }
       ],
       "args": [
@@ -609,46 +296,7 @@ export type OraoVrf = {
         },
         {
           "name": "networkState",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  111,
-                  114,
-                  97,
-                  111,
-                  45,
-                  118,
-                  114,
-                  102,
-                  45,
-                  110,
-                  101,
-                  116,
-                  119,
-                  111,
-                  114,
-                  107,
-                  45,
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103,
-                  117,
-                  114,
-                  97,
-                  116,
-                  105,
-                  111,
-                  110
-                ]
-              }
-            ]
-          }
+          "writable": true
         },
         {
           "name": "treasury"
@@ -813,7 +461,7 @@ export type OraoVrf = {
     {
       "code": 6009,
       "name": "unknownTreasuryGiven",
-      "msg": "unknownTreasuryGiven"
+      "msg": "UnknownTreasuryGiven"
     }
   ],
   "types": [

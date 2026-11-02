@@ -1,9 +1,28 @@
 use anchor_lang::{prelude::*, InstructionData};
 use solana_hash::Hash;
 use solana_message::AddressLookupTableAccount;
-use solana_sha256_hasher::Hasher;
 
-use super::super::borsh;
+/// Incremental SHA-256 over the concatenation of the fed chunks.
+///
+/// `solana_sha256_hasher::Hasher` is host-only (it is `cfg`-ed out on the Solana
+/// target even with the `sha2` feature), while the accounts hash is computed
+/// on-chain as well. Hashing the concatenation yields exactly the digest the
+/// incremental hasher used to produce, so stored hashes stay valid; on-chain this
+/// is a single `sol_sha256` syscall.
+#[derive(Clone, Default)]
+struct Hasher {
+    data: Vec<u8>,
+}
+
+impl Hasher {
+    fn hash(&mut self, val: &[u8]) {
+        self.data.extend_from_slice(val);
+    }
+
+    fn result(self) -> Hash {
+        solana_sha256_hasher::hash(&self.data)
+    }
+}
 
 /// This PDA represents a state of a registered client.
 #[account]

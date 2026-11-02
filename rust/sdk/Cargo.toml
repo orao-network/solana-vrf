@@ -1,7 +1,8 @@
 [package]
 name = "orao-solana-vrf"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2021"
+rust-version = "1.89"
 authors = ["ORAO Devs <hello@orao.network>"]
 homepage = "https://orao.network"
 repository = "https://github.com/orao-network/solana-vrf"
@@ -13,14 +14,17 @@ description = "ORAO Verifiable Random Function for Solana."
 no-entrypoint = []
 no-idl = []
 no-log-ix-name = []
+anchor-debug = []
 idl-build = ["anchor-lang/idl-build"]
 cpi = ["no-entrypoint"]
 sdk = [
     "anchor-client",
     "ed25519-dalek",
     "no-entrypoint",
+    "solana-compute-budget-interface",
     "solana-rpc-client",
     "solana-rpc-client-api",
+    "solana-sdk",
     "thiserror",
     "tokio",
 ]
@@ -29,9 +33,11 @@ default = ["sdk"]
 [dependencies]
 anchor-lang.workspace = true
 anchor-spl.workspace = true
-anchor-client = { workspace = true, optional = true, features = ["async"] }
+anchor-client = { workspace = true, optional = true }
+solana-sdk = { workspace = true, optional = true }
 solana-rpc-client = { workspace = true, optional = true }
 solana-rpc-client-api = { workspace = true, optional = true }
+solana-compute-budget-interface = { workspace = true, optional = true }
 ed25519-dalek = { workspace = true, optional = true }
 tokio = { version = "1", optional = true }
 thiserror = { version = "1", optional = true }

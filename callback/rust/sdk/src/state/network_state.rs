@@ -1,7 +1,5 @@
 use anchor_lang::{account, prelude::Pubkey, AnchorDeserialize, AnchorSerialize, Discriminator};
 
-use super::super::borsh;
-
 /// This PDA holds oracle state and configuration.
 #[account]
 #[cfg_attr(any(feature = "sdk", test), derive(Debug))]

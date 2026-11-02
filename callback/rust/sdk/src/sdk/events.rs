@@ -1,8 +1,8 @@
 use core::fmt;
 use std::io;
 
-use anchor_client::solana_sdk::{bs58, native_token::LAMPORTS_PER_SOL};
 use anchor_lang::{prelude::borsh::BorshDeserialize, Discriminator};
+use solana_sdk::native_token::LAMPORTS_PER_SOL;
 
 use crate::events::{
     CallbackUpdated, CalledBack, Fulfilled, Registered, Requested, RequestedAlt, Responded,

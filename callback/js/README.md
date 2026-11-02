@@ -1,11 +1,12 @@
-# Callback VRF JS SDK
+# ORAO Solana VRF Callback — JS SDK
 
-Library to interact with `orao-vrf-cb` smart contract on Solana network.
+Library to interact with the `orao-vrf-cb` smart contract on Solana — the **callback variant**
+of ORAO VRF. Unlike the classic VRF, requests are made via CPI from a registered client program
+and fulfillment triggers a client-defined callback instruction.
 
-Provides interface to request for a verifiable randomness (Ed25519 Signature) on the Solana network.
-
-The Callback VRF is designed for on-chain usage — this SDK might get handy if you want to build
-tools or infrastructure around yor Callback VRF client.
+This off-chain SDK is mainly useful for tooling and infrastructure around an on-chain client
+(registration, funding, withdrawing, inspecting clients). For on-chain integration use the
+[Rust SDK](https://crates.io/crates/orao-solana-vrf-cb) with the `cpi` feature.
 
 ## Installation
 

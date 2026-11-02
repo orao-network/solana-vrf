@@ -55,7 +55,7 @@ pub struct Request<'info> {
     ///
     /// CHECK: Asserted by the CPI
     #[account(mut)]
-    pub treasury: AccountInfo<'info>,
+    pub treasury: UncheckedAccount<'info>,
     /// The request account.
     ///
     /// CHECK: Asserted by the CPI
@@ -65,7 +65,7 @@ pub struct Request<'info> {
         seeds::program = orao_solana_vrf_cb::id(),
         bump,
     )]
-    pub request: AccountInfo<'info>,
+    pub request: UncheckedAccount<'info>,
     pub system_program: Program<'info, System>,
 }
 
@@ -75,7 +75,7 @@ pub fn handler(
     override_callback: Option<HowToOverride>,
 ) -> Result<()> {
     // Setup the CPI accounts
-    let cpi_program = ctx.accounts.vrf.to_account_info();
+    let cpi_program = ctx.accounts.vrf.key();
     let mut cpi_accounts = cpi::accounts::Request {
         payer: ctx.accounts.payer.to_account_info(),
         state: ctx.accounts.client_state.to_account_info(),

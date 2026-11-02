@@ -1,20 +1,19 @@
 use std::ops::Deref;
 use std::sync::Arc;
 
-use anchor_client::solana_sdk::{
-    commitment_config::CommitmentConfig, signature::Signature, signer::keypair::read_keypair_file,
-    signer::Signer,
-};
 use anchor_client::{Client, ClientError, Cluster, Program};
 use indicatif::ProgressBar;
-use orao_solana_vrf::{get_randomness, wait_fulfilled, randomness_account_address, state::RandomnessAccountData, ID};
+use orao_solana_vrf::{
+    get_randomness, randomness_account_address, state::RandomnessAccountData, wait_fulfilled, ID,
+};
 use russian_roulette::{
     player_state_account_address, spin_and_pull_the_trigger,
     state::{current_state, CurrentState, PlayerState},
 };
 use solana_cli_config::Config;
-use solana_sdk::commitment_config::CommitmentLevel;
-use solana_client::rpc_config::RpcSendTransactionConfig;
+use solana_commitment_config::{CommitmentConfig, CommitmentLevel};
+use solana_rpc_client_api::config::RpcSendTransactionConfig;
+use solana_sdk::{signature::Signature, signer::keypair::read_keypair_file, signer::Signer};
 use structopt::StructOpt;
 
 /// CLI action.
@@ -119,7 +118,11 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn describe_state(sound_effects: bool, state: PlayerState, previous_round: Option<&RandomnessAccountData>) {
+fn describe_state(
+    sound_effects: bool,
+    state: PlayerState,
+    previous_round: Option<&RandomnessAccountData>,
+) {
     match previous_round {
         Some(round) => match current_state(&round) {
             CurrentState::Alive => println!(

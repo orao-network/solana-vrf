@@ -7,7 +7,7 @@ impl ErrorCode {
     ///
     /// Returns `None` if code doesn't match known variant.
     ///
-    /// [`InstructionError::Custom`]: anchor_client::solana_sdk::instruction::InstructionError::Custom
+    /// [`InstructionError::Custom`]: solana_sdk::instruction::InstructionError::Custom
     pub fn from_custom_error(code: u32) -> Option<Self> {
         match code.checked_sub(anchor_lang::error::ERROR_CODE_OFFSET)? {
             0 => Some(Self::NotAuthorized),

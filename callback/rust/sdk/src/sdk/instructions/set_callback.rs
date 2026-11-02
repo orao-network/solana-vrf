@@ -1,12 +1,12 @@
 use std::ops::Deref;
 use std::sync::Arc;
 
-use anchor_client::solana_sdk::instruction::Instruction;
-use anchor_client::solana_sdk::signer::Signer;
 use anchor_client::ThreadSafeSigner;
 use anchor_lang::prelude::Pubkey;
+use anchor_lang::system_program;
 use anchor_lang::{InstructionData, ToAccountMetas};
-use solana_system_interface::program as system_program;
+use solana_sdk::instruction::Instruction;
+use solana_sdk::signer::Signer;
 
 use crate::state::client::Callback;
 use crate::SetCallbackParams;
@@ -99,7 +99,7 @@ impl SetCallbackBuilder {
             crate::accounts::SetCallback {
                 payer,
                 client,
-                system_program: Pubkey::new_from_array(system_program::ID.to_bytes()),
+                system_program: system_program::ID,
             }
             .to_account_metas(None),
         )
@@ -131,7 +131,7 @@ impl SetCallbackBuilder {
             .accounts(crate::accounts::SetCallback {
                 payer: orao_vrf.payer(),
                 client,
-                system_program: Pubkey::new_from_array(system_program::ID.to_bytes()),
+                system_program: system_program::ID,
             })
             .args(crate::instruction::SetCallback {
                 params: self.params,

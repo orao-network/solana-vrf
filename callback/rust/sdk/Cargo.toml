@@ -1,7 +1,8 @@
 [package]
 name = "orao-solana-vrf-cb"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
+rust-version = "1.89"
 authors = ["ORAO Devs <hello@orao.network>"]
 homepage = "https://orao.network"
 repository = "https://github.com/orao-network/solana-vrf/callback"
@@ -19,12 +20,16 @@ cpi = ["no-entrypoint"]
 no-entrypoint = []
 no-idl = []
 no-log-ix-name = []
+anchor-debug = []
 idl-build = ["anchor-lang/idl-build"]
 sdk = [
     "no-entrypoint",
     "anchor-client",
+    "solana-sdk",
     "solana-rpc-client",
     "solana-rpc-client-api",
+    "solana-compute-budget-interface",
+    "bs58",
     "ed25519-dalek",
     "serde",
     "tokio",
@@ -32,18 +37,19 @@ sdk = [
 ]
 
 [dependencies]
-anchor-lang = "0.32.1"
-anchor-client = { version = "0.32.1", optional = true, features = ["async"] }
-solana-rpc-client = { version = "2.3", optional = true }
-solana-rpc-client-api = { version = "2.3", optional = true }
-solana-hash = { version = "2.3" }
-solana-message = { version = "2.3" }
-solana-address-lookup-table-interface = { version = "2.2", features = [
-    "bincode",
-    "bytemuck",
-] }
-solana-sha256-hasher = { version = "2.3" }
-solana-system-interface = { version = "2" }
+anchor-lang = { version = "1.2.1", default-features = false, features = ["solana-v4"] }
+anchor-client = { version = "1.2.1", optional = true, default-features = false, features = ["async", "solana-v4"] }
+solana-sdk = { version = "4", optional = true }
+# Agave 4.4 client crates moved to solana-transaction 5, which anchor-client 1.2
+# still cannot use; stay on the 4.3 line until Anchor catches up.
+solana-rpc-client = { version = "~4.3", optional = true }
+solana-rpc-client-api = { version = "~4.3", optional = true }
+solana-compute-budget-interface = { version = "3", optional = true }
+bs58 = { version = "0.5", optional = true }
+solana-hash = "4"
+solana-message = "4"
+solana-address-lookup-table-interface = { version = "3", features = ["bincode", "bytemuck"] }
+solana-sha256-hasher = "3"
 byteorder = "1.5.0"
 ed25519-dalek = { version = "1.0.1", optional = true }
 serde = { version = "1", optional = true }

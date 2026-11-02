@@ -3,7 +3,7 @@
 </h1>
 
 <p>
-  Generate on-chain randomness on Solana and invoke a Callback on your contract. ORAO's Verifiable Random Function for Solana offers unbiased, fast and affordable randomness for your Solana programs. Create unique NFT characteristics, generate random levels for games and weapons, randomize airdrops and provide secure, verifiable lottery. Built using Anchor framework.
+  Generate on-chain randomness on Solana and invoke a callback on your contract. ORAO's Verifiable Random Function for Solana offers unbiased, fast and affordable randomness for your Solana programs. Create unique NFT characteristics, generate random levels for games and weapons, randomize airdrops and provide secure, verifiable lottery. Built using Anchor framework.
 </p>
 
 <p align="center">
@@ -14,6 +14,33 @@
 This repository provides Rust and JS web3 SDKs for ORAO Callback VRF program.
 
 Program account (devnet/mainnet): `VRFCBePmGTpZ234BhbzNNzmyg39Rgdd6VgdfhHwKypU`
+
+**New here?**
+👉 [**Getting Started**](../GETTING_STARTED.md#callback-quick-start) — 5-minute callback quick start (registration → fund → request → callback ix).
+👉 [**Recipes**](../RECIPES.md) — patterns including NFT trait selection (callback) and weighted raffle.
+
+> ⚠️ **Callbacks must not fail.** The oracle ignores callback errors once a fulfillment
+> deadline is reached — see [Faulty callback policy](#faulty-callback-policy-and-the-request-explorer)
+> before designing your callback.
+
+## Table of contents
+
+- [Getting Started](../GETTING_STARTED.md#callback-quick-start) — quick start for the callback variant
+- [Recipes](../RECIPES.md) — common use-case patterns
+- [Developer Integration Guide](#developer-integration-guide)
+  - [1. Create, deploy and initialize a client program](#1-create-deploy-and-initialize-a-client-program-for-solana)
+  - [2. Register your client program at the Callback VRF](#2-register-your-client-program-at-the-callback-vrf)
+    - [Callback](#callback)
+    - [Callback Directives](#callback-directives)
+    - [Updating client-level callback with `SetCallback`](#updating-client-level-callback-with-setcallback-instruction)
+  - [3. Fund the new Client PDA](#3-fund-the-new-client-pda-created-in-the-previous-step)
+    - [Withdrawing client funds](#withdrawing-client-funds-using-the-withdraw-instruction)
+  - [4. Request new randomness](#4-request-new-randomness)
+    - [Simple `Request` CPI](#an-example-of-a-simple-request-cpi)
+    - [`Request` CPI with optional request-level callback](#an-example-of-a-request-cpi-with-an-optional-request-level-callback)
+- [Faulty callback policy and the request explorer](#faulty-callback-policy-and-the-request-explorer)
+- [Transferring client ownership](#transferring-client-ownership-using-the-transfer-instruction)
+- [Pushing Solana limits](#pushing-solana-limits)
 
 ## Developer Integration Guide
 
@@ -30,7 +57,7 @@ All the requests to the Callback VRF are made via CPI by a registered client, so
 
 Here are the minimal requirements for a client program:
 
-1.  Program must have at least one PDA (bellow called a _State PDA_) that is
+1.  Program must have at least one PDA (below called a _State PDA_) that is
     going to be used as a request authority — this PDA will sign the CPI call
     to the `Request` instruction so that the request could be authorized by the
     Callback VRF.
@@ -39,8 +66,8 @@ Here are the minimal requirements for a client program:
 
 Client programs can have one or more instructions that can be used as callbacks.
 
-    Callback instructions have some requirements imposed on their list
-    of accounts (see the [Callback](#callback) section bellow).
+> **Note:** callback instructions have some requirements imposed on their list of
+> accounts — see the [Callback](#callback) section below.
 
 As you can see the minimal client program could have just two instructions:
 first one to initialize the state PDA and the second one to perform the Request CPI.
@@ -58,7 +85,7 @@ used for the following purposes:
 Please note that only the program owner (it's [upgrade authority](https://solana.com/docs/core/programs#updating-solana-programs))
 is able to call the `Register` instruction — this account becomes an owner of
 the new client. The client ownership could later be transferred using the `Transfer` instruction
-(see bellow).
+(see below).
 
 Also note that you can register the same client program multiple times as long
 as unique State PDAs are used for every registration — every such registration
@@ -81,12 +108,12 @@ let vrf = new OraoCb(provider);
 let builder = await new RegisterBuilder(
     vrf,
     clientProgram.programId,
-    clientStateAddress,
+    clientStateAddr,
     [...clientStateSeeds, Buffer.from([clientStateBump])]
 )
     // You can omit the callback completely so the
     // new client won't have a client-level callback
-    .withCallback(/* see the Callback section bellow */)
+    .withCallback(/* see the Callback section below */)
     .build();
 
 console.log("Registered in", await builder.rpc());
@@ -100,7 +127,7 @@ let state_seeds: Vec<Vec<u8>> = /* State PDA seeds and bump */;
 let signature = RegisterBuilder::new(state_seeds)
     // You can omit the callback completely so the
     // new client won't have a client-level callback
-    .with_callback(/* see the Callback section bellow */)
+    .with_callback(/* see the Callback section below */)
     .build(vrf, program_address, state_address).await?
     .send().await?;
 
@@ -123,7 +150,7 @@ as long as it expects the following list of accounts:
 3.  (readonly) VRF's `NetworkState` PDA will be available for reading
 4.  (readonly) Fulfilled `RequestAccount` PDA will be available for reading
 5.  (optional) ... zero or more additional accounts given upon registration
-    or upon the `Request`/`RequestAlt` CPI (see bellow)
+    or upon the `Request`/`RequestAlt` CPI (see below)
 
 From the features perspective there are two types of callbacks:
 
@@ -132,7 +159,7 @@ From the features perspective there are two types of callbacks:
     This type of callback is able to use Solana's feature that allows developers
     to create a collection of related addresses to efficiently load more addresses
     in a single transaction. This is only possible for a _request-level callback_
-    (see bellow).
+    (see below).
 
 From the contract perspective there are two types of callbacks:
 
@@ -255,7 +282,7 @@ To define a callback you must provide the following information:
                 seeds: [Buffer.from(MY_PDA_SEED), Buffer.from([myPdaBump])],
             },
         ];
-        let(remainingAccounts, accountsHash) = compileAccounts(
+        let [remainingAccounts, accountsHash] = compileAccounts(
             accounts,
             lookupTables
         );
@@ -265,25 +292,6 @@ To define a callback you must provide the following information:
             remainingAccounts,
         };
         ```
-
-##### Faulty callback policy and the request explorer
-
-Among other important characteristics the oracle’s design was built with an
-emphasis on ensuring that all client requests must be fulfilled in one way
-or another. In the context of arbitrary callbacks, this means that the oracle
-must be able to ignore potential errors and still fulfill the client’s request.
-The Solana platform does not allow catching CPI errors, so the oracle uses
-a configurable deadline (expressed in slots) during which the callback has
-a chance to execute successfully. Once this deadline is reached, the randomness
-request will be fulfilled, but the callback will be ignored.
-
-For the client, this means their callback should never fail — for debugging
-purposes, the [request explorer][request-explorer] is available. Using this tool,
-you can view your callback logs even if they are not accessible in the Solana
-explorer, as well as identify other potential issues with your callback
-(e.g. exceeding the maximum transaction size).
-
-[request-explorer]: https://vrf-explorer.orao.network
 
 ##### Callback Directives
 
@@ -420,7 +428,7 @@ Here is an example of off-chain `Withdraw` invocation:
     let signature = WithdrawBuilder::new(amount_in_lamports)
         .build(&vrf, client_addr).await?
         .send().await?;
-    println!("Registered in {signature}");
+    println!("Withdrawn in {signature}");
     ```
 
 ### 4. Request new randomness
@@ -491,8 +499,7 @@ pub struct InvokeRequest<'info> {
 /// And here is a handler for our `InvokeRequest` instruction
 pub fn handler(ctx: Context<InvokeRequest>, seed: [u8; 32]) -> Result<()> {
     use orao_solana_vrf_cb::{cpi, RequestParams};
-    // As stated above our simple instruction will just perform CPI
-    // without any other logic.
+    // Our simple instruction will just perform CPI without any other logic.
 
     // First lets prepare instruction parameters and accounts.
     let cpi_program = ctx.accounts.vrf.to_account_info();
@@ -507,8 +514,7 @@ pub fn handler(ctx: Context<InvokeRequest>, seed: [u8; 32]) -> Result<()> {
         system_program: ctx.accounts.system_program.to_account_info(),
     };
 
-    // As said above our state account will authorize the `Request` CPI,
-    // so VRF expects it to sign the invocation
+    // Our state account authorizes the `Request` CPI, so VRF expects it to sign the invocation
     // (see https://solana.com/developers/guides/getstarted/how-to-cpi-with-signer)
     cpi_accounts.state.is_signer = true;
     let signers_seeds: &[&[&[u8]]] = &[&[
@@ -595,8 +601,7 @@ pub fn handler(
     use orao_solana_vrf_cb::{
         cpi, RequestParams, state::client::Callback, instruction
     };
-    // As said above our simple instruction will just perform CPI
-    // without any other logic.
+    // Our simple instruction will just perform CPI without any other logic.
 
     // First lets prepare instruction parameters and accounts.
     let cpi_program = ctx.accounts.vrf.to_account_info();
@@ -611,8 +616,7 @@ pub fn handler(
         system_program: ctx.accounts.system_program.to_account_info(),
     };
 
-    // As said above our state account will authorize the `Request` CPI,
-    // so VRF expects it to sign the invocation
+    // Our state account authorizes the `Request` CPI, so VRF expects it to sign the invocation
     // (see https://solana.com/developers/guides/getstarted/how-to-cpi-with-signer)
     cpi_accounts.state.is_signer = true;
     let signers_seeds: &[&[&[u8]]] = &[&[
@@ -627,7 +631,7 @@ pub fn handler(
         //     our callback needs to read — this is an arbitrary account
         // *   the second one is the "Statistic" account our callback needs
         //     to updated — this is our program's PDA
-        // The `Callback` instruction itself is defined bellow.
+        // The `Callback` instruction itself is defined below.
         let data_address = SOME_KNOWN_ADDRESS;
         let (stat_address, stat_bump) = Pubkey::find_program_address(
             &[b"STATISTIC"],
@@ -723,6 +727,25 @@ pub struct Callback<'info> {
     pub statistic: Account<'info, Statistic>,
 }
 ```
+
+## Faulty callback policy and the request explorer
+
+Among other important characteristics the oracle's design was built with an
+emphasis on ensuring that all client requests must be fulfilled in one way
+or another. In the context of arbitrary callbacks, this means that the oracle
+must be able to ignore potential errors and still fulfill the client's request.
+The Solana platform does not allow catching CPI errors, so the oracle uses
+a configurable deadline (expressed in slots) during which the callback has
+a chance to execute successfully. Once this deadline is reached, the randomness
+request will be fulfilled, but the callback will be ignored.
+
+For the client, this means their callback should never fail — for debugging
+purposes, the [request explorer][request-explorer] is available. Using this tool,
+you can view your callback logs even if they are not accessible in the Solana
+explorer, as well as identify other potential issues with your callback
+(e.g. exceeding the maximum transaction size).
+
+[request-explorer]: https://vrf-explorer.orao.network
 
 ## Transferring client ownership using the `Transfer` instruction
 

@@ -50,7 +50,7 @@ CLICK! Player 56HnAmFGyM9QcuNM51WvX88cXX76aMVQivc53aHuAHxK is alive after 11 rou
 
 Requirements:
 
-Note: these instructions assume you have a working solana-cli, rust, anchor installation (v0.29) and that all env and paths are set.
+Note: these instructions assume you have a working solana-cli, rust, anchor installation (v1.2.1) and that all env and paths are set.
 The contract is already deployed on both the `devnet` and `mainnet`, however you can change it's ID and deploy to another address:
 
 ```sh

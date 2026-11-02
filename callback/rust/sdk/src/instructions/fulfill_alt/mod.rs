@@ -28,10 +28,10 @@ pub struct FulfillAlt<'info> {
     pub payer: Signer<'info>,
     /// CHECK: It is asserted via constraint that program matches the registered client program.
     #[account(constraint = program.key() == client.program @ ErrorCode::UnexpectedClientProgram)]
-    pub program: AccountInfo<'info>,
+    pub program: UncheckedAccount<'info>,
     /// CHECK: It is asserted via constraint that state matches the registered client state.
     #[account(mut, constraint = state.key() == client.state @ ErrorCode::UnexpectedClientState)]
-    pub state: AccountInfo<'info>,
+    pub state: UncheckedAccount<'info>,
     #[account(
         mut,
         seeds = [CB_CLIENT_ACCOUNT_SEED, program.key().as_ref(), state.key().as_ref()],
@@ -52,7 +52,7 @@ pub struct FulfillAlt<'info> {
     /// Instructions sysvar account.
     ///
     /// CHECK:
-    pub instruction_acc: AccountInfo<'info>,
+    pub instruction_acc: UncheckedAccount<'info>,
     // Requests goes as remaining accounts.
 }
 

@@ -42,7 +42,7 @@
 //! >     This type of callback is able to use Solana's feature that allows developers
 //! >     to create a collection of related addresses to efficiently load more addresses
 //! >     in a single transaction. This is only possible for a _request-level callback_
-//! >     (see bellow).
+//! >     (see below).
 //! >
 //! > For the same reason there are two kinds of request accounts:
 //! >
@@ -119,7 +119,7 @@
 //!     2.  The state PDA (writable) (see [`Client::state`]).
 //!     3.  The [`NetworkState`] PDA (read-only).
 //!     4.  The corresponding [`RequestAccount`] PDA (read-only).
-//!     5.  [ ... zero or more _remaining accounts_ (see bellow) ]
+//!     5.  [ ... zero or more _remaining accounts_ (see below) ]
 //!
 //! #### Remaining accounts of a callback
 //!
@@ -218,6 +218,9 @@ pub mod sdk;
 
 declare_id!("VRFCBePmGTpZ234BhbzNNzmyg39Rgdd6VgdfhHwKypU");
 
+/// The Ed25519 program (`Ed25519SigVerify111111111111111111111111111`).
+pub const ED25519_PROGRAM_ID: Pubkey = pubkey!("Ed25519SigVerify111111111111111111111111111");
+
 /// Helper that checks for Byzantine quorum.
 pub const fn quorum(count: usize, total: usize) -> bool {
     count >= majority(total)
@@ -280,16 +283,16 @@ pub mod orao_vrf_cb {
     }
 
     #[access_control(ctx.accounts.validate(&ctx, &params))]
-    pub fn fulfill<'a, 'info>(
-        ctx: Context<'a, 'a, 'a, 'info, Fulfill<'info>>,
+    pub fn fulfill<'info>(
+        ctx: Context<'info, Fulfill<'info>>,
         params: FulfillParams,
     ) -> Result<()> {
         fulfill::fulfill_handler(ctx, params)
     }
 
     #[access_control(ctx.accounts.validate(&ctx, &params))]
-    pub fn fulfill_alt<'a, 'info>(
-        ctx: Context<'a, 'a, 'a, 'info, FulfillAlt<'info>>,
+    pub fn fulfill_alt<'info>(
+        ctx: Context<'info, FulfillAlt<'info>>,
         params: FulfillAltParams,
     ) -> Result<()> {
         fulfill_alt::fulfill_alt_handler(ctx, params)

@@ -1,8 +1,9 @@
 [package]
 name = "example-client"
-version = "0.3.2"
+version = "0.4.0"
 description = "Created with Anchor"
 edition = "2021"
+rust-version = "1.89"
 
 [lib]
 crate-type = ["cdylib", "lib"]
@@ -14,10 +15,11 @@ cpi = ["no-entrypoint"]
 no-entrypoint = []
 no-idl = []
 no-log-ix-name = []
+anchor-debug = []
 idl-build = ["anchor-lang/idl-build", "orao-solana-vrf-cb/idl-build"]
 
 [dependencies]
-anchor-lang = "0.32.1"
+anchor-lang = { version = "1.2.1", default-features = false, features = ["solana-v4"] }
 
 [dependencies.orao-solana-vrf-cb]
 path = "../../../../sdk"

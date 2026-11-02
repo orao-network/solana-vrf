@@ -1,4 +1,4 @@
-import { BN, web3 } from "@coral-xyz/anchor";
+import { BN, web3 } from "@anchor-lang/core";
 import nacl from "tweetnacl";
 import { quorum } from ".";
 

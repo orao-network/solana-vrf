@@ -1,7 +1,8 @@
 [package]
 name = "off-chain"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2021"
+rust-version = "1.89"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -16,7 +17,10 @@ anchor-client.workspace = true
 anchor-lang.workspace = true
 indicatif = "0.17"
 orao-solana-vrf = { path = "../../sdk" }
+solana-sdk.workspace = true
+solana-commitment-config.workspace = true
 solana-rpc-client.workspace = true
 solana-rpc-client-api.workspace = true
+bs58.workspace = true
 tokio = { version = "1", features = ["full"] }
 rand.workspace = true

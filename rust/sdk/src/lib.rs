@@ -24,7 +24,6 @@
 //!
 //! ```ignore
 //! // assuming ctx to be a context of an instruction that performs CPI
-//! let vrf_program = ctx.accounts.vrf.to_account_info();
 //! let request_accounts = orao_solana_vrf::cpi::accounts::Request {
 //!     payer: ctx.accounts.player.to_account_info(),
 //!     network_state: ctx.accounts.config.to_account_info(),
@@ -32,7 +31,7 @@
 //!     request: ctx.accounts.request.to_account_info(),
 //!     system_program: ctx.accounts.system_program.to_account_info(),
 //! };
-//! let cpi_ctx = CpiContext::new(vrf_program, request_accounts);
+//! let cpi_ctx = CpiContext::new(ctx.accounts.vrf.key(), request_accounts);
 //! orao_solana_vrf::cpi::request(cpi_ctx, seed)?;
 //! ```
 #![cfg_attr(docsrs, feature(doc_cfg))]
@@ -55,6 +54,9 @@ pub use crate::sdk::*;
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 declare_id!("VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y");
+
+/// The Ed25519 program (`Ed25519SigVerify111111111111111111111111111`).
+pub const ED25519_PROGRAM_ID: Pubkey = pubkey!("Ed25519SigVerify111111111111111111111111111");
 
 /// This is the seed used for creating request/fulfillment accounts.
 pub const RANDOMNESS_ACCOUNT_SEED: &[u8] = b"orao-vrf-randomness-request";
@@ -142,10 +144,7 @@ pub mod orao_vrf {
     /// (for required accounts see [`crate::Request`]).
     ///
     /// *  seed – unique request seed
-    pub fn request<'info>(
-        ctx: Context<'_, '_, '_, 'info, Request<'info>>,
-        seed: [u8; 32],
-    ) -> Result<()> {
+    pub fn request<'info>(ctx: Context<'info, Request<'info>>, seed: [u8; 32]) -> Result<()> {
         Ok(())
     }
 
@@ -158,10 +157,7 @@ pub mod orao_vrf {
     /// Performs a randomness request (for required accounts see [`crate::RequestV2`]).
     ///
     /// *  seed – unique request seed
-    pub fn request_v2<'info>(
-        ctx: Context<'_, '_, '_, 'info, RequestV2<'info>>,
-        seed: [u8; 32],
-    ) -> Result<()> {
+    pub fn request_v2<'info>(ctx: Context<'info, RequestV2<'info>>, seed: [u8; 32]) -> Result<()> {
         Ok(())
     }
 
@@ -200,7 +196,7 @@ pub struct InitNetwork<'info> {
     )]
     pub network_state: Account<'info, NetworkState>,
     /// CHECK:
-    pub treasury: AccountInfo<'info>,
+    pub treasury: UncheckedAccount<'info>,
     pub system_program: Program<'info, System>,
 }
 
@@ -231,7 +227,7 @@ pub struct UpdateNetwork<'info> {
     )]
     pub network_state: Account<'info, NetworkState>,
     /// CHECK:
-    pub treasury: AccountInfo<'info>,
+    pub treasury: UncheckedAccount<'info>,
 }
 
 /// (**deprecated: see [`crate::RequestV2`]**) Request randomness.
@@ -277,7 +273,7 @@ pub struct Request<'info> {
         constraint = network_state.config.treasury == treasury.key() ||
         network_state.config.token_fee_config.as_ref().map(|x| x.treasury) == Some(treasury.key())
         @ Error::UnknownTreasuryGiven)]
-    pub treasury: AccountInfo<'info>,
+    pub treasury: UncheckedAccount<'info>,
     #[account(
         init,
         payer = payer,
@@ -305,7 +301,7 @@ pub struct Fulfill<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     /// CHECK:
-    pub instruction_acc: AccountInfo<'info>,
+    pub instruction_acc: UncheckedAccount<'info>,
     #[account(
         mut,
         seeds = [CONFIG_ACCOUNT_SEED],
@@ -362,7 +358,7 @@ pub struct RequestV2<'info> {
         constraint = network_state.config.treasury == treasury.key() ||
         network_state.config.token_fee_config.as_ref().map(|x| x.treasury) == Some(treasury.key())
         @ Error::UnknownTreasuryGiven)]
-    pub treasury: AccountInfo<'info>,
+    pub treasury: UncheckedAccount<'info>,
     #[account(
         init,
         payer = payer,
@@ -390,7 +386,7 @@ pub struct FulfillV2<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     /// CHECK:
-    pub instruction_acc: AccountInfo<'info>,
+    pub instruction_acc: UncheckedAccount<'info>,
     #[account(
         mut,
         seeds = [CONFIG_ACCOUNT_SEED],
@@ -403,8 +399,12 @@ pub struct FulfillV2<'info> {
         bump,
     )]
     pub request: Account<'info, RandomnessV2>,
-    /// CHECK: An address of this account is validated via anchor constraint
-    #[account(mut, constraint = *request.client() == client.key())]
-    pub client: AccountInfo<'info>,
+    /// CHECK: An address of this account is validated via anchor constraint.
+    ///
+    /// `dup` — the client may well be the fee payer (e.g. a request fulfilled by its
+    /// own author), which Anchor 1.x would otherwise reject as a duplicate mutable
+    /// account.
+    #[account(mut, dup, constraint = *request.client() == client.key())]
+    pub client: UncheckedAccount<'info>,
     pub system_program: Program<'info, System>,
 }

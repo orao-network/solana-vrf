@@ -28,7 +28,7 @@ pub mod example_client {
     }
 
     pub fn request_alt<'info>(
-        ctx: Context<'_, '_, '_, 'info, RequestAlt<'info>>,
+        ctx: Context<'info, RequestAlt<'info>>,
         seed: [u8; 32],
         override_with_param: Option<HowToOverrideAlt>,
     ) -> Result<()> {

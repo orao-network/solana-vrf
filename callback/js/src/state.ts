@@ -1,4 +1,4 @@
-import { BN, IdlAccounts, IdlTypes, web3 } from "@coral-xyz/anchor";
+import { BN, IdlAccounts, IdlTypes, web3 } from "@anchor-lang/core";
 import {
     networkStateAddress,
     PROGRAM_ID,

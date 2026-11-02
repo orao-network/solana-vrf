@@ -8,7 +8,7 @@ export type OraoVrfCb = {
   "address": "VRFCBePmGTpZ234BhbzNNzmyg39Rgdd6VgdfhHwKypU",
   "metadata": {
     "name": "oraoVrfCb",
-    "version": "0.3.1",
+    "version": "0.4.0",
     "spec": "0.1.0",
     "description": "Created with Anchor"
   },
@@ -1156,7 +1156,7 @@ export type OraoVrfCb = {
       ]
     },
     {
-      "name": "orao_vrf_cb::events::fulfilled::Fulfilled",
+      "name": "oraoVrfCbEventsFulfilledFulfilled",
       "discriminator": [
         210,
         174,
@@ -1218,7 +1218,7 @@ export type OraoVrfCb = {
     {
       "code": 6009,
       "name": "fulfilled",
-      "msg": "fulfilled"
+      "msg": "Fulfilled"
     },
     {
       "code": 6010,
@@ -2058,7 +2058,7 @@ export type OraoVrfCb = {
             "fields": [
               {
                 "defined": {
-                  "name": "orao_vrf_cb::state::request::Fulfilled"
+                  "name": "oraoVrfCbStateRequestFulfilled"
                 }
               }
             ]
@@ -2127,7 +2127,7 @@ export type OraoVrfCb = {
             "fields": [
               {
                 "defined": {
-                  "name": "orao_vrf_cb::state::request::Fulfilled"
+                  "name": "oraoVrfCbStateRequestFulfilled"
                 }
               }
             ]
@@ -2541,7 +2541,7 @@ export type OraoVrfCb = {
       }
     },
     {
-      "name": "orao_vrf_cb::events::fulfilled::Fulfilled",
+      "name": "oraoVrfCbEventsFulfilledFulfilled",
       "docs": [
         "Event that signals a request was fulfilled."
       ],
@@ -2574,7 +2574,7 @@ export type OraoVrfCb = {
       }
     },
     {
-      "name": "orao_vrf_cb::state::request::Fulfilled",
+      "name": "oraoVrfCbStateRequestFulfilled",
       "docs": [
         "Fulfilled request representation."
       ],

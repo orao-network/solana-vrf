@@ -1,7 +1,8 @@
 [package]
 name = "russian-roulette"
-version = "0.7.0"
+version = "0.8.0"
 edition = "2021"
+rust-version = "1.89"
 
 [lib]
 crate-type = ["cdylib", "lib"]
@@ -11,16 +12,18 @@ name = "russian_roulette"
 no-entrypoint = []
 no-idl = []
 no-log-ix-name = []
+anchor-debug = []
 idl-build = ["anchor-lang/idl-build"]
 cpi = ["no-entrypoint"]
-sdk = ["no-entrypoint", "rand", "anchor-client"]
+sdk = ["no-entrypoint", "rand", "anchor-client", "solana-sdk"]
 default = []
 
 [dependencies]
-anchor-client = { version = "0.32.1", optional = true }
-anchor-lang = { version = "0.32.1", features = ["init-if-needed"] }
+anchor-client = { version = "1.2.1", optional = true, default-features = false, features = ["async", "solana-v4"] }
+anchor-lang = { version = "1.2.1", default-features = false, features = ["solana-v4", "init-if-needed"] }
 blake3 = "=1.8.2"
 orao-solana-vrf = { path = "../../../../sdk", default-features = false, features = [
     "cpi",
 ] }
 rand = { version = "0.8", optional = true }
+solana-sdk = { version = "4", optional = true }

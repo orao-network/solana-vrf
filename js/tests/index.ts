@@ -1,5 +1,5 @@
 import assert from "assert";
-import { AnchorProvider, web3, BN } from "@coral-xyz/anchor";
+import { AnchorProvider, web3, BN } from "@anchor-lang/core";
 import { Orao, PROGRAM_ADDRESS, NetworkState, InitBuilder, FulfillBuilder } from "../src";
 import { describe, it } from "mocha";
 import nacl from "tweetnacl";

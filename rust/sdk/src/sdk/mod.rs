@@ -6,19 +6,15 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use anchor_client::{
-    solana_sdk::{
-        compute_budget::ComputeBudgetInstruction, ed25519_instruction, instruction::Instruction,
-        signature::Keypair, signer::Signer, sysvar,
-    },
-    ThreadSafeSigner,
-};
+use anchor_client::ThreadSafeSigner;
 use anchor_lang::{
     prelude::{AccountMeta, Pubkey},
     system_program, InstructionData, ToAccountMetas,
 };
 use anchor_spl::token;
+use solana_compute_budget_interface::ComputeBudgetInstruction;
 use solana_rpc_client::nonblocking::rpc_client::RpcClient;
+use solana_sdk::{instruction::Instruction, signature::Keypair, signer::Signer, sysvar};
 use tokio::{sync::oneshot, task::JoinError};
 
 use crate::{
@@ -30,6 +26,45 @@ use crate::{
 };
 
 pub use events::Event;
+
+/// Builds the Ed25519 program instruction that verifies `message` signed by `keypair`.
+///
+/// This mirrors `new_ed25519_instruction` of the Solana 2.x SDK: a single
+/// signature with every instruction index set to `u16::MAX` (i.e. "this very
+/// instruction"), which is the only layout the VRF program accepts.
+pub fn new_ed25519_instruction(keypair: &ed25519_dalek::Keypair, message: &[u8]) -> Instruction {
+    use ed25519_dalek::Signer as _;
+
+    const PUBKEY_OFFSET: u16 = 2 + 14; // header + offsets
+    const SIGNATURE_OFFSET: u16 = PUBKEY_OFFSET + 32;
+    const MESSAGE_OFFSET: u16 = SIGNATURE_OFFSET + 64;
+
+    let signature = keypair.sign(message).to_bytes();
+    let pubkey = keypair.public.to_bytes();
+
+    let mut data = Vec::with_capacity(MESSAGE_OFFSET as usize + message.len());
+    data.extend_from_slice(&[1, 0]); // num_signatures, padding
+    for value in [
+        SIGNATURE_OFFSET,
+        u16::MAX,
+        PUBKEY_OFFSET,
+        u16::MAX,
+        MESSAGE_OFFSET,
+        message.len() as u16,
+        u16::MAX,
+    ] {
+        data.extend_from_slice(&value.to_le_bytes());
+    }
+    data.extend_from_slice(&pubkey);
+    data.extend_from_slice(&signature);
+    data.extend_from_slice(message);
+
+    Instruction {
+        program_id: crate::ED25519_PROGRAM_ID,
+        accounts: vec![],
+        data,
+    }
+}
 
 mod events;
 
@@ -869,7 +904,7 @@ impl FulfillBuilder {
     /// *   `fulfill_authority` — is the authorized fulfill authority present
     ///     in the effective configuration (see [`crate::get_network_state`]).
     ///     [`ed25519_dalek::Keypair`] is required because it is required by the
-    ///     [`ed25519_instruction::new_ed25519_instruction`].
+    ///     [`new_ed25519_instruction`].
     ///
     /// Note that this function returns a pair of instructions and the order matters —
     /// in the transaction the first instruction (the `ed25519` instruction) must go
@@ -901,7 +936,7 @@ impl FulfillBuilder {
         let fulfill_authority =
             ed25519_dalek::Keypair::from_bytes(fulfill_authority.to_bytes().as_ref()).unwrap();
 
-        let ed25519 = ed25519_instruction::new_ed25519_instruction(&fulfill_authority, &self.seed);
+        let ed25519 = new_ed25519_instruction(&fulfill_authority, &self.seed);
         let fulfill = match version {
             RandomnessAccountVersion::V1 => Instruction::new_with_bytes(
                 id,
@@ -965,10 +1000,7 @@ impl FulfillBuilder {
 
         builder = builder
             // this instruction must be right before the fulfill instruction
-            .instruction(ed25519_instruction::new_ed25519_instruction(
-                &fulfill_authority,
-                &self.seed,
-            ));
+            .instruction(new_ed25519_instruction(&fulfill_authority, &self.seed));
 
         let builder = match randomness_account_data.client() {
             None => builder

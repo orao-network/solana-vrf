@@ -1,6 +1,6 @@
 [toolchain]
-anchor_version = "0.32.1"
-solana_version = "2.3.0"
+anchor_version = "1.2.1"
+solana_version = "4.3.2"
 
 [features]
 seeds = false
@@ -8,9 +8,6 @@ skip-lint = false
 
 [programs.localnet]
 russian_roulette = "DTHCPBTw6tFZDwbiSzKXXK8wQ7n7v5zJAH3Ex3uvoSK5"
-
-[registry]
-url = "https://api.apr.dev"
 
 [provider]
 cluster = "localnet"

@@ -1,5 +1,5 @@
-import * as anchor from "@coral-xyz/anchor";
-import { Program, web3, BN } from "@coral-xyz/anchor";
+import * as anchor from "@anchor-lang/core";
+import { Program, web3, BN } from "@anchor-lang/core";
 import { ExampleClient } from "../target/types/example_client";
 import { assert } from "chai";
 import {
@@ -17,7 +17,7 @@ import {
 } from "@orao-network/solana-vrf-cb";
 import testSecretKey from "../test_keypair.json";
 import nacl from "tweetnacl";
-import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
+import { bs58 } from "@anchor-lang/core/dist/cjs/utils/bytes";
 
 const testKeyPair = web3.Keypair.fromSecretKey(new Uint8Array(testSecretKey));
 

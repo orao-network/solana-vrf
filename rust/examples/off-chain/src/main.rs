@@ -2,20 +2,17 @@ mod command;
 
 use std::{str::FromStr, sync::Arc};
 
-use anchor_client::{
-    solana_sdk::{
-        bs58,
-        commitment_config::{CommitmentConfig, CommitmentLevel},
-        native_token::LAMPORTS_PER_SOL,
-        signature::read_keypair_file,
-        signer::{keypair::Keypair, Signer},
-    },
-    Client, Cluster, Program,
-};
+use anchor_client::{Client, Cluster, Program};
 use anchor_lang::prelude::Pubkey;
 use orao_solana_vrf::{wait_fulfilled, RequestBuilder};
 use solana_cli_config::{Config, CONFIG_FILE};
+use solana_commitment_config::{CommitmentConfig, CommitmentLevel};
 use solana_rpc_client_api::config::RpcSendTransactionConfig;
+use solana_sdk::{
+    native_token::LAMPORTS_PER_SOL,
+    signature::read_keypair_file,
+    signer::{keypair::Keypair, Signer},
+};
 
 use crate::command::CliOpts;
 use clap::Parser;

@@ -1,12 +1,9 @@
 use std::ops::Deref;
 
-use anchor_client::{
-    solana_sdk::{
-        compute_budget::ComputeBudgetInstruction, instruction::Instruction, signer::Signer,
-    },
-    ClientError,
-};
+use anchor_client::ClientError;
+use solana_compute_budget_interface::ComputeBudgetInstruction;
 use solana_rpc_client::nonblocking::rpc_client::RpcClient;
+use solana_sdk::{instruction::Instruction, signer::Signer};
 
 /// Calculates recommended fee based on the median fee of the last 150 slots.
 ///

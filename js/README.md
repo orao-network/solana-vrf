@@ -1,4 +1,4 @@
-# VRF v2 JS SDK
+# ORAO Solana VRF — JS SDK
 
 Library to interact with `orao-vrf` smart contract on Solana network.
 

@@ -94,14 +94,14 @@ pub struct Register<'info> {
         constraint = program_data_address_matches(&program, program_data.key()) @ ErrorCode::UnexpectedClientProgramData,
         executable,
     )]
-    pub program: AccountInfo<'info>,
+    pub program: UncheckedAccount<'info>,
     /// The program data account of the program being registered.
     #[account(constraint = program_data.upgrade_authority_address == Some(payer.key()) @ ErrorCode::WrongOwner)]
     pub program_data: Account<'info, ProgramData>,
     /// Opaque program's side client state (a PDA). This is the request authority.
     ///
     /// CHECK: Checked by [`Register::validate`].
-    pub state: AccountInfo<'info>,
+    pub state: UncheckedAccount<'info>,
     /// Client PDA being created.
     #[account(
         init,

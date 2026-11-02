@@ -1,12 +1,12 @@
 use std::ops::Deref;
 use std::sync::Arc;
 
-use anchor_client::solana_sdk::instruction::Instruction;
-use anchor_client::solana_sdk::signer::Signer;
 use anchor_client::{ClientError, ThreadSafeSigner};
 use anchor_lang::prelude::{Pubkey, UpgradeableLoaderState};
+use anchor_lang::system_program;
 use anchor_lang::{AccountDeserialize, InstructionData, ToAccountMetas};
-use solana_system_interface::program as system_program;
+use solana_sdk::instruction::Instruction;
+use solana_sdk::signer::Signer;
 
 use crate::state::client::{Callback, Client};
 use crate::state::network_state::NetworkState;
@@ -121,7 +121,7 @@ impl RegisterBuilder {
                 state,
                 client: Client::find_address(&program, &state, &id).0,
                 network_state: NetworkState::find_address(&id).0,
-                system_program: Pubkey::new_from_array(system_program::ID.to_bytes()),
+                system_program: system_program::ID,
             }
             .to_account_metas(None),
         )
@@ -178,7 +178,7 @@ impl RegisterBuilder {
                 state,
                 client: Client::find_address(&program, &state, &orao_vrf.id()).0,
                 network_state: NetworkState::find_address(&orao_vrf.id()).0,
-                system_program: Pubkey::new_from_array(system_program::ID.to_bytes()),
+                system_program: system_program::ID,
             })
             .args(crate::instruction::Register {
                 params: self.params,

@@ -1,5 +1,5 @@
-import * as anchor from "@coral-xyz/anchor";
-import { Program, web3, AnchorProvider } from "@coral-xyz/anchor";
+import * as anchor from "@anchor-lang/core";
+import { Program, web3, AnchorProvider } from "@anchor-lang/core";
 import IDL from "./target/idl/example_client.json";
 import { ExampleClient } from "./target/types/example_client";
 import { Command, InvalidArgumentError, Option } from "commander";
@@ -16,7 +16,7 @@ import {
     RequestAltAccount,
 } from "@orao-network/solana-vrf-cb";
 import { NetworkState } from "@orao-network/solana-vrf-cb";
-import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
+import { bs58 } from "@anchor-lang/core/dist/cjs/utils/bytes";
 
 const program = new Command();
 

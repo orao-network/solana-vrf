@@ -1,4 +1,4 @@
-import { BN, Program, Provider, web3 } from "@coral-xyz/anchor";
+import { BN, Program, Provider, web3 } from "@anchor-lang/core";
 import {
     Ed25519Program,
     SYSVAR_INSTRUCTIONS_PUBKEY,
@@ -23,8 +23,8 @@ import {
 } from "./state";
 import { OraoVrf } from "./types/orao_vrf";
 import * as IDL from "./types/orao_vrf.json";
-import { MethodsBuilder } from "@coral-xyz/anchor/dist/cjs/program/namespace/methods";
-import { AllInstructionsMap } from "@coral-xyz/anchor/dist/cjs/program/namespace/types";
+import { MethodsBuilder } from "@anchor-lang/core/dist/cjs/program/namespace/methods";
+import { AllInstructionsMap } from "@anchor-lang/core/dist/cjs/program/namespace/types";
 
 export {
     Randomness,

@@ -101,7 +101,7 @@ pub struct RequestAlt<'info> {
         mut,
         constraint = network_state.config.treasury == treasury.key() @ ErrorCode::WrongTreasury,
     )]
-    pub treasury: AccountInfo<'info>,
+    pub treasury: UncheckedAccount<'info>,
     /// Request PDA being created.
     ///
     /// CHECK: It is initialized within the instruction.
@@ -110,7 +110,7 @@ pub struct RequestAlt<'info> {
         seeds = [CB_REQUEST_ALT_ACCOUNT_SEED, client.key().as_ref(), &params.seed],
         bump,
     )]
-    pub request: AccountInfo<'info>,
+    pub request: UncheckedAccount<'info>,
     pub system_program: Program<'info, System>,
 }
 

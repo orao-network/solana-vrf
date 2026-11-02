@@ -1,4 +1,4 @@
-import { BN, IdlAccounts, Instruction, Program, Provider, web3 } from "@coral-xyz/anchor";
+import { BN, IdlAccounts, IdlTypes, Instruction, Program, Provider, web3 } from "@anchor-lang/core";
 import {
     Ed25519Program,
     ComputeBudgetProgram,
@@ -20,9 +20,9 @@ import {
 } from "./state";
 import { OraoVrfCb } from "./types/orao_vrf_cb";
 import IDL from "./types/orao_vrf_cb.json";
-import { MethodsBuilder } from "@coral-xyz/anchor/dist/cjs/program/namespace/methods";
-import { AllInstructionsMap, IdlTypes } from "@coral-xyz/anchor/dist/cjs/program/namespace/types";
-import { decodeUpgradeableLoaderState } from "@coral-xyz/anchor/dist/cjs/utils/registry";
+import { MethodsBuilder } from "@anchor-lang/core/dist/cjs/program/namespace/methods";
+import { AllInstructionsMap } from "@anchor-lang/core/dist/cjs/program/namespace/types";
+import { decodeUpgradeableLoaderState } from "@anchor-lang/core/dist/cjs/utils/registry";
 import { sha256 } from "@noble/hashes/sha2";
 
 export { Provider, MethodsBuilder, web3 };

@@ -4,8 +4,8 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use anchor_client::solana_sdk::signer::Signer;
 use anchor_lang::prelude::Pubkey;
+use solana_sdk::signer::Signer;
 use tokio::{sync::oneshot, task::JoinError};
 
 use crate::{events, state::request::RequestAccount};

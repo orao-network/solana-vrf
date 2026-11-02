@@ -19,11 +19,7 @@ declare_id!("DTHCPBTw6tFZDwbiSzKXXK8wQ7n7v5zJAH3Ex3uvoSK5");
 pub const PLAYER_STATE_ACCOUNT_SEED: &[u8] = b"russian-roulette-player-state";
 
 pub fn player_state_account_address(player: &Pubkey) -> Pubkey {
-    Pubkey::find_program_address(
-        &[PLAYER_STATE_ACCOUNT_SEED, player.as_ref()],
-        &crate::id(),
-    )
-    .0
+    Pubkey::find_program_address(&[PLAYER_STATE_ACCOUNT_SEED, player.as_ref()], &crate::id()).0
 }
 
 #[program]
@@ -52,7 +48,7 @@ pub mod russian_roulette {
         player_state.assert_can_play(ctx.accounts.prev_round.as_ref())?;
 
         // Request randomness.
-        let cpi_program = ctx.accounts.vrf.to_account_info();
+        let cpi_program = ctx.accounts.vrf.key();
         let cpi_accounts = RequestV2 {
             payer: ctx.accounts.player.to_account_info(),
             network_state: ctx.accounts.config.to_account_info(),
@@ -92,7 +88,7 @@ pub struct SpinAndPullTheTrigger<'info> {
         bump,
         seeds::program = orao_solana_vrf::ID
     )]
-    pub prev_round: AccountInfo<'info>,
+    pub prev_round: UncheckedAccount<'info>,
     /// CHECK:
     #[account(
         mut,
@@ -100,10 +96,10 @@ pub struct SpinAndPullTheTrigger<'info> {
         bump,
         seeds::program = orao_solana_vrf::ID
     )]
-    pub random: AccountInfo<'info>,
+    pub random: UncheckedAccount<'info>,
     /// CHECK:
     #[account(mut)]
-    pub treasury: AccountInfo<'info>,
+    pub treasury: UncheckedAccount<'info>,
     #[account(
         mut,
         seeds = [CONFIG_ACCOUNT_SEED],
@@ -131,11 +127,14 @@ pub enum Error {
 #[cfg(feature = "sdk")]
 pub async fn spin_and_pull_the_trigger<
     'a,
-    C: Deref<Target = impl anchor_client::solana_sdk::signer::Signer> + Clone,
+    C: Deref<Target = impl solana_sdk::signer::Signer> + Clone,
 >(
     roulette: &'a anchor_client::Program<C>,
     vrf: &anchor_client::Program<C>,
-) -> std::result::Result<anchor_client::RequestBuilder<'a, C, Arc<dyn ThreadSafeSigner>>, anchor_client::ClientError> {
+) -> std::result::Result<
+    anchor_client::RequestBuilder<'a, C, Arc<dyn ThreadSafeSigner>>,
+    anchor_client::ClientError,
+> {
     let seed = rand::random();
 
     // roulette accounts
@@ -169,7 +168,7 @@ pub async fn spin_and_pull_the_trigger<
             random: request_address,
             config: network_state_address,
             vrf: orao_solana_vrf::id(),
-            system_program: anchor_client::solana_sdk::system_program::ID,
+            system_program: anchor_lang::system_program::ID,
         })
         .args(crate::instruction::SpinAndPullTheTrigger { force: seed }))
 }
