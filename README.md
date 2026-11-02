@@ -273,10 +273,15 @@ for more.
 ## Running a local test validator
 
 `anchor test` will spin up a local validator automatically for the [cpi](rust/examples/cpi)
-tests. To run a validator manually with the VRF program preloaded:
+tests (its `Anchor.toml` clones the VRF program from devnet). To run a validator
+manually with the VRF program preloaded, clone it from the cluster the same way:
 
 ```sh
 solana-test-validator -r \
-    --bpf-program VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y js/dist/orao_vrf.so \
+    --url devnet \
+    --clone-upgradeable-program VRFzZoJdhFWL8rkvu87LpKM3RbcVezpMEc6X5GVDr7y \
     --ledger /tmp/test-ledger
 ```
+
+Use `--url mainnet-beta` to clone the mainnet build instead; both clusters run the
+same program version.
